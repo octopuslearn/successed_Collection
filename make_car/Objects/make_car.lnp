@@ -1,0 +1,8 @@
+".\Objects\STARTUP.obj",
+".\Objects\car.obj",
+".\Objects\main.obj",
+".\Objects\motor.obj",
+".\Objects\keycord.obj",
+".\Objects\JDY-31.obj" 
+TO ".\Objects\make_car" 
+PRINT(".\Listings\make_car.m51") RAMSIZE(256) 

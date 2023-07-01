@@ -1,0 +1,36 @@
+C51 COMPILER V9.54   MAIN                                                                  05/19/2023 15:28:17 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\SoftwareInstall\MDK_51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(
+                    -.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "keycord.h"
+   2          #include "JDY-31.h"
+   3          void main()
+   4          {
+   5   1        EA=1;
+   6   1        UartInit();
+   7   1        while(1)
+   8   1        {
+   9   2          JDY31_judgement();//À¶ÑÀ¿ØÖÆ
+  10   2          //keyjudgement();//°´¼ü¿ØÖÆ
+  11   2        }
+  12   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     10    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

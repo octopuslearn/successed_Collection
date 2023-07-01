@@ -1,0 +1,60 @@
+C51 COMPILER V9.54   JDY_31                                                                05/19/2023 15:28:17 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE JDY_31
+OBJECT MODULE PLACED IN .\Objects\JDY-31.obj
+COMPILER INVOKED BY: D:\SoftwareInstall\MDK_51\C51\BIN\C51.EXE JDY-31.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\JDY-31.lst) TABS(2) OBJECT(.\Objects\JDY-31.obj)
+
+line level    source
+
+   1          #include "JDY-31.h"
+   2          
+   3          unsigned char JDY31_mode;
+   4          
+   5          void UartInit()   //9600bps@11.0592MHz
+   6          {
+   7   1        SCON = 0x50;    //8???,?????
+   8   1        TMOD &= 0x0F;   //???????
+   9   1        TMOD |= 0x20;   //???????
+  10   1        TL1 = 0xFD;     //???????
+  11   1        TH1 = 0xFD;     //???????
+  12   1        ET1 = 0;      //???????
+  13   1        TR1 = 1;      //???1????
+  14   1        ES=1;
+  15   1      }
+  16          
+  17          void JDY31_interrupt() interrupt 4
+  18          {
+  19   1        if(RI)
+  20   1        {
+  21   2          RI=0;
+  22   2          JDY31_mode=SBUF;
+  23   2        }
+  24   1      }
+  25          
+  26          void JDY31_judgement()
+  27          {
+  28   1        switch(JDY31_mode)
+  29   1        {
+  30   2          case '1':go();break;
+  31   2          case '2':back();break;
+  32   2          case '3':turnleft();break;
+  33   2          case '4':turnright();break;
+  34   2          case '5':stop();break;
+  35   2        }
+  36   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     66    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

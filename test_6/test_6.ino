@@ -21,9 +21,9 @@
 #define RIGHT     'e'   //右转
 
 #define full 100
-#define large_adjust full*1.2
-#define big_adjust   full*1.5
-#define small_adjust full*1
+#define large_adjust full*1.5 //更改了1.2-1.5
+#define big_adjust   full*1.2 //更改了1.5-1.2
+#define small_adjust full*1.1 //更改了1-1.1
 #define go  full*1
 #define stop_car 0
 

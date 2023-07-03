@@ -20,7 +20,7 @@
 #define LEFT      'd'   //左转
 #define RIGHT     'e'   //右转
 
-#define full 100
+#define full 150  //100-150
 #define large_adjust full*1.5 //更改了1.2-1.5
 #define big_adjust   full*1.3 //更改了1.5-1.2-1.3
 #define small_adjust full*1.2 //更改了1-1.1-1.2

@@ -31,6 +31,17 @@ int sensor4 = 5;
 #define go        full*1
 #define go_p      full*0.6
 
+int hw_in[4];
+int hw_xiuzheng[4];
+
+
+#define XZ_LEFT       'm'
+#define XZ_RIGHT      'n'
+#define XZ_LEFT_BIG   'x'
+#define XZ_RIGHT_BIG  'y'
+
+int s = 0;
+
 void car_work(int which_car, int pwm_left_value, int pwm_right_value);
 
 
@@ -57,7 +68,6 @@ void loop() {
 
 void read_hongwai()
 {
-  int hw_in[4];
   hw_in[0] = digitalRead(sensor1);
   hw_in[1] = digitalRead(sensor2);
   hw_in[2] = digitalRead(sensor3);
@@ -73,31 +83,123 @@ void read_hongwai()
   {
     Serial.println("小幅度-右偏");
     car_work(LEFT, go_p, small_pwm);
+    xiuzheng(XZ_LEFT);
   }
   else if(hw_in[0])                               /*左边有线，右偏-左转*/
   {
     Serial.println("大幅度-右偏");
-    car_work(LEFT, go_p, big_pwm);
+//    car_work(LEFT, go_p, big_pwm);
+    xiuzheng(XZ_LEFT_BIG);         // x
   }
   
   else if(hw_in[2])                               /*右边有线，左偏-右转*/
   {
     Serial.println("小幅度-左偏");
     car_work(RIGHT, small_pwm, go_p);
+    xiuzheng(XZ_RIGHT);            // y
   }
   else if(hw_in[3])                               /*右边有线，左偏-右转*/
   {
     Serial.println("大幅度-左偏");
     car_work(RIGHT, big_pwm, go_p);
+    xiuzheng(XZ_RIGHT_BIG);
   }
 
   else if(!hw_in[1] && !hw_in[2])
   {
     Serial.println("正轨");
     car_work(RUN, go, go);
+    xiuzheng(XZ_RIGHT_BIG);
   } 
 }
 
+void xiuzheng(char xiuzheng_mode)
+{
+  switch(xiuzheng_mode)
+  {
+  
+    case 'm':
+      do
+      {
+        Serial.println("小幅度-右偏");
+        Serial.print("m开始修正：  ");
+        s++;
+        Serial.println(s);
+        hw_xiuzheng[1] = digitalRead(sensor2);
+        hw_xiuzheng[2] = digitalRead(sensor3);
+        Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
+        Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
+        car_work(LEFT, go_p, small_pwm);  
+      }while(!(hw_xiuzheng[1]==0 && hw_xiuzheng[2]==0));
+      s = 0;
+      Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
+      Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
+      Serial.println("m修正完成");
+     break;
+
+
+     case 'n':
+        do
+        {
+          Serial.println("小幅度-左偏");
+          Serial.print("n开始修正：  ");
+          s++;
+          Serial.println(s);
+          hw_xiuzheng[1] = digitalRead(sensor2);
+          hw_xiuzheng[2] = digitalRead(sensor3);
+          Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
+          Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
+          car_work(RIGHT, go_p, small_pwm);  
+        }while(!(hw_xiuzheng[1]==0 && hw_xiuzheng[2]==0));
+        s = 0;
+        Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
+        Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
+        Serial.println("n修正完成");
+     break;
+
+
+     case 'x':
+        do
+        {
+          Serial.println("大幅度-右偏");
+          Serial.print("x开始修正：  ");
+          s++;
+          Serial.println(s);
+          hw_xiuzheng[0] = digitalRead(sensor1);
+          hw_xiuzheng[1] = digitalRead(sensor2);
+          Serial.print("hw_xiuzheng[0]: ");Serial.print(hw_xiuzheng[0]);Serial.print("\t");
+          Serial.print("hw_xiuzheng[1]: ");Serial.println(hw_xiuzheng[1]);
+          car_work(RIGHT, go_p, small_pwm);  
+        }while(hw_xiuzheng[1]==0);
+        s = 0;
+        Serial.print("hw_xiuzheng[0]: ");Serial.print(hw_xiuzheng[0]);Serial.print("\t");
+        Serial.print("hw_xiuzheng[1]: ");Serial.println(hw_xiuzheng[1]);
+        Serial.println("x修正完成");
+     break;
+
+
+//     case 'y':
+//        do
+//        {
+//          Serial.println("大幅度-左偏");
+//          Serial.print("y开始修正：  ");
+//          s++;
+//          Serial.println(s);
+//          hw_xiuzheng[2] = digitalRead(sensor3);
+//          hw_xiuzheng[3] = digitalRead(sensor4);
+//          Serial.print("hw_xiuzheng[2]: ");Serial.print(hw_xiuzheng[2]);Serial.print("\t");
+//          Serial.print("hw_xiuzheng[3]: ");Serial.println(hw_xiuzheng[3]);
+//          car_work(LEFT, go_p, small_pwm);  
+//        }while(hw_xiuzheng[2]==0);
+//        s = 0;
+//        Serial.print("hw_xiuzheng[2]: ");Serial.print(hw_xiuzheng[2]);Serial.print("\t");
+//        Serial.print("hw_xiuzheng[3]: ");Serial.println(hw_xiuzheng[3]);
+//        Serial.println("y修正完成");
+//     break;
+
+      default:break;
+  }
+}
 
 void car_work(int which_car, int pwm_left_value, int pwm_right_value)
 {
@@ -125,14 +227,14 @@ void car_work(int which_car, int pwm_left_value, int pwm_right_value)
       break;
 
      case RIGHT:
-      Serial.println("LEFT"); //左转输出状态
+      Serial.println("RIGHT"); //左转输出状态
       digitalWrite(a1, HIGH);
       digitalWrite(a2, LOW);
       digitalWrite(b1, HIGH);
       digitalWrite(b2, LOW);
       break;
      case LEFT:
-      Serial.println("RIGHT"); //右转弯输出状态
+      Serial.println("LEFT"); //右转弯输出状态
       digitalWrite(a1, HIGH);
       digitalWrite(a2, LOW);
       digitalWrite(b1, HIGH);

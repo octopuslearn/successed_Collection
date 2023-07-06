@@ -1,14 +1,9 @@
+/*0,1当IO，23口当模拟串口。行不通，因为，0,1做io口读到的电平时错的，都是11。*/
+
 #include <SoftwareSerial.h>
 SoftwareSerial second_arduino(2, 3);  //虚拟串口2-rxd,3-txd
 
-#define lef_90 200  
-#define rig_90 200 
-
-#define lef_90 200
-#define rig_90 200
-
 int lr_90[2];
-
 
 void lefrig_90();
 
@@ -35,12 +30,14 @@ void lefrig_90()
   if(lr_90[0] == 1) //左直角
   {
 //    Serial.println("左直角");
-second_arduino.println("左直角");
+second_arduino.print("second_arduino： ");
+second_arduino.print("左直角");
 //    car_runtime(RIGHT,0,riggo_90);
   }
   if(lr_90[1] == 1) //右直角
   {
 //    Serial.println("右直角");
+second_arduino.print("second_arduino： ");
 second_arduino.println("右直角");
 //    car_runtime(LEFT,lefgo_90,0);
   }

@@ -134,6 +134,17 @@ void hy_invlue()
     car_runtime(RIGHT,small_adjust);
   }  
 
+    if(lr_90[0] > lef_90) //左直角
+    {
+      lr90_open=1;  Serial.println("左直角");
+      Serial.print("lr_90[0]:  ");  Serial.print(lr_90[0]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
+      car_runtime(BACK, 100);
+      delay(50);
+      car_runtime(STOP, 0);
+      delay(500);
+      lr90_time(lef90);
+    }
+
   if(hw_in[0]==0 && hw_in[1]==0 && hw_in[2] == 0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0) //在轨
   {
     if(hw_in[0]==0 && hw_in[1]==0 && hw_in[2] == 0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && !(lr_90[0] > rig_90) && !(lr_90[1] > rig_90)) //在轨
@@ -141,19 +152,22 @@ void hy_invlue()
       Serial.println("在轨");
       car_runtime(RUN,go);
     }
-    if(lr_90[0] > lef_90) //左直角
-    {
-      lr90_open=1;  Serial.println("左直角");
-      Serial.print("lr_90[0]:  ");  Serial.print(lr_90[0]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
-      car_runtime(STOP, 0);
-      lr90_time(lef90);
-    }
-    if(lr_90[1] > rig_90) //右直角
-    {
-      lr90_open=1;  Serial.println("右直角");
-      Serial.print("lr_90[1]:  ");  Serial.print(lr_90[1]); Serial.print("\t");  Serial.print("rig_90:  ");  Serial.println(rig_90);
-      car_runtime(STOP, 0);
-    }
+//    if(lr_90[0] > lef_90) //左直角
+//    {
+//      lr90_open=1;  Serial.println("左直角");
+//      Serial.print("lr_90[0]:  ");  Serial.print(lr_90[0]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
+//      car_runtime(BACK, 250);
+//      delay(100);
+//      car_runtime(STOP, 0);
+//      delay(1000);
+//      lr90_time(lef90);
+//    }
+//    if(lr_90[1] > rig_90) //右直角
+//    {
+//      lr90_open=1;  Serial.println("右直角");
+//      Serial.print("lr_90[1]:  ");  Serial.print(lr_90[1]); Serial.print("\t");  Serial.print("rig_90:  ");  Serial.println(rig_90);
+//      lr90_time(rig90);
+//    }
   } 
 }
 
@@ -162,24 +176,41 @@ void lr90_time(int lr90_time_value)
   switch(lr90_time_value)
   {
     case lef90:
+      car_runtime(LEFT, riggo_90);  Serial.println("左直角-开始转");
       while(1)
-      {
-        lr90_this_vale[0]=digitalRead(hy5);  //OUT1
-        car_runtime(RIGHT, riggo_90);  Serial.println("右直角-开始转");
-        Serial.print("起始值lr90_this_vale[0]:  "); Serial.println(lr90_this_vale[0]);
-        if(lr90_this_vale[0]==0)
-        {
-          lr90_this_vale[0]=digitalRead(hy5);
-          Serial.print("更新值lr90_this_vale[0]:  "); Serial.println(lr90_this_vale[0]);
-        }
-        else if(lr90_this_vale[0]==1) 
-        {
-          Serial.println("右直角-转完了");
-        }   
+      {               
+        do{          
+          lr90_this_vale[0]=digitalRead(hy2);         
+        }while(lr90_this_vale[0]==0);
+        Serial.println("左直角-转完了"); 
+        break;
+/***以下，第二种写法***/
+//        lr90_this_vale[0]=digitalRead(hy2);
+//        if(lr90_this_vale[0]==1)
+//        {
+//          Serial.println("左直角-转完了");
+//          break;
+//        }
+/***以上，第二种写法***/  
       }      
     break;
 
-    case rig90:
+//    case rig90:
+//      while(1)
+//      {
+//        lr90_this_vale[1]=digitalRead(hy6);  //OUT1
+//        car_runtime(LEFT, lefgo_90);  Serial.println("直角-开始转");
+//        Serial.print("起始值lr90_this_vale[0]:  "); Serial.println(lr90_this_vale[0]);
+//        if(lr90_this_vale[0]==0)
+//        {
+//          lr90_this_vale[0]=digitalRead(hy5);
+//          Serial.print("更新值lr90_this_vale[0]:  "); Serial.println(lr90_this_vale[0]);
+//        }
+//        else if(lr90_this_vale[0]==1) 
+//        {
+//          Serial.println("右直角-转完了");
+//        }   
+//      }  
 
     break;
 

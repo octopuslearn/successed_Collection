@@ -1,10 +1,14 @@
+/***YUAN***/
+/***数组未改，左右90度弯，完成版***/
+//注意：有问题，不一定是代码的问题，要看一下硬件有没有线脱落
+
 #include <TimerOne.h>
 
 /*************以下，90度弯*************/
 #define lef_90_pin A0 //新添90弯
 #define rig_90_pin A1
-#define lef_90 300  //90度弯阈值
-#define rig_90 300 
+#define lef_90 600  //90度弯阈值  //弱光下600 //正常实验室300
+#define rig_90 600 
 int lr_90[2];       //90度弯读取值
 #define lefgo_90 full*2.25//90度转弯角度
 #define riggo_90 full*2.25
@@ -158,7 +162,7 @@ void hy_invlue()
 
   if(hw_in[0]==0 && hw_in[1]==0 && hw_in[2] == 0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0) //在轨
   {
-    if(hw_in[0]==0 && hw_in[1]==0 && hw_in[2] == 0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && !(lr_90[0] > rig_90) && !(lr_90[1] > rig_90)) //在轨
+    if(hw_in[0]==0 && hw_in[1]==0 && hw_in[2] == 0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && !(lr_90[0] > lef_90) && !(lr_90[1] > rig_90)) //在轨
     {
       Serial.println("在轨");
       car_runtime(RUN,go);

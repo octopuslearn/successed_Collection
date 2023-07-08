@@ -1,3 +1,8 @@
+/*舍弃*/
+/***test_6-copy_1.0***/
+//错误代码
+//应该是假设的微调法，但是我写不出来
+
 #define STOP      0 //停止
 #define RUN       1 //前进
 #define BACK      2 //后退
@@ -17,10 +22,10 @@ int sensor3 = 4;
 int sensor4 = 5; 
 
 #define full 100
-#define small_pwm full*1.5
-#define big_pwm   full*1.7
-#define go        full*1
-#define go_p      full*0.6
+#define small_pwm full*0.8  //0.8
+#define big_pwm   full*0.8  //0.8
+#define go        full*1    
+#define go_p      full*0.8  //0.8
 
 int hw_in[4];
 int hw_xiuzheng[4];
@@ -53,8 +58,7 @@ void setup()
 
 void loop() {
   // put your main code here, to run repeatedly:
-//  read_hongwai();
-car_work(STOP,100,100);
+  read_hongwai();
 }
 
 
@@ -73,28 +77,32 @@ void read_hongwai()
 
   if(hw_in[1]==1)                               /*左边有线，右偏-左转*/
   {
-    Serial.println("小幅度-右偏");
-    car_work(LEFT, go_p, small_pwm);
-    xiuzheng(XZ_LEFT);
+    Serial.println("小幅度-右偏"); //2
+//    car_work(LEFT, go_p, small_pwm);
+//    xiuzheng(XZ_LEFT);
+    car_work(RIGHT, go_p, small_pwm);
   }
   else if(hw_in[0]==1)                               /*左边有线，右偏-左转*/
   {
     Serial.println("大幅度-右偏");
 //    car_work(LEFT, go_p, big_pwm);
-    xiuzheng(XZ_LEFT_BIG);         // x
+//    xiuzheng(XZ_LEFT_BIG);         // x
+    car_work(RIGHT, go_p, big_pwm);
   }
   
   else if(hw_in[2]==1)                               /*右边有线，左偏-右转*/
   {
     Serial.println("小幅度-左偏");
-    car_work(RIGHT, small_pwm, go_p);
-    xiuzheng(XZ_RIGHT);            
+//    car_work(RIGHT, small_pwm, go_p);
+//    xiuzheng(XZ_RIGHT);
+    car_work(LEFT, small_pwm, go_p);             
   }
   else if(hw_in[3]==1)                               /*右边有线，左偏-右转*/
   {
     Serial.println("大幅度-左偏");
 //    car_work(RIGHT, big_pwm, go_p);
-    xiuzheng(XZ_RIGHT_BIG);          //y
+//    xiuzheng(XZ_RIGHT_BIG);          //y
+    car_work(LEFT, big_pwm, go_p);
   }
 
   else if(!hw_in[1] && !hw_in[2])
@@ -120,7 +128,7 @@ void xiuzheng(char xiuzheng_mode)
         hw_xiuzheng[2] = digitalRead(sensor3);
         Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
         Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
-        car_work(LEFT, go_p, small_pwm);  
+        car_work(RIGHT, go_p, small_pwm);  
       }while(!(hw_xiuzheng[1]==0 && hw_xiuzheng[2]==0));
       s = 0;
       Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
@@ -140,7 +148,7 @@ void xiuzheng(char xiuzheng_mode)
           hw_xiuzheng[2] = digitalRead(sensor3);
           Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
           Serial.print("hw_xiuzheng[2]: ");Serial.println(hw_xiuzheng[2]);
-          car_work(RIGHT, go_p, small_pwm);  
+          car_work(LEFT, small_pwm, go_p);  
         }while(!(hw_xiuzheng[1]==0 && hw_xiuzheng[2]==0));
         s = 0;
         Serial.print("hw_xiuzheng[1]: ");Serial.print(hw_xiuzheng[1]);Serial.print("\t");
@@ -160,7 +168,7 @@ void xiuzheng(char xiuzheng_mode)
           hw_xiuzheng[1] = digitalRead(sensor2);
           Serial.print("hw_xiuzheng[0]: ");Serial.print(hw_xiuzheng[0]);Serial.print("\t");
           Serial.print("hw_xiuzheng[1]: ");Serial.println(hw_xiuzheng[1]);
-          car_work(RIGHT, go_p, small_pwm);  
+          car_work(RIGHT, go_p, big_pwm);  
         }while(hw_xiuzheng[1]==0);
         s = 0;
         Serial.print("hw_xiuzheng[0]: ");Serial.print(hw_xiuzheng[0]);Serial.print("\t");
@@ -180,7 +188,7 @@ void xiuzheng(char xiuzheng_mode)
           hw_xiuzheng[3] = digitalRead(sensor4);
           Serial.print("hw_xiuzheng[2]: ");Serial.print(hw_xiuzheng[2]);Serial.print("\t");
           Serial.print("hw_xiuzheng[3]: ");Serial.println(hw_xiuzheng[3]);
-          car_work(LEFT, go_p, small_pwm);  
+          car_work(LEFT, big_pwm, go_p);  
         }while(hw_xiuzheng[2]==0);
         s = 0;
         Serial.print("hw_xiuzheng[2]: ");Serial.print(hw_xiuzheng[2]);Serial.print("\t");

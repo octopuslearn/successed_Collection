@@ -1,4 +1,6 @@
-#include <TimerOne.h>
+/*舍弃*/
+/***YUAN_gai***/
+/***继承自YUAN,数组编号错误，逻辑一塌糊涂***/
 
 /****以下，任意时间角度*****/
 #define lr_which_lef 'x'  //任意时间转弯-左转
@@ -16,7 +18,7 @@ int lr_which_cnt = 0;         //任意时间转弯累计值
 #define lef_90_pin A0 //90度弯引脚
 #define rig_90_pin A1
 #define lef_90 300  //90度弯阈值
-#define rig_90 300 
+#define rig_90 600 
 int lr_90[4];       //90度弯读取值
 
 #define lefgo_90 full*2.25//90度转弯角度
@@ -78,19 +80,11 @@ void setup() {
   pinMode(hy6, INPUT);
   Serial.begin(9600);
   car_runtime(STOP, 0);
-//  Timer1.initialize(1000); 
-//  Timer1.attachInterrupt(trun_LR90);
 }
 
 void loop() {
-/*******以下为，使用定时器中断*********/
-//Serial.print("lr_which_cnt: "); Serial.print(lr_which_cnt); Serial.print('\t');
-//Serial.print("lr_which_time: "); Serial.println(lr_which_time);
-//  lr_anyangle(lr_which_lef);
-/*******以上为，使用定时器中断*********/
-
-////  hy_invlue();
-lr_anyangle(lr_which_lef, lr_which_time);     //旋转任意时间
+  hy_invlue();
+//lr_anyangle(lr_which_lef, lr_which_time);     //旋转任意时间
 
 }
 
@@ -116,35 +110,35 @@ void hy_invlue()
         Serial.print(hw_in[6]); Serial.print('\t'); 
   Serial.print("初始lr_90[1]:  ");  Serial.print(lr_90[1]); Serial.print("\t");  Serial.print("rig_90:  ");  Serial.println(rig_90);
 
-  if(hw_in[5] == 1)//最大幅度-右偏
+  if(hw_in[1] == 1)//最大幅度-右偏
   {
     Serial.println("最大幅度-右偏");
     car_runtime(LEFT,large_adjust);
   }
-  if(hw_in[6] == 1)//大幅度-左偏
+  if(hw_in[6] == 1)//最大幅度-左偏
   {
     Serial.println("最大幅度-左偏");
     car_runtime(RIGHT,large_adjust);
   }
 
-  if(hw_in[1] == 1) //大幅度-右偏
+  if(hw_in[2] == 1) //大幅度-右偏
   {
     Serial.println("大幅度-右偏");
     car_runtime(LEFT,big_adjust);
     
   }
-  if(hw_in[4] == 1) //大幅度-左偏
+  if(hw_in[5] == 1) //大幅度-左偏
   {
     Serial.println("大幅度-左偏");
     car_runtime(RIGHT,big_adjust);
   }
   
-  if(hw_in[2] == 1) //小幅度-右偏
+  if(hw_in[3] == 1) //小幅度-右偏
   {
     Serial.println("小幅度-右偏");
     car_runtime(LEFT,small_adjust);
   }
-  if(hw_in[3] == 1) //小幅度-左偏
+  if(hw_in[4] == 1) //小幅度-左偏
   {
     Serial.println("小幅度-左偏");
     car_runtime(RIGHT,small_adjust);
@@ -153,7 +147,7 @@ void hy_invlue()
     if(lr_90[1] > lef_90) //左直角
     {
       Serial.println("左直角");
-      Serial.print("lr_90[0]:  ");  Serial.print(lr_90[0]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
+      Serial.print("lr_90[1]: ");  Serial.print(lr_90[1]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
       car_runtime(BACK, 100);
       delay(50);
       car_runtime(STOP, 0);
@@ -164,7 +158,7 @@ void hy_invlue()
     if(lr_90[2] > rig_90) //右直角
     {
       Serial.println("右直角");
-      Serial.print("lr_90[1]:  ");  Serial.print(lr_90[1]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
+      Serial.print("lr_90[2]:  ");  Serial.print(lr_90[2]); Serial.print("\t");  Serial.print("lr_90:  ");  Serial.println(rig_90);
       car_runtime(BACK, 100);
       delay(50);
       car_runtime(STOP, 0);
@@ -174,7 +168,7 @@ void hy_invlue()
 
   if(hw_in[1]==0 && hw_in[2]==0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && hw_in[6] == 0) //在轨
   {
-    if(hw_in[1]==0 && hw_in[2]==0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && hw_in[6] == 0 && !(lr_90[1] > rig_90) && !(lr_90[2] > rig_90)) //在轨
+    if(hw_in[1]==0 && hw_in[2]==0 && hw_in[3] == 0 && hw_in[4] == 0 && hw_in[5] == 0 && hw_in[6] == 0 && !(lr_90[1] > lef_90) && !(lr_90[2] > rig_90)) //在轨
     {
       Serial.println("在轨");
       car_runtime(RUN,go);
@@ -191,16 +185,10 @@ void lr90_time(char lr90_time_value)
       while(1)
       {               
         do{          
-          lr90_this_vale[1]=digitalRead(hy3);         
+          lr90_this_vale[1]=digitalRead(hy4);;         
         }while(lr90_this_vale[1]==0);
         Serial.println("左直角-转完了"); 
         break;
-//        lr90_this_vale[2]=digitalRead(hy3);
-//        if(lr90_this_vale[2]==1)
-//        {
-//          Serial.println("左直角-转完了");
-//          break;
-//        }  
       }      
     break;
 
@@ -209,7 +197,7 @@ void lr90_time(char lr90_time_value)
       {
         car_runtime(RIGHT, riggo_90);  Serial.println("右直角-开始转");
         do{          
-          lr90_this_vale[2]=digitalRead(hy2);  //OUT2;         
+          lr90_this_vale[2]=digitalRead(hy3);  //OUT2;         
         }while(lr90_this_vale[2]==0);
         Serial.println("右直角-转完了");
         break;
@@ -271,58 +259,8 @@ void car_runtime(char car_mode, int pwm)
 }
 
 
-/*******以下为，使用定时器中断*********/
-//想法很好但是方法错了，因为在中断里不能完成复杂的事，所以失败了
-//void trun_LR90()
-//{
-//  if(lr_which_lef_start == 1)
-//  {    while(1);
-////    do{
-////      lr_which_cnt++;
-////    }while(!(lr_which_cnt>lr_which_time));
-////    lr_which_cnt++;
-////    if(lr_which_cnt>lr_which_time)
-////    {
-////      lr_which_cnt = 0;
-////      lr_which_lef_close = 1;
-////    }
-//    lr_which_cnt = 0;
-//    lr_which_lef_close = 1;
-////    lr_which_lef_start = 0;
-//  }
-//} 
-//
-//
-//void lr_anyangle(char lr_which)
-//{
-//  switch(lr_which)
-//  {
-//   case lr_which_lef:
-//    Serial.println("开始-任意时间转弯");
-//    lr_which_lef_start = 1;  //开始左转标志置一
-//    Serial.print("lr_which_lef_start:  "); Serial.println(lr_which_lef_start);
-//    while(1)
-//    {
-//      
-//      car_runtime(LEFT, riggo_90); //左转
-//      
-//      if(lr_which_lef_close == 1)
-//      {
-//        car_runtime(BACK, 100);
-//        delay(50);
-//        car_runtime(STOP, 0);
-//        Serial.println("任意时间转弯完成");
-//        break;
-//      }
-//     }
-//    break;
-//
-//    default:break;
-//  } 
-//}
-/*******以上为，使用定时器中断*********/
 
-
+/***以下，任意角度时间***/
 void lr_anyangle(char lr_which, int lr_which_ms)
 {
   switch(lr_which)
@@ -343,3 +281,4 @@ void lr_anyangle(char lr_which, int lr_which_ms)
 
   while(1);
 }
+/***以上，任意角度时间***/

@@ -1,3 +1,6 @@
+/*舍弃*/
+/***test_6***/
+//错误代码
 #define ln1_left    6 //左电机1
 #define ln2_left    7 //左电机2
 #define ln3_right   8 //右电机1
@@ -28,6 +31,9 @@
 #define stop_car 0
 
 
+#define cartesian full*1.5  //直角
+
+
 int hw_in[6];     //红外采集
 
 void car_runtime(char car_mode, int pwm);
@@ -47,7 +53,7 @@ void setup() {
   pinMode(hy5, INPUT);
   pinMode(hy6, INPUT);
   // put your setup code here, to run once:
-//  Serial.begin(9600);
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -128,7 +134,12 @@ void hy_invlue()
 //      car_runtime(RUN,go);
 //  }
 /***以上方法理论上对，实际上错误***/ 
- 
+
+  if(hw_in[4]==0 && hw_in[5]==0)  //直角-左侧
+  {
+    Serial.println("直角-左侧");
+    car_runtime(LEFT,cartesian);
+  } 
 }
 
 void car_runtime(char car_mode, int pwm)

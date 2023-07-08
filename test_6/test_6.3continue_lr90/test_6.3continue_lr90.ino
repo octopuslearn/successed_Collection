@@ -1,3 +1,6 @@
+/***test_6.3continue_lr90***/
+/***此为定时器中断测试,只做了一个方向的弯，未完成，90度弯错误办法***/
+//舍弃
 #include <TimerOne.h>
 #define gogogo 123
 

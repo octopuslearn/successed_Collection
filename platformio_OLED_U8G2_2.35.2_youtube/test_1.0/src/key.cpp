@@ -44,6 +44,7 @@ while(1) {//这一步在void setup中
 
 #include "key.h"
 
+int key_to_u8g2 = 0;        //按键情况
 struct Button button1;      //1.申请一个按键结构
 void Callback_button1_Handler(void *btn);//回调函数
 bool HAL_key0_ReadPin();
@@ -75,33 +76,41 @@ void Callback_button1_Handler(void* btn)
     switch(get_button_event((struct Button*)btn))
   {
     case PRESS_DOWN:
+      key_to_u8g2 = 1;
       Serial.println("KEY0:PRESS_DOWN\n");
     break;
-    
+
     case PRESS_UP:
+      key_to_u8g2 = 2;
       Serial.println("KEY0:PRESS_UP\n");
     break;
     
     case PRESS_REPEAT:
+      key_to_u8g2 = 3;
       Serial.println("KEY0:PRESS_REPEAT\n");
     break;
     
     case SINGLE_CLICK:
+      key_to_u8g2 = 4;
       Serial.println("KEY0:SINGLE_CLICK\n");
     break;
     
     case DOUBLE_CLICK:
+      key_to_u8g2 = 5;
       Serial.println("KEY0:DOUBLE_CLICK\n");
     break;
    
     case LONG_PRESS_START:
-      Serial.println("KEY1:LONG_PRESS_START\n");
+      key_to_u8g2 = 6;
+      Serial.println("KEY0:LONG_PRESS_START\n");
     break;
     
     case LONG_PRESS_HOLD:
-      Serial.println("KEY1:LONG_PRESS_HOLD\n");
+      key_to_u8g2 = 7;
+      Serial.println("KEY0:LONG_PRESS_HOLD\n");
     break;
     
     default:break;
   }
 }
+

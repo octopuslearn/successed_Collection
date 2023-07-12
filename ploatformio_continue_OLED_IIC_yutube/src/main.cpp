@@ -203,9 +203,9 @@ void loop() {
   if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
   {
     button_select_clicked = 1;
-    if(current_screen==0)        {current_screen = 1;/*调试*/ Serial.println("1级菜单");}//主菜单-1级菜单 //到达子菜单
-    else if(current_screen == 1) {current_screen = 2;/*调试*/ Serial.println("2级菜单");}//1级菜单-2级菜单
-    else if(current_screen == 2) {current_screen = 3;/*调试*/ Serial.println("3级菜单");}//2级菜单-3级菜单
+    if(current_screen==0)        {current_screen = 1;/*调试*/ Serial.println("1级菜单");}//主菜单-1级菜单 //到达子菜单  /*只要只设定一次，就可以不用按4下才能回到主菜单*/
+    // else if(current_screen == 1) {current_screen = 2;/*调试*/ Serial.println("2级菜单");}//1级菜单-2级菜单
+    // else if(current_screen == 2) {current_screen = 3;/*调试*/ Serial.println("3级菜单");}//2级菜单-3级菜单
     else  {current_screen=0;Serial.println("主菜单");}                   //-主菜单
   }
   if((digitalRead(5)==HIGH) && (button_select_clicked==1))
@@ -254,7 +254,7 @@ void loop() {
       }
       else if(current_screen == 2)  //直接跳转到t_lr90
       {
-
+        u8g2.drawStr(25, 25, "i love you");
       }
       else if(current_screen == 3)  //直接跳转到car_O/C
       {
@@ -263,6 +263,6 @@ void loop() {
 
 
 
-  delay(100);
+  // delay(100);
   } while ( u8g2.nextPage() );
 }

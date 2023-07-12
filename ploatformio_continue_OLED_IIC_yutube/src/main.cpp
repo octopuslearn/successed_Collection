@@ -64,7 +64,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
 
 
-
+int compare_jiemian = 0; //暂存值
 
 
 
@@ -232,8 +232,7 @@ void loop() {
       }
       if(demo_mode_state%3 == 0)      {current_screen = 0; item_selected = demo_mode_state/3;}//跳回到主菜单
       else if(demo_mode_state%3 == 1) {current_screen = 1; item_selected = demo_mode_state/3;}//直接跳转到hd_value
-      else if(demo_mode_state%3 == 2) {current_screen = 2; item_selected = demo_mode_state/3;}//直接跳转到t_lr90
-      else if(demo_mode_state%3 == 3) {current_screen = 3; item_selected = demo_mode_state/3;}//直接跳转到car_O/C
+      else if(demo_mode_state%3 == 2) {current_screen = 2; item_selected = demo_mode_state/3;}//直接跳转到t_lr90  //没有数对三取余数是3的！！！！！！！
     }
   }
 
@@ -270,32 +269,39 @@ void loop() {
 /*按下enter,在屏幕之间跳转*/
   if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
   {
-    button_select_clicked = 1;
-    if(current_screen==0) 
-    {       
-      if(item_selected == 0)
-      {
-        current_screen = 1;/*调试*/ Serial.println("1级菜单");
+    delay(50);
+    if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
+    {
+      button_select_clicked = 1;
+      if(current_screen==0) 
+      {       
+        if(item_selected == 0)
+        {
+          current_screen = 1;/*调试*/ Serial.println("1级菜单");
+        }
+        if(item_selected == 1)
+        {
+          current_screen = 2;/*调试*/ Serial.println("1级菜单");
+        }
+        if(item_selected == 2)
+        {
+          current_screen = 3;/*调试*/ Serial.println("1级菜单");
+        }
+        if(item_selected == 3)
+        {
+          current_screen = 4;/*调试*/ Serial.println("1级菜单");
+        }
       }
-      if(item_selected == 1)
-      {
-        current_screen = 2;/*调试*/ Serial.println("1级菜单");
-      }
-      if(item_selected == 2)
-      {
-        current_screen = 3;/*调试*/ Serial.println("1级菜单");
-      }
-      if(item_selected == 3)
-      {
-        current_screen = 4;/*调试*/ Serial.println("1级菜单");
-      }
-    
+      else 
+        {current_screen=0;Serial.println("主菜单");} /*就缺了个这！！！*/
     }
   } 
+
+  /*以下，把这里注释了就回不去了*/
     //主菜单-1级菜单 //到达子菜单  /*只要只设定一次，就可以不用按4下才能回到主菜单*/
-    // else if(current_screen == 1) {current_screen = 2;/*调试*/ Serial.println("2级菜单");}//1级菜单-2级菜单
-    // else if(current_screen == 2) {current_screen = 3;/*调试*/ Serial.println("3级菜单");}//2级菜单-3级菜单
-  else  {current_screen=0;Serial.println("主菜单");}                   //-主菜单
+  // else  {current_screen=0;Serial.println("主菜单");}                   //-主菜单
+  /*以上，把这里注释了就回不去了*/
+
   if((digitalRead(5)==HIGH) && (button_select_clicked==1))
   {
     button_select_clicked = 0;//取消点击
@@ -342,8 +348,7 @@ void loop() {
       }
       else if(current_screen == 1)  //直接跳转到hd_value
       {
-        while()
-        {
+       
           u8g2.drawStr(0,10,"hd:");
           read_hd_value();
           u8g2.setCursor((10*3), 10);   u8g2.print(hw_in[0]);
@@ -352,8 +357,9 @@ void loop() {
           u8g2.setCursor((10*7.5), 10); u8g2.print(hw_in[3]);
           u8g2.setCursor((10*9), 10);   u8g2.print(hw_in[4]);
           u8g2.setCursor((10*10.5), 10);u8g2.print(hw_in[5]);
-        }
-        
+          // while(1);//直接进入不了
+
+
       }
       else if(current_screen == 2)  //直接跳转到t_lr90
       {

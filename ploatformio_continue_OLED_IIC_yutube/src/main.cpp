@@ -129,6 +129,35 @@ char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
 
 
 
+
+
+#define hy1   22     //OUT5
+#define hy2   23     //OUT4
+#define hy3   24     //OUT3
+#define hy4   25     //OUT2
+#define hy5   26    //OUT1
+#define hy6   27    //OUT6
+int hw_in[8];
+
+
+/*函数声明*/
+void read_hd_value_setup();
+void read_hd_value();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void setup(){
   Serial.begin(9600);
   pinMode(2, INPUT_PULLUP); //mode
@@ -137,12 +166,34 @@ void setup(){
   pinMode(5, INPUT_PULLUP); //enter
   u8g2.begin();//初始化演示器
   u8g2.setColorIndex(1);  // set the color to white//设置颜色为白色
+  read_hd_value_setup();
   // put your setup code here, to run once:
 
 }
 
 
 void loop() {
+
+
+
+/*测试*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*直接进入界面or手动进入界面模式*/
   if(digitalRead(2) == 0) //mode  //自动进入界面模式
@@ -224,6 +275,10 @@ void loop() {
     u8g2.firstPage();
   do {
 
+/*全缓存模式*/
+  u8g2.clearBuffer(); 
+  u8g2.setCursor(0,0);//清除内部缓冲区
+
       if(current_screen == 0) //菜单屏幕
       {
         u8g2.drawXBMP(0, 22, 128, 21, bitmap_item_sel_outline);  //绘制所选项中框
@@ -250,19 +305,54 @@ void loop() {
       }
       else if(current_screen == 1)  //直接跳转到hd_value
       {
-        u8g2.drawStr(25, 25, "succeed!");
+          u8g2.drawStr(0,10,"hd:");
+          read_hd_value();
+          u8g2.setCursor((10*3), 10);   u8g2.print(hw_in[0]);
+          u8g2.setCursor((10*4.5), 10); u8g2.print(hw_in[1]);
+          u8g2.setCursor((10*6), 10);   u8g2.print(hw_in[2]);
+          u8g2.setCursor((10*7.5), 10); u8g2.print(hw_in[3]);
+          u8g2.setCursor((10*9), 10);   u8g2.print(hw_in[4]);
+          u8g2.setCursor((10*10.5), 10);u8g2.print(hw_in[5]);
+        
       }
-      else if(current_screen == 2)  //直接跳转到t_lr90
-      {
-        u8g2.drawStr(25, 25, "i love you");
-      }
-      else if(current_screen == 3)  //直接跳转到car_O/C
-      {
+      // else if(current_screen == 2)  //直接跳转到t_lr90
+      // {
+      //   u8g2.drawStr(25, 25, menu_items[item_selected]);
+      // }
+      // else if(current_screen == 3)  //直接跳转到car_O/C
+      // {
 
-      }
+      // }
 
+  // u8g2.sendBuffer();                 //绘制缓冲区的内容
 
-
-  // delay(100);
   } while ( u8g2.nextPage() );
+}
+
+
+void read_hd_value_setup()
+{
+  pinMode(hy1, INPUT);//寻迹模块引脚初始化
+  pinMode(hy2, INPUT);
+  pinMode(hy3, INPUT);
+  pinMode(hy4, INPUT);
+  pinMode(hy5, INPUT);
+  pinMode(hy6, INPUT);
+}
+
+void read_hd_value()
+{
+  hw_in[0] = digitalRead(hy1);  //OUT5
+  hw_in[1] = digitalRead(hy2);  //OUT4
+  hw_in[2] = digitalRead(hy3);  //OUT3
+  hw_in[3] = digitalRead(hy4);  //OUT2
+  hw_in[4] = digitalRead(hy5);  //OUT1
+  hw_in[5] = digitalRead(hy6);  //OUT6
+  /*调试*/
+  // Serial.print("hw_in[0]:");Serial.print(hw_in[0]); Serial.print('\t');
+  //  Serial.print("hw_in[1]:");Serial.print(hw_in[1]); Serial.print('\t');
+  //   Serial.print("hw_in[2]:");Serial.print(hw_in[2]); Serial.print('\t');
+  //    Serial.print("hw_in[3]:");Serial.print(hw_in[3]); Serial.print('\t');
+  //     Serial.print("hw_in[4]:");Serial.print(hw_in[4]); Serial.print('\t');
+  //       Serial.print("hw_in[5]:");Serial.print(hw_in[5]); Serial.println('\t'); 
 }

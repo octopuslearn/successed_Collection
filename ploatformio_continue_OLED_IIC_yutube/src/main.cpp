@@ -166,7 +166,7 @@ void loop() {
       {
         demo_mode_state = 0;//跳回到第一个屏幕
       }
-      if(demo_mode_state%3 == 0) {current_screen = 0; item_selected = demo_mode_state/3;}//跳回到主菜单
+      if(demo_mode_state%3 == 0)      {current_screen = 0; item_selected = demo_mode_state/3;}//跳回到主菜单
       else if(demo_mode_state%3 == 1) {current_screen = 1; item_selected = demo_mode_state/3;}//直接跳转到hd_value
       else if(demo_mode_state%3 == 2) {current_screen = 2; item_selected = demo_mode_state/3;}//直接跳转到t_lr90
       else if(demo_mode_state%3 == 3) {current_screen = 3; item_selected = demo_mode_state/3;}//直接跳转到car_O/C
@@ -203,10 +203,10 @@ void loop() {
   if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
   {
     button_select_clicked = 1;
-    if(current_screen==0)        {current_screen = 1;}//主菜单-1级菜单 //到达子菜单
-    else if(current_screen == 1) {current_screen = 2;}//1级菜单-2级菜单
-    else if(current_screen == 2) {current_screen = 3;}//2级菜单-3级菜单
-    else  {current_screen=0;}                   //-主菜单
+    if(current_screen==0)        {current_screen = 1;/*调试*/ Serial.println("1级菜单");}//主菜单-1级菜单 //到达子菜单
+    else if(current_screen == 1) {current_screen = 2;/*调试*/ Serial.println("2级菜单");}//1级菜单-2级菜单
+    else if(current_screen == 2) {current_screen = 3;/*调试*/ Serial.println("3级菜单");}//2级菜单-3级菜单
+    else  {current_screen=0;Serial.println("主菜单");}                   //-主菜单
   }
   if((digitalRead(5)==HIGH) && (button_select_clicked==1))
   {
@@ -231,26 +231,26 @@ void loop() {
         /*将上一项设定为淡色*/
         u8g2.setFont(u8g_font_7x14); //设置字体
         u8g2.drawStr(25, 15, menu_items[item_sel_previous]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[item_sel_previous]);  //绘制握手图标
-        Serial.print("上一项，图标："); Serial.println(item_sel_previous);
+        u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        ///*调试*/ Serial.print("上一项，图标："); Serial.println(item_sel_previous);
 
         /*将当前项设定为深色*/
         u8g2.setFont(u8g_font_7x14B); //设置字体 //B代表粗体
         u8g2.drawStr(25, 15+20+2, menu_items[item_selected]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[item_selected]);  //绘制握手图标
-        Serial.print("当前项，图标："); Serial.println(item_selected);
+        u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        ///*调试*/  Serial.print("当前项，图标："); Serial.println(item_selected);
         /*将下一项设定为浅色*/
         u8g2.setFont(u8g_font_7x14); //设置字体 //B代表粗体
         u8g2.drawStr(25, 15+20+20+2+2, menu_items[item_sel_next]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[item_sel_next]);  //绘制握手图标
-        Serial.print("下一项，图标："); Serial.println(item_sel_next);
+        u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        ///*调试*/  Serial.print("下一项，图标："); Serial.println(item_sel_next);
 
         u8g2.drawXBMP(128-2, 0, 2, 64, bitmap_scrollbar_background);  //绘制滚动列表背景
         u8g2.drawBox(125, 64/NUM_ITEMS * item_selected, 3, 64/NUM_ITEMS);  //绘制滚动条 //drawBox是绘制啥的，为啥绘制滚动条的时候要用？？？
       }
       else if(current_screen == 1)  //直接跳转到hd_value
       {
-
+        u8g2.drawStr(25, 25, "succeed!");
       }
       else if(current_screen == 2)  //直接跳转到t_lr90
       {

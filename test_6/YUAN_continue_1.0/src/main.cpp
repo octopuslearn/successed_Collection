@@ -1,11 +1,4 @@
 /**
- * @file main.cpp
- * @author your name (you@domain.com)
- * @brief 
- * @version 0.1
- * @date 2023-07-13
- * 
- * @copyright Copyright (c) 2023
  * 
  * 说明：白底上亮-1，黑线上灭-0
  * 规定：左转为车向左转，右转为车向右转
@@ -13,7 +6,8 @@
 
 #include <Arduino.h>
 
-#define hd1   22    //
+/*灰度接线*/
+#define hd1   22    //灰度1-8通道
 #define hd2   23    //
 #define hd3   24    //
 #define hd4   25    //
@@ -22,7 +16,7 @@
 #define hd7   28    //
 #define hd8   29    //
 
-
+/*电机接线*/
 #define left_motor_pwm    2 //左电机pwm
 #define right_motor_pwm   3 //右电机pwm
 #define ln1_left    30 //左电机1
@@ -30,39 +24,184 @@
 #define ln3_right   32 //右电机1
 #define ln4_right   33 //右电机2
 
+/*车运动定义*/
 #define STOP      'a'   //停止
 #define RUN       'b'  //前进
 #define BACK      'c'   //后退
 #define LEFT      'd'   //左转
 #define RIGHT     'e'   //右转
 
+
+
+
 int hd_value[9];  //灰度传感器数值
-
-
-
-void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm);
-void fline();
-
 
 
 
 
 void setup()
 {
-  Serial.begin(9600);
+  /*灰度引脚模式*/
+  pinMode(hd1,INPUT);pinMode(hd2,INPUT);
+  pinMode(hd3,INPUT);pinMode(hd4,INPUT);
+  pinMode(hd5,INPUT);pinMode(hd6,INPUT);
+  pinMode(hd7,INPUT);pinMode(hd8,INPUT);
+
+  /*电机引脚模式*/
+  pinMode(ln1_left,OUTPUT);pinMode(ln2_left,OUTPUT);
+  pinMode(ln3_right,OUTPUT);pinMode(ln4_right,OUTPUT);
+  /*电机PWM引脚模式*/
+  pinMode(left_motor_pwm,OUTPUT);pinMode(right_motor_pwm,OUTPUT);
+
+  Serial.begin(9600); //串口调试
 }
 
-void loop()
-{
-  fline();
+
+
+
+
+
+
+/*左转*/
+void AnitClockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
+{ 
+  motor_Exercise_status(car_mode_a, lr_a, lr_a_ms);//左转 //LEFT
+  delay(lr_a_ms);    
+  motor_Exercise_status(STOP, 0, 0);//停车
+  /*调试*/Serial.println("左转完成");
 }
+
+
+/*右转*/
+void Clockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
+{ 
+  motor_Exercise_status(RIGHT, 50, 50);//右转
+  delay(lr_a_ms);    
+  motor_Exercise_status(STOP, 0, 0);//停车
+  /*调试*/Serial.println("右转完成");
+}
+
+
+/*返回-5678左右60cm弯*/
+void target_1or2(int target_1or2_choose)
+{
+  switch(target_1or2_choose)
+  {
+    case 1: //左转
+        int x=1;
+        while(x=1)
+        {
+          track_Q();//循迹-前进
+          hd_read_value();
+          if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==0 && hd_value[4]==0)
+          {
+            x = 0;
+            break;
+          }
+        }
+        AnitClockwise(LEFT, 50, 50, 50);  //左转
+    break;
+
+    case 2: //右转
+        int x=1;
+        while(x=1)
+        {
+          track_Q();//循迹-前进
+          hd_read_value();
+          if(hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
+          {
+            x = 0;
+            break;
+          }
+        }
+        AnitClockwise(RIGHT, 50, 50, 50);  //右转
+    break;
+  }
+}
+
+
+/*60cm前进累计*/
+void lj_60cm(int lj_60cm_ms)
+{ 
+  track_Q();
+  delay(lj_60cm_ms);
+}
+
+
+/*找到白色(终点)停下*/
+void white_Search()
+{
+  int x = 1;
+  while(x=1)
+  {
+    track_Q();//循迹-前进
+    hd_read_value();
+    if(hd_value[1]==1 && hd_value[2]==1 && hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==1 && hd_value[7]==1 && hd_value[8]==1)
+    {
+      x = 0;
+      break;
+    }
+  }
+   motor_Exercise_status(STOP, 0, 0); //停车
+}
+
+/*找到黑色(终点)停下*/
+void black_Search()
+{
+  int x = 1;
+  while(x=1)
+  {
+    track_Q();//循迹-前进
+    hd_read_value();
+    if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==1 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
+    {
+      x = 0;
+      break;
+    }
+  }
+   motor_Exercise_status(STOP, 0, 0); //停车
+}
+
 
 
 
 
 
 /*循迹*/
-void fline()
+void track_Q()
+{
+    hd_read_value();//读取灰度值
+
+    if(hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==1 && hd_value[6]==1)  //右偏-小      0011 //左转
+    {
+      motor_Exercise_status(LEFT, 50, 50);
+      /*调试*/Serial.println("右偏-小");
+    }
+    else if(hd_value[3]==0 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==1)  //右偏-中 0111 
+    {
+      motor_Exercise_status(LEFT, 80, 80);
+      /*调试*/Serial.println("右偏-中");
+    }
+
+    else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==0 && hd_value[6]==0)  //左偏-小 1100 //右转
+    {
+      motor_Exercise_status(RIGHT, 50, 50);
+      /*调试*/Serial.println("左偏-小");
+    }
+    else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==0)  //左偏-中 1110
+    {
+      motor_Exercise_status(RIGHT, 80, 80);
+      /*调试*/Serial.println("左偏-中");
+    }
+    
+    motor_Exercise_status(RUN, 100, 100); //前进
+    /*调试*/Serial.println("正轨");
+
+}
+
+
+/*读取灰度值*/
+void hd_read_value()
 {
   hd_value[1] = digitalRead(hd1);
   hd_value[2] = digitalRead(hd2);
@@ -73,7 +212,7 @@ void fline()
   hd_value[7] = digitalRead(hd7);
   hd_value[8] = digitalRead(hd8);
 
-  /*调试*/
+/*以下，调试*/
    Serial.print(hd_value[1]); Serial.print('\t');
     Serial.print(hd_value[2]); Serial.print('\t');
      Serial.print(hd_value[3]); Serial.print('\t');
@@ -82,40 +221,7 @@ void fline()
          Serial.print(hd_value[6]); Serial.print('\t');
           Serial.print(hd_value[7]); Serial.print('\t');
             Serial.print(hd_value[8]); Serial.println('\t');
-  
-
-  // if(hd_value[4]==0 || hd_value[5]==0)
-  // {
-  //   if(hd_value[3]==1 && hd_value[6]==1)
-  //   {
-  //     motor_Exercise_status(RUN, 100, 100);
-  //   }
-  // }
-
-  if(hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==1 && hd_value[6]==1)  //右偏-小      0011
-  {
-    motor_Exercise_status(LEFT, 50, 50);
-    /*调试*/Serial.println("右偏-小");
-  }
-  else if(hd_value[3]==0 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==1)  //右偏-中 0111
-  {
-    motor_Exercise_status(LEFT, 80, 80);
-    /*调试*/Serial.println("右偏-中");
-  }
-
-  else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==0 && hd_value[6]==0)  //左偏-小 1100
-  {
-    motor_Exercise_status(RIGHT, 50, 50);
-    /*调试*/Serial.println("左偏-小");
-  }
-  else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==0)  //左偏-中 1110
-  {
-    motor_Exercise_status(RIGHT, 80, 80);
-    /*调试*/Serial.println("左偏-中");
-  }
-  
-  motor_Exercise_status(RUN, 100, 100);
-  /*调试*/Serial.println("正轨");
+/*以上，调试*/
 }
 
 

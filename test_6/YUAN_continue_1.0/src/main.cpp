@@ -24,6 +24,12 @@
 #define ln3_right   32 //右电机1
 #define ln4_right   33 //右电机2
 
+
+
+
+/*调试LED*/
+#define led1 49
+
 /*车运动定义*/
 #define STOP      'a'   //停止
 #define RUN       'b'  //前进
@@ -33,8 +39,13 @@
 
 
 
-
 int hd_value[9];  //灰度传感器数值
+
+int Aim = 0;  //目的地编号
+
+
+
+
 
 
 
@@ -53,8 +64,34 @@ void setup()
   /*电机PWM引脚模式*/
   pinMode(left_motor_pwm,OUTPUT);pinMode(right_motor_pwm,OUTPUT);
 
+  /*调试LED*/
+  pinMode(led1,OUTPUT);
+
+
   Serial.begin(9600); //串口调试
 }
+
+
+
+void loop()
+{
+  OpenmvRead();//目的地编号
+
+  if(Aim==1)//目的地编号  ////1号位置在左边
+  {
+
+    black_Search();                   //找到黑色(终点)停下
+    Advance_black(10);                //到黑线，上前
+    AnitClockwise(LEFT, 50, 50, 50);  //左转
+    white_Search();                   //找到白色(终点)停下
+
+    digitalWrite(led1,LOW);//亮红灯
+  }
+}
+
+
+
+
 
 
 
@@ -83,7 +120,7 @@ void Clockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
 
 
 /*返回-5678左右60cm弯*/
-void target_1or2(int target_1or2_choose)
+void leri_chooise(int target_1or2_choose)
 {
   switch(target_1or2_choose)
   {
@@ -127,6 +164,13 @@ void lj_60cm(int lj_60cm_ms)
   delay(lj_60cm_ms);
 }
 
+/*到黑线，上前*/
+void Advance_black(int Advance_go)
+{
+  track_Q();
+  delay(Advance_go);
+}
+
 
 /*找到白色(终点)停下*/
 void white_Search()
@@ -153,7 +197,7 @@ void black_Search()
   {
     track_Q();//循迹-前进
     hd_read_value();
-    if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==1 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
+    if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
     {
       x = 0;
       break;

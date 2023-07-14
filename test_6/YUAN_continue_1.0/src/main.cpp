@@ -42,6 +42,7 @@
 int hd_value[9];  //灰度传感器数值
 
 int Aim = 0;  //目的地编号
+int ZY = 0;   //openmv分左右
 
 
 
@@ -75,18 +76,79 @@ void setup()
 
 void loop()
 {
-  OpenmvRead();//目的地编号
+  // OpenmvRead();//目的地编号
 
-  if(Aim==1)//目的地编号  ////1号位置在左边
+  if(Aim==1)//目的地编号1  ////1号位置在左边
   {
+    /*前进*/
+    black_Search();                   //前进找到黑色(终点)停下
+    Advance_black(10);                //到黑线，上前
+    AnitClockwise(LEFT, 50, 50, 50);  //左转
+    white_Search();                   //找到白色(终点)停下
 
-    black_Search();                   //找到黑色(终点)停下
+    /*返回*/
+    Search_black_back();              //后退找到黑线停下
     Advance_black(10);                //到黑线，上前
     AnitClockwise(LEFT, 50, 50, 50);  //左转
     white_Search();                   //找到白色(终点)停下
 
     digitalWrite(led1,LOW);//亮红灯
   }
+
+  if(Aim==2)//目的地编号2  ////2号位置在右边
+  {
+    /*前进*/
+    black_Search();                   //前进找到黑色(终点)停下
+    Advance_black(10);                //到黑线，上前
+    AnitClockwise(RIGHT, 50, 50, 50); //右转
+    white_Search();                   //找到白色(终点)停下
+
+    /*返回*/
+    Search_black_back();              //后退找到黑线停下
+    Advance_black(10);                //到黑线，上前
+    AnitClockwise(RIGHT, 50, 50, 50); //右转
+    white_Search();                   //找到白色(终点)停下
+  }
+
+  if(Aim>2)
+  {
+    black_Search();                   //前进找到黑色(终点)停下
+    lj_60cm(1500);                    //60cm前进累计
+    //OpenmvZY();                       //比对，分左右
+
+    switch(ZY)
+    {
+      case 0://左转
+        black_Search();                   //前进找到黑色(终点)停下
+        Advance_black(10);                //到黑线，上前
+        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        white_Search();                   //找到白色(终点)停下
+
+        Search_black_back();              //后退找到黑线停下
+        Advance_black(10);                //到黑线，上前
+        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        white_Search();                   //找到白色(终点)停下
+
+      break;
+
+      case 1://右转
+        /*前进*/
+        black_Search();                   //前进找到黑色(终点)停下
+        Advance_black(10);                //到黑线，上前
+        AnitClockwise(RIGHT, 50, 50, 50); //右转
+        white_Search();                   //找到白色(终点)停下
+
+        /*返回*/
+        Search_black_back();              //后退找到黑线停下
+        Advance_black(10);                //到黑线，上前
+        AnitClockwise(RIGHT, 50, 50, 50); //右转
+        white_Search();                   //找到白色(终点)停下
+      break;
+
+      default:break;
+    }
+  }
+
 }
 
 
@@ -105,6 +167,7 @@ void AnitClockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
   motor_Exercise_status(car_mode_a, lr_a, lr_a_ms);//左转 //LEFT
   delay(lr_a_ms);    
   motor_Exercise_status(STOP, 0, 0);//停车
+  delay(100);
   /*调试*/Serial.println("左转完成");
 }
 
@@ -115,6 +178,7 @@ void Clockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
   motor_Exercise_status(RIGHT, 50, 50);//右转
   delay(lr_a_ms);    
   motor_Exercise_status(STOP, 0, 0);//停车
+  delay(100);
   /*调试*/Serial.println("右转完成");
 }
 
@@ -167,7 +231,7 @@ void lj_60cm(int lj_60cm_ms)
 /*到黑线，上前*/
 void Advance_black(int Advance_go)
 {
-  track_Q();
+  motor_Exercise_status(RUN, 100, 100); 
   delay(Advance_go);
 }
 
@@ -187,15 +251,16 @@ void white_Search()
     }
   }
    motor_Exercise_status(STOP, 0, 0); //停车
+   delay(100);
 }
 
-/*找到黑色(终点)停下*/
+/*前进找到黑色(终点)停下*/
 void black_Search()
 {
   int x = 1;
   while(x=1)
   {
-    track_Q();//循迹-前进
+    track_Q();//前进循迹
     hd_read_value();
     if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
     {
@@ -204,14 +269,33 @@ void black_Search()
     }
   }
    motor_Exercise_status(STOP, 0, 0); //停车
+   delay(100);
+}
+
+/*后退找到黑线，停止*/
+void Search_black_back()
+{
+  int x = 1;
+  while(x)
+  {
+    // motor_Exercise_status(BACK, 100, 100); //停车
+    
+    track_Q_BACK();
+    if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
+    {
+      x = 0;
+      break;
+    }
+  }
+  motor_Exercise_status(RUN, 100, 100); //先刹车，后停车
+  delay(100);
+  motor_Exercise_status(STOP, 0, 0); //停车
+  delay(100);
 }
 
 
 
-
-
-
-/*循迹*/
+/*前进循迹*/
 void track_Q()
 {
     hd_read_value();//读取灰度值
@@ -242,6 +326,37 @@ void track_Q()
     /*调试*/Serial.println("正轨");
 
 }
+
+/*倒退循迹*/
+void track_Q_BACK()
+{
+    hd_read_value();
+    if(hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==1 && hd_value[6]==1)  //右偏-小      0011 //左转
+    {
+      motor_Exercise_status(LEFT, 50, 50);
+      /*调试*/Serial.println("右偏-小");
+    }
+    else if(hd_value[3]==0 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==1)  //右偏-中 0111 
+    {
+      motor_Exercise_status(LEFT, 80, 80);
+      /*调试*/Serial.println("右偏-中");
+    }
+
+    else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==0 && hd_value[6]==0)  //左偏-小 1100 //右转
+    {
+      motor_Exercise_status(RIGHT, 50, 50);
+      /*调试*/Serial.println("左偏-小");
+    }
+    else if(hd_value[3]==1 && hd_value[4]==1 && hd_value[5]==1 && hd_value[6]==0)  //左偏-中 1110
+    {
+      motor_Exercise_status(RIGHT, 80, 80);
+      /*调试*/Serial.println("左偏-中");
+    }
+    
+    motor_Exercise_status(BACK, 100, 100); //前进
+    /*调试*/Serial.println("正轨");
+}
+
 
 
 /*读取灰度值*/

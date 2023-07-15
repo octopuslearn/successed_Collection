@@ -102,9 +102,9 @@ char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
 #define AnitClockwise_ms 500   //左转时间
 #define AnitClockwise_pwm_le 80 //左转pwm-左
 #define AnitClockwise_pwm_ri 80 
-#define Clockwise_ms 1000   //右转时间
-#define Clockwise_pwm_le 70 //右转pwm-左
-#define Clockwise_pwm_ri 70 
+#define Clockwise_ms 500   //右转时间
+#define Clockwise_pwm_le 80 //右转pwm-左
+#define Clockwise_pwm_ri 80 
 /*以上，需要调试的各种参数*/
 
 
@@ -144,8 +144,8 @@ char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
 
 int hd_value[9];  //灰度传感器数值
 
-int Aim = 0;  //目的地编号
-int ZY = 0;   //openmv分左右
+int Aim = 15;  //目的地编号
+int ZY = 5;   //openmv分左右
 
 
 char Aim_in = ' ';
@@ -166,7 +166,7 @@ void hd_read_value();/*读取灰度值*/
 void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm);/*电机运动状态*/
 void OpenmvZY();/*k210确定左右，有无*/
 void OpenmvRead();/*k210读取目标病房*/
-// void OLED_show();/*OELD*/
+void OLED_show();/*OELD*/
 /*以上，函数声明*/
 
 
@@ -209,39 +209,50 @@ void setup()
 
 void loop()
 {
-  // OLED_show();
+  Serial.println("程序开始： ");
+  //OLED_show();
   OpenmvRead();//读取目的地编号 
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
   {
+    /*调试*/Serial.println("目标1-/*前进*/");
+    /*调试*/delay(1000);
     /*前进*/
     black_Search();                   //前进找到黑色(终点)停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     white_Search();                   //找到白色(终点)停下
-
+    /*调试*/
+    /*调试*/Serial.println("目标1-/*返回*/");
+    /*调试*/delay(1000);
     /*返回*/
     Search_black_back();              //后退找到黑线停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     white_Search();                   //找到白色(终点)停下
-
+    /*调试*/Serial.println("目标1-/*完成*/");
+    /*调试*/delay(1000);
     digitalWrite(led1,LOW);//亮红灯
   }
 
   if(Aim==2)//目的地编号2  ////2号位置在右边
   {
+    /*调试*/Serial.println("目标2-/*前进*/");
+    /*调试*/delay(1000);
     /*前进*/
     black_Search();                   //前进找到黑色(终点)停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
-
+    /*调试*/Serial.println("目标2-/*返回*/");
+    /*调试*/delay(1000);
     /*返回*/
     Search_black_back();              //后退找到黑线停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
+    /*调试*/Serial.println("目标2-/*完成*/");
+    /*调试*/delay(1000);
   }
 /*以上，近端*/
 
@@ -251,6 +262,7 @@ void loop()
   {
     black_Search();                   //前进找到黑色(终点)停下  //到达近端十字路口
     lj_60cm(lj_60cm_go);              //60cm前进累计-向前
+    Serial.println("中端开始读取：  ");
     OpenmvZY();                     //比对，分左右
 
     /*开始中端*/
@@ -395,7 +407,7 @@ void AnitClockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
 /*右转*/
 void Clockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
 { 
-  motor_Exercise_status(RIGHT, 50, 50);//右转
+  motor_Exercise_status(car_mode_a, lr_a, lr_a_ms);//右转
   delay(lr_a_ms);    
   motor_Exercise_status(STOP, 0, 0);//停车
   delay(100);
@@ -712,23 +724,22 @@ void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm)
 /*k210读取目标病房*/
 void OpenmvRead()
 {
-  Serial.println("k210读取目标病房");
+  // Serial.println("k210读取目标病房");
   while(Serial1.read()>=0); //清空缓冲区
   while(Serial1.available()==0);//等待信号传输
   if(Serial1.available())     //读取k210目标病房
   {
-    Serial.println("inininin!!!");
+    /*绝对不可以在此打印，否则只能识别1*/// Serial.println("inininin!!!");
     Aim_in = Serial1.read();
-    if(Aim_in=='1') {Aim=1;}
-    if(Aim_in=='2') {Aim=2;}  
-    if(Aim_in=='3') {Aim=3;}
-    if(Aim_in=='4') {Aim=4;Serial.println("k210读取目标病房____4");}
-    if(Aim_in=='5') {Aim=5;}  
-    if(Aim_in=='6') {Aim=6;}
-    if(Aim_in=='7') {Aim=7;}
-    if(Aim_in=='8') {Aim=8;}
-    // OLED_show();
-    Serial.println("outoutout!!!");
+    if(Aim_in=='1') {Aim=1;Serial.println("k210_1");}
+    if(Aim_in=='2') {Aim=2;Serial.println("k210_2");}  
+    if(Aim_in=='3') {Aim=3;Serial.println("k210_3");}
+    if(Aim_in=='4') {Aim=4;Serial.println("k210_4");}
+    if(Aim_in=='5') {Aim=5;Serial.println("k210_5");}  
+    if(Aim_in=='6') {Aim=6;Serial.println("k210_6");}
+    if(Aim_in=='7') {Aim=7;Serial.println("k210_7");}
+    if(Aim_in=='8') {Aim=8;Serial.println("k210_8");}
+    /*绝对不可以在此打印，否则只能识别1*/// Serial.println("outoutout!!!");
   }
   while(Serial1.read()>=0); //清空缓冲区
 }
@@ -736,24 +747,29 @@ void OpenmvRead()
 /*k210确定左右，有无*/
 void OpenmvZY()
 {
+  //Serial.println("进入成功开始读取");
   while(Serial1.read()>=0); //清空缓冲区
-  Serial1.write(0x31);//发送开启指令
   while(Serial1.available()==0);//等待信号传输
   if(Serial1.available()>0)     //读取k210确定左右，有无
   {
     char Aim_choose_in = Serial1.read();
+    Serial.print("********Aim_choose_in*******"); Serial.println(Aim_choose_in); Serial.print("********Aim_choose_in*******"); 
     if(Aim_choose_in=='0')     
     {
       ZY=0;
+      /*调试*/Serial.print("ZY:   "); Serial.println(ZY);
     }
     if(Aim_choose_in=='1') 
     {
       ZY=1;
+      /*调试*/Serial.print("ZY:   "); Serial.println(ZY);
     }  
     if(Aim_choose_in=='2')
     {
       ZY=2;
+      /*调试*/Serial.print("ZY:   "); Serial.println(ZY);
     }
+    Serial.println("进入成功-读取");
     // OLED_show();
   }
   while(Serial1.read()>=0); //清空缓冲区

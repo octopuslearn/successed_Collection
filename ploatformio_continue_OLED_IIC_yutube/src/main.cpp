@@ -101,7 +101,7 @@ void setup(){
   pinMode(5, INPUT_PULLUP); //enter
   u8g2.begin();//初始化演示器
   u8g2.setColorIndex(1);  // set the color to white//设置颜色为白色
-  read_hd_value_setup();
+  read_hd_value_setup();  //灰度引脚定义
   // put your setup code here, to run once:
 
 }
@@ -109,17 +109,17 @@ void setup(){
 
 void loop() {
 /*直接进入界面or手动进入界面模式*/
-  if(digitalRead(2) == 0) //mode  //自动进入界面模式
+  if(digitalRead(2) == 0) 
   {
-    demo_mode = 0;
+    demo_mode = 0;  //自动模式
   }
   else  //按键进入界面模式
   {
-    demo_mode = 1;
+    demo_mode = 1;  //手动模式
   }
 
 /*up,down跳转到上一个，下一个项*/ //直接进入模式
-  if(demo_mode == 0)
+  if(demo_mode == 0)  //自动模式
   { 
     demo_mode_delay++;//延时
     if(demo_mode_delay>15)
@@ -136,7 +136,7 @@ void loop() {
     }
   }
 
-  if(demo_mode == 1)
+  if(demo_mode == 1) //手动模式
   {
     if((digitalRead(3)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
     {
@@ -218,9 +218,9 @@ void loop() {
     u8g2.firstPage();
   do {
 
-/*全缓存模式*/
-  u8g2.clearBuffer(); 
-  u8g2.setCursor(0,0);//清除内部缓冲区
+// /*全缓存模式*/
+//   u8g2.clearBuffer(); 
+//   u8g2.setCursor(0,0);//清除内部缓冲区
 
       if(current_screen == 0) //菜单屏幕
       {
@@ -257,9 +257,6 @@ void loop() {
           u8g2.setCursor((10*7.5), 10); u8g2.print(hw_in[3]);
           u8g2.setCursor((10*9), 10);   u8g2.print(hw_in[4]);
           u8g2.setCursor((10*10.5), 10);u8g2.print(hw_in[5]);
-          // while(1);//直接进入不了
-
-
       }
       else if(current_screen == 2)  //直接跳转到t_lr90
       {
@@ -269,7 +266,7 @@ void loop() {
       {
         u8g2.drawStr(25, 25, "mmm");
       }
-      else if(current_screen == 4)  //直接跳转到car_O/C
+      else if(current_screen == 4)  //直接跳转到wring!
       {
         u8g2.drawStr(25, 25, "wring!");
       }

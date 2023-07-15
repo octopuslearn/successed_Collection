@@ -72,9 +72,13 @@ const int MAX_ITEM_LENGTH = 20;//项目名称的最大数组，即menu_items列�
 
 char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
   { "hd_value" }, 
-  { "t_lr90" }, 
-  { "car_O/C" }, 
+  // { "t_lr90" }, 
+  // { "car_O/C" }, 
+  // { "wring!" }, 
+  { "Aim" }, 
+  { "ZY" }, 
   { "wring!" }, 
+
   // { "GPS Speed" }, 
   // { "Big Knob" },   
   // { "Park Sensor" }, 
@@ -95,10 +99,10 @@ char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
 
 #define Advance_black_ms 500 //到黑线上前
 
-#define AnitClockwise_ms 1100   //左转时间
+#define AnitClockwise_ms 1000   //左转时间
 #define AnitClockwise_pwm_le 70 //左转pwm-左
 #define AnitClockwise_pwm_ri 70 
-#define Clockwise_ms 1100   //右转时间
+#define Clockwise_ms 1000   //右转时间
 #define Clockwise_pwm_le 70 //右转pwm-左
 #define Clockwise_pwm_ri 70 
 /*以上，需要调试的各种参数*/
@@ -143,6 +147,8 @@ int hd_value[9];  //灰度传感器数值
 int Aim = 0;  //目的地编号
 int ZY = 0;   //openmv分左右
 
+
+char Aim_in = ' ';
 
 
 /*以下，函数声明*/
@@ -203,8 +209,9 @@ void setup()
 
 void loop()
 {
-  OpenmvRead();//读取目的地编号
   OLED_show();
+  OpenmvRead();//读取目的地编号 
+  Serial.println("sss");
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
   {
@@ -696,20 +703,23 @@ void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm)
 /*k210读取目标病房*/
 void OpenmvRead()
 {
+  Serial.println("k210读取目标病房");
   while(Serial1.read()>=0); //清空缓冲区
   while(Serial1.available()==0);//等待信号传输
-  if(Serial1.available()>0)     //读取k210目标病房
+  if(Serial1.available())     //读取k210目标病房
   {
-    char Aim_in = Serial1.read();
+    Serial.println("inininin!!!");
+    Aim_in = Serial1.read();
     if(Aim_in=='1') {Aim=1;}
     if(Aim_in=='2') {Aim=2;}  
     if(Aim_in=='3') {Aim=3;}
-    if(Aim_in=='4') {Aim=4;}
+    if(Aim_in=='4') {Aim=4;Serial.println("k210读取目标病房____4");}
     if(Aim_in=='5') {Aim=5;}  
     if(Aim_in=='6') {Aim=6;}
     if(Aim_in=='7') {Aim=7;}
     if(Aim_in=='8') {Aim=8;}
     OLED_show();
+    Serial.println("outoutout!!!");
   }
   while(Serial1.read()>=0); //清空缓冲区
 }
@@ -718,6 +728,7 @@ void OpenmvRead()
 void OpenmvZY()
 {
   while(Serial1.read()>=0); //清空缓冲区
+  Serial1.write(0x31);//发送开启指令
   while(Serial1.available()==0);//等待信号传输
   if(Serial1.available()>0)     //读取k210确定左右，有无
   {
@@ -743,60 +754,72 @@ void OpenmvZY()
 void OLED_show()
 {
 
-    if((digitalRead(3)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
+    if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
     {
-      button_down_clicked = 1;
-      item_selected++;//当前按键项目++
-      /*调试*/
-      Serial.print("down按下: "); Serial.println(item_selected);
-      if(item_selected>=NUM_ITEMS)  //划到低了
+      delay(50);
+      if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
       {
-        item_selected = 0;
+        button_down_clicked = 1;
+        item_selected++;//当前按键项目++
+        /*调试*/
+        Serial.print("down按下: "); Serial.println(item_selected);
+        if(item_selected>=NUM_ITEMS)  //划到低了
+        {
+          item_selected = 0;
+        }
       }
     }
-    else if((digitalRead(4)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
+    else if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
     {
-      button_up_clicked = 1;
-      item_selected--;//当前按键项目++
-      /*调试*/
-      Serial.print("up按下: "); Serial.println(item_selected);
-      if(item_selected < 0)  //划到顶了 //为啥不是<=1???
+      delay(50);
+      if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
       {
-        item_selected = NUM_ITEMS-1;  //我认为是跳转到最后一项 NUM_ITEMS-1  //引用下标
+        button_up_clicked = 1;
+        item_selected--;//当前按键项目++
+        /*调试*/
+        Serial.print("up按下: "); Serial.println(item_selected);
+        if(item_selected < 0)  //划到顶了 //为啥不是<=1???
+        {
+          item_selected = NUM_ITEMS-1;  //我认为是跳转到最后一项 NUM_ITEMS-1  //引用下标
+        }
       }
     }
+    
+    if((digitalRead(42)==HIGH) && (button_up_clicked==1))   {button_up_clicked = 0;};  //取消点击  //up
+
+    if((digitalRead(41)==HIGH) && (button_down_clicked==1)) {button_down_clicked = 0;};  //down
 
 
-  if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
+  if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
   {
     delay(50);
-    if((digitalRead(5)==LOW) && (button_select_clicked==0)) //enter
+    if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
     {
       button_select_clicked = 1;
       if(current_screen==0) 
       {       
         if(item_selected == 0)
         {
-          current_screen = 1;/*调试*/ Serial.println("1级菜单");
+          current_screen = 1;/*调试*/ Serial.println("1级菜单hd_value");
         }
         if(item_selected == 1)
         {
-          current_screen = 2;/*调试*/ Serial.println("1级菜单");
+          current_screen = 2;/*调试*/ Serial.println("1级菜单t_lr90");
         }
         if(item_selected == 2)
         {
-          current_screen = 3;/*调试*/ Serial.println("1级菜单");
+          current_screen = 3;/*调试*/ Serial.println("1级菜单car_O/C");
         }
         if(item_selected == 3)
         {
-          current_screen = 4;/*调试*/ Serial.println("1级菜单");
+          current_screen = 4;/*调试*/ Serial.println("1级菜单wring!");
         }
       }
     else 
         {current_screen=0;Serial.println("主菜单");} /*就缺了个这！！！*/
     }
   }
-    if((digitalRead(5)==HIGH) && (button_select_clicked==1))
+    if((digitalRead(43)==HIGH) && (button_select_clicked==1))
     {
       button_select_clicked = 0;//取消点击
     }
@@ -841,14 +864,14 @@ void OLED_show()
        
           u8g2.drawStr(0,10,"hd_value: ");
           hd_read_value();//读取灰度值
-          u8g2.setCursor((10*0), 20); u8g2.print(hd_value[1]);
-          u8g2.setCursor((10*1), 20); u8g2.print(hd_value[2]);
-          u8g2.setCursor((10*2), 20); u8g2.print(hd_value[3]);
-          u8g2.setCursor((10*3), 20); u8g2.print(hd_value[4]);
-          u8g2.setCursor((10*4), 20); u8g2.print(hd_value[5]);
-          u8g2.setCursor((10*5), 20); u8g2.print(hd_value[6]);
-          u8g2.setCursor((10*6), 20); u8g2.print(hd_value[7]);
-          u8g2.setCursor((10*7), 20); u8g2.print(hd_value[8]);
+          u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
+          u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
+          u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
+          u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
+          u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
+          u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
+          u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
+          u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
       }
       else if(current_screen == 2)  //直接跳转到t_lr90
       {

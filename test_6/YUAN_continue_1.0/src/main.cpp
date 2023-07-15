@@ -1,10 +1,34 @@
 /**
- * 
  * 说明：白底上亮-1，黑线上灭-0
  * 规定：左转为车向左转，右转为车向右转
  */
 
 #include <Arduino.h>
+
+
+
+
+/*以下，需要调试的各种参数*/
+#define lj_60cm_go 500 //60cm前进累计
+#define lj_60cm_lr 500 //60cm左右累计
+
+#define Advance_black_ms 500 //到黑线上前
+
+#define AnitClockwise_ms 1100   //左转时间
+#define AnitClockwise_pwm_le 70 //左转pwm-左
+#define AnitClockwise_pwm_ri 70 
+#define Clockwise_ms 1100   //右转时间
+#define Clockwise_pwm_le 70 //右转pwm-左
+#define Clockwise_pwm_ri 70 
+/*以上，需要调试的各种参数*/
+
+
+
+/*以下，调试用外设*/
+#define led1 49
+/*以上，调试用外设*/
+
+
 
 /*灰度接线*/
 #define hd1   22    //灰度1-8通道
@@ -24,12 +48,6 @@
 #define ln3_right   32 //右电机1
 #define ln4_right   33 //右电机2
 
-
-
-
-/*调试LED*/
-#define led1 49
-
 /*车运动定义*/
 #define STOP      'a'   //停止
 #define RUN       'b'  //前进
@@ -47,7 +65,6 @@ int ZY = 0;   //openmv分左右
 
 
 /*以下，函数声明*/
-
 void AnitClockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms);/*左转*/
 void Clockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms); /*右转*/
 void leri_chooise(int target_1or2_choose);/*返回-5678左右60cm弯*/
@@ -60,6 +77,9 @@ void track_Q();/*前进循迹*/
 void track_Q_BACK();/*倒退循迹*/
 void hd_read_value();/*读取灰度值*/
 void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm);/*电机运动状态*/
+void OpenmvZY();/*k210确定左右，有无*/
+void OpenmvRead();/*k210读取目标病房*/
+/*以上，函数声明*/
 
 
 
@@ -78,32 +98,35 @@ void setup()
   /*电机PWM引脚模式*/
   pinMode(left_motor_pwm,OUTPUT);pinMode(right_motor_pwm,OUTPUT);
 
-  /*调试LED*/
+
+  /*以下，调试用外设*/
   pinMode(led1,OUTPUT);
+  /*以上，调试用外设*/
 
 
-  Serial.begin(9600); //串口调试
+  Serial.begin(9600); //调试-串口0
+  Serial1.begin(9600); //k210-串口1
 }
 
 
 
 void loop()
 {
-  // OpenmvRead();//目的地编号
+  OpenmvRead();//读取目的地编号
 
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
   {
     /*前进*/
     black_Search();                   //前进找到黑色(终点)停下
-    Advance_black(10);                //到黑线，上前
-    AnitClockwise(LEFT, 50, 50, 50);  //左转
+    Advance_black(Advance_black_ms);                //到黑线，上前
+    AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     white_Search();                   //找到白色(终点)停下
 
     /*返回*/
     Search_black_back();              //后退找到黑线停下
-    Advance_black(10);                //到黑线，上前
-    AnitClockwise(LEFT, 50, 50, 50);  //左转
+    Advance_black(Advance_black_ms);                //到黑线，上前
+    AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     white_Search();                   //找到白色(终点)停下
 
     digitalWrite(led1,LOW);//亮红灯
@@ -113,14 +136,14 @@ void loop()
   {
     /*前进*/
     black_Search();                   //前进找到黑色(终点)停下
-    Advance_black(10);                //到黑线，上前
-    AnitClockwise(RIGHT, 50, 50, 50); //右转
+    Advance_black(Advance_black_ms);                //到黑线，上前
+    Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
 
     /*返回*/
     Search_black_back();              //后退找到黑线停下
-    Advance_black(10);                //到黑线，上前
-    AnitClockwise(RIGHT, 50, 50, 50); //右转
+    Advance_black(Advance_black_ms);                //到黑线，上前
+    Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
   }
 /*以上，近端*/
@@ -130,35 +153,35 @@ void loop()
   if(Aim>2)
   {
     black_Search();                   //前进找到黑色(终点)停下  //到达近端十字路口
-    lj_60cm(1500);                    //60cm前进累计
-    //OpenmvZY();                     //比对，分左右
+    lj_60cm(lj_60cm_go);              //60cm前进累计-向前
+    OpenmvZY();                     //比对，分左右
 
     /*开始中端*/
     switch(ZY)//中端找到了目的地编号
     {
       case 0://中端左转
         black_Search();                   //前进找到黑色(终点)停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
         white_Search();                   //找到白色(终点)停下
 
         Search_black_back();              //后退找到黑线停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
         white_Search();                   //找到白色(终点)停下
       break;
 
       case 1://中端右转
         /*前进*/
         black_Search();                   //前进找到黑色(终点)停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(RIGHT, 50, 50, 50); //右转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
         white_Search();                   //找到白色(终点)停下
 
         /*返回*/
         Search_black_back();              //后退找到黑线停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(RIGHT, 50, 50, 50); //右转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
         white_Search();                   //找到白色(终点)停下
       break;
 
@@ -167,23 +190,23 @@ void loop()
 
     /*开始远端*/
     black_Search();                   //到达中端十字路口上
-    lj_60cm(1500);                    //60cm前进累计
-    //OpenmvZY();                     //比对，分左右
+    lj_60cm(lj_60cm_go);              //60cm前进累计
+    OpenmvZY();                     //比对，分左右
 
     switch(ZY)//远端找到了目的地编号
     {
       case 0://远端左转
         black_Search();                   //前进找到黑色(终点)停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(LEFT, 50, 50, 50);  //左转
-        lj_60cm(1500);                    //60cm前进累计
-        //OpenmvZY();                     //比对，分左右
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
+        lj_60cm(lj_60cm_lr);              //60cm左右累计
+        OpenmvZY();                     //比对，分左右
         /*远端分支*/
         if(ZY==0)//远端左分支-左转
         {
           black_Search();                   //前进找到黑色(终点)停下
-          Advance_black(10);                //到黑线，上前
-          AnitClockwise(LEFT, 50, 50, 50);  //左转
+          Advance_black(Advance_black_ms);                //到黑线，上前
+          AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
           white_Search();                   //找到白色(终点)停下
 
           /*远端返回*/
@@ -194,8 +217,8 @@ void loop()
         else if(ZY==1)//远端左分支-右转
         {
           black_Search();                   //前进找到黑色(终点)停下
-          Advance_black(10);                //到黑线，上前
-          AnitClockwise(RIGHT, 50, 50, 50);  //右转
+          Advance_black(Advance_black_ms);                //到黑线，上前
+          Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms);  //右转
           white_Search();                   //找到白色(终点)停下
 
           /*远端返回*/
@@ -209,16 +232,16 @@ void loop()
 
       case 1://远端右转
         black_Search();                   //前进找到黑色(终点)停下
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(RIGHT, 50, 50, 50);  //左转
-        lj_60cm(1500);                    //60cm前进累计
-        //OpenmvZY();                     //比对，分左右
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms);  //右转
+        lj_60cm(lj_60cm_lr);              //60cm左右累计
+        OpenmvZY();                     //比对，分左右
         /*远端分支*/
         if(ZY==0)//远端右分支-左转
         {
           black_Search();                   //前进找到黑色(终点)停下
-          Advance_black(10);                //到黑线，上前
-          AnitClockwise(LEFT, 50, 50, 50);  //左转
+          Advance_black(Advance_black_ms);                //到黑线，上前
+          AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
           white_Search();                   //找到白色(终点)停下
 
           /*远端返回*/
@@ -229,8 +252,8 @@ void loop()
         else if(ZY==1)//右转
         {
           black_Search();                   //前进找到黑色(终点)停下
-          Advance_black(10);                //到黑线，上前
-          AnitClockwise(RIGHT, 50, 50, 50);  //右转
+          Advance_black(Advance_black_ms);                //到黑线，上前
+          Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms);  //右转
           white_Search();                   //找到白色(终点)停下
 
           /*远端返回*/
@@ -254,9 +277,10 @@ void loop()
 
 
 
-
-
 /*以下，所有函数*/
+
+
+
 
 /*左转*/
 void AnitClockwise(char car_mode_a, int lr_a, int lr_b, int lr_a_ms)
@@ -300,8 +324,8 @@ void leri_chooise(int target_1or2_choose)
           }
         }
     
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     }
     break;
 
@@ -318,8 +342,8 @@ void leri_chooise(int target_1or2_choose)
             break;
           }
         }
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(RIGHT, 50, 50, 50);  //右转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms);  //右转
     }
     break;
     /*以上，后退左右转*/
@@ -339,8 +363,8 @@ void leri_chooise(int target_1or2_choose)
             break;
           }
         }
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(LEFT, 50, 50, 50);  //左转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     }
     break;
 
@@ -356,8 +380,8 @@ void leri_chooise(int target_1or2_choose)
             break;
           }
         }
-        Advance_black(10);                //到黑线，上前
-        AnitClockwise(RIGHT, 50, 50, 50);  //右转
+        Advance_black(Advance_black_ms);                //到黑线，上前
+        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms);  //右转
     break;
     /*以上，前进左右转*/    
 
@@ -576,4 +600,54 @@ void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm)
       digitalWrite(ln4_right, LOW);
       break;
   }
+}
+
+/*k210读取目标病房*/
+void OpenmvRead()
+{
+  while(Serial1.read()>=0); //清空缓冲区
+  while(Serial1.available()==0);//等待信号传输
+  if(Serial1.available()>0)     //读取k210目标病房
+  {
+    char Aim_in = Serial1.read();
+    if(Aim_in=='1') {Aim=1;}
+    if(Aim_in=='2') {Aim=2;}  
+    if(Aim_in=='3') {Aim=3;}
+    if(Aim_in=='4') {Aim=4;}
+    if(Aim_in=='5') {Aim=5;}  
+    if(Aim_in=='6') {Aim=6;}
+    if(Aim_in=='7') {Aim=7;}
+    if(Aim_in=='8') {Aim=8;}
+  }
+  while(Serial1.read()>=0); //清空缓冲区
+}
+
+/*k210确定左右，有无*/
+void OpenmvZY()
+{
+  while(Serial1.read()>=0); //清空缓冲区
+  while(Serial1.available()==0);//等待信号传输
+  if(Serial1.available()>0)     //读取k210确定左右，有无
+  {
+    char Aim_choose_in = Serial1.read();
+    if(Aim_choose_in=='0')     
+    {
+      ZY=0;
+    }
+    if(Aim_choose_in=='1') 
+    {
+      ZY=1;
+    }  
+    if(Aim_choose_in=='2')
+    {
+      ZY=2;
+    }
+  }
+  while(Serial1.read()>=0); //清空缓冲区
+}
+
+/*OELD*/
+void OLED_show()
+{
+
 }

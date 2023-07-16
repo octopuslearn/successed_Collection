@@ -4,7 +4,7 @@
  */
 
 #include <Arduino.h>
-
+#include <FlexiTimer2.h>
 /*以下，OLED相关文件*/
 #include <U8g2lib.h>
 #include <Wire.h>
@@ -167,6 +167,7 @@ void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm);/*电�
 void OpenmvZY();/*k210确定左右，有无*/
 void OpenmvRead();/*k210读取目标病房*/
 void OLED_show();/*OELD*/
+void OLED_button_read();
 /*以上，函数声明*/
 
 
@@ -203,6 +204,12 @@ void setup()
   u8g2.begin();//初始化演示器
   u8g2.setColorIndex(1);   
   /*以上，OLED部分*/
+
+  /*以下，初始化定时器2*/
+  FlexiTimer2::set(5, 1.0/1000, OLED_button_read); // call every 500 1ms "ticks"
+  // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
+  FlexiTimer2::start();
+  /*以上，初始化定时器2*/
 }
 
 
@@ -210,7 +217,7 @@ void setup()
 void loop()
 {
   Serial.println("程序开始： ");
-  //OLED_show();
+  OLED_show();
   OpenmvRead();//读取目的地编号 
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
@@ -778,7 +785,72 @@ void OpenmvZY()
 /*OELD*/
 void OLED_show()
 {
+  /*分页模式*/
+  u8g2.firstPage();
+  do {
 
+      if(current_screen == 0) //菜单屏幕
+      {
+        u8g2.drawXBMP(0, 22, 128, 21, bitmap_item_sel_outline);  //绘制所选项中框
+
+        /*将上一项设定为淡色*/
+        u8g2.setFont(u8g_font_7x14); //设置字体
+        u8g2.drawStr(25, 15, menu_items[item_sel_previous]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+        u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        /*调试*/ Serial.print("上一项，图标："); Serial.println(item_sel_previous);
+
+        /*将当前项设定为深色*/
+        u8g2.setFont(u8g_font_7x14B); //设置字体 //B代表粗体
+        u8g2.drawStr(25, 15+20+2, menu_items[item_selected]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+        u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        /*调试*/  Serial.print("当前项，图标："); Serial.println(item_selected);
+        /*将下一项设定为浅色*/
+        u8g2.setFont(u8g_font_7x14); //设置字体 //B代表粗体
+        u8g2.drawStr(25, 15+20+20+2+2, menu_items[item_sel_next]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+        u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[0]);  //绘制握手图标
+        /*调试*/  Serial.print("下一项，图标："); Serial.println(item_sel_next);
+
+        u8g2.drawXBMP(128-2, 0, 2, 64, bitmap_scrollbar_background);  //绘制滚动列表背景
+        u8g2.drawBox(125, 64/NUM_ITEMS * item_selected, 3, 64/NUM_ITEMS);  //绘制滚动条 //drawBox是绘制啥的，为啥绘制滚动条的时候要用？？？
+      }
+      else if(current_screen == 1)  //直接跳转到hd_value
+      {
+       
+          u8g2.drawStr(0,10,"hd_value: ");
+          hd_read_value();//读取灰度值
+          u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
+          u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
+          u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
+          u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
+          u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
+          u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
+          u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
+          u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
+      }
+      else if(current_screen == 2)  //直接跳转到t_lr90
+      {
+        u8g2.drawStr(0,10,"Aim: ");
+        u8g2.setCursor(sizeof("Aim: ")*8, 20);
+        u8g2.print(Aim);
+      }
+      else if(current_screen == 3)  //直接跳转到car_O/C
+      {
+        u8g2.drawStr(0, 10, "ZY: ");
+        u8g2.setCursor(sizeof("ZY: ")*8, 20);
+        u8g2.print(ZY);
+      }
+      else if(current_screen == 4)  //直接跳转到wring!
+      {
+        u8g2.drawStr(25, 25, "wring!");
+      }
+
+  } while ( u8g2.nextPage() );
+}
+
+
+
+void OLED_button_read()
+{
     if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
     {
       delay(50);
@@ -854,66 +926,4 @@ void OLED_show()
     if(item_sel_previous < 0)          {item_sel_previous = NUM_ITEMS-1;}
     item_sel_next = item_selected+1;
     if(item_sel_next >= NUM_ITEMS) {item_sel_next = 0;}
-  
-
-  /*分页模式*/
-  u8g2.firstPage();
-  do {
-
-      if(current_screen == 0) //菜单屏幕
-      {
-        u8g2.drawXBMP(0, 22, 128, 21, bitmap_item_sel_outline);  //绘制所选项中框
-
-        /*将上一项设定为淡色*/
-        u8g2.setFont(u8g_font_7x14); //设置字体
-        u8g2.drawStr(25, 15, menu_items[item_sel_previous]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        /*调试*/ Serial.print("上一项，图标："); Serial.println(item_sel_previous);
-
-        /*将当前项设定为深色*/
-        u8g2.setFont(u8g_font_7x14B); //设置字体 //B代表粗体
-        u8g2.drawStr(25, 15+20+2, menu_items[item_selected]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        /*调试*/  Serial.print("当前项，图标："); Serial.println(item_selected);
-        /*将下一项设定为浅色*/
-        u8g2.setFont(u8g_font_7x14); //设置字体 //B代表粗体
-        u8g2.drawStr(25, 15+20+20+2+2, menu_items[item_sel_next]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        /*调试*/  Serial.print("下一项，图标："); Serial.println(item_sel_next);
-
-        u8g2.drawXBMP(128-2, 0, 2, 64, bitmap_scrollbar_background);  //绘制滚动列表背景
-        u8g2.drawBox(125, 64/NUM_ITEMS * item_selected, 3, 64/NUM_ITEMS);  //绘制滚动条 //drawBox是绘制啥的，为啥绘制滚动条的时候要用？？？
-      }
-      else if(current_screen == 1)  //直接跳转到hd_value
-      {
-       
-          u8g2.drawStr(0,10,"hd_value: ");
-          hd_read_value();//读取灰度值
-          u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
-          u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
-          u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
-          u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
-          u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
-          u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
-          u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
-          u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
-      }
-      else if(current_screen == 2)  //直接跳转到t_lr90
-      {
-        u8g2.drawStr(0,10,"Aim: ");
-        u8g2.setCursor(sizeof("Aim: ")*8, 20);
-        u8g2.print(Aim);
-      }
-      else if(current_screen == 3)  //直接跳转到car_O/C
-      {
-        u8g2.drawStr(0, 10, "ZY: ");
-        u8g2.setCursor(sizeof("ZY: ")*8, 20);
-        u8g2.print(ZY);
-      }
-      else if(current_screen == 4)  //直接跳转到wring!
-      {
-        u8g2.drawStr(25, 25, "wring!");
-      }
-
-  } while ( u8g2.nextPage() );
 }

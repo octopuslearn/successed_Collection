@@ -11,6 +11,9 @@
 #include <U8x8lib.h>
 #include <Wire.h>
 
+#include "avr8-stub.h"
+#include "app_api.h"
+
 /*OLED配置*/
 //SCL-8 SDA-9
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 8, /* data=*/ 9, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
@@ -169,6 +172,7 @@ void OLED_button_read();
 
 void setup()
 {
+  debug_init();
   /*灰度引脚模式*/
   pinMode(hd1,INPUT);pinMode(hd2,INPUT);
   pinMode(hd3,INPUT);pinMode(hd4,INPUT);
@@ -187,8 +191,8 @@ void setup()
   /*以上，调试用外设*/
 
 
-  Serial.begin(9600); //调试-串口0
-  Serial1.begin(9600); //k210-串口1
+  // Serial.begin(9600); //调试-串口0
+  // Serial1.begin(9600); //k210-串口1
 
   /*以下，OLED部分*/
   pinMode(40, INPUT_PULLUP); //mode
@@ -246,7 +250,7 @@ void loop()
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
   {
-    /*调试*///Serial.println("目标1-/*前进*/");
+    /*调试*/Serial.println("目标1-/*前进*/");
     black_Search();                   //前进找到黑色(终点)停下
     /*调试*/  //Serial.println("前进找到黑色(终点)停下");
     Advance_black(Advance_black_ms);                //到黑线，上前
@@ -1027,3 +1031,8 @@ void OpenmvZY()
 
 // }
 
+// HardwareSerial0.cpp.o (symbol from plugin): In function `Serial':
+// (.text+0x0): multiple definition of `__vector_25'
+// avr8-stub.c.o (symbol from plugin):(.text+0x0): first defined here
+// collect2.exe: error: ld returned 1 exit status
+// *** [.pio\build\megaatmega2560\firmware.elf] Error 1

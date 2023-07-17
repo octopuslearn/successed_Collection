@@ -205,7 +205,7 @@ void setup()
   /*以上，初始化定时器2*/
 
   /*以下，初始化定时器2*/
-  Timer3.initialize(1500000);
+  Timer3.initialize(800000);//1500000-1000000-800000
   Timer3.attachInterrupt(OLED_show);
   /*以上，初始化定时器2*/
 }
@@ -845,11 +845,29 @@ void OLED_show()
       else if(current_screen == 4)  //直接跳转到wring!
       {
         // /*调试*/Serial.println("wring!");
-        u8g2.drawStr(25, 25, "wring!");
+          u8g2.drawStr(0,10,"hd_value: ");
+          hd_read_value();//读取灰度值
+          u8g2.setCursor((10*0), 10*2.5); u8g2.print(hd_value[1]);
+          u8g2.setCursor((10*1), 10*2.5); u8g2.print(hd_value[2]);
+          u8g2.setCursor((10*2), 10*2.5); u8g2.print(hd_value[3]);
+          u8g2.setCursor((10*3), 10*2.5); u8g2.print(hd_value[4]);
+          u8g2.setCursor((10*4), 10*2.5); u8g2.print(hd_value[5]);
+          u8g2.setCursor((10*5), 10*2.5); u8g2.print(hd_value[6]);
+          u8g2.setCursor((10*6), 10*2.5); u8g2.print(hd_value[7]);
+          u8g2.setCursor((10*7), 10*2.5); u8g2.print(hd_value[8]);
+
+        u8g2.drawStr(0,45,"Aim: ");
+        u8g2.setCursor(sizeof("Aim: ")*8, 45);
+        u8g2.print(Aim);
+
+
+        u8g2.drawStr(0, 60, "ZY: ");
+        u8g2.setCursor(sizeof("ZY: ")*8, 60);
+        u8g2.print(ZY);
       }
 
   } while ( u8g2.nextPage() );
-   /*调试*/Serial.println("结束");
+   ///*调试*/Serial.println("结束");
 }
 
 
@@ -864,7 +882,7 @@ void OLED_button_read()
         button_down_clicked = 1;
         item_selected++;//当前按键项目++
         /*调试*/
-        Serial.print("down按下: "); Serial.println(item_selected);
+        //Serial.print("down按下: "); Serial.println(item_selected);
         if(item_selected>=NUM_ITEMS)  //划到低了
         {
           item_selected = 0;
@@ -879,7 +897,7 @@ void OLED_button_read()
         button_up_clicked = 1;
         item_selected--;//当前按键项目++
         /*调试*/
-        Serial.print("up按下: "); Serial.println(item_selected);
+        //Serial.print("up按下: "); Serial.println(item_selected);
         if(item_selected < 0)  //划到顶了 //为啥不是<=1???
         {
           item_selected = NUM_ITEMS-1;  //我认为是跳转到最后一项 NUM_ITEMS-1  //引用下标
@@ -902,23 +920,25 @@ void OLED_button_read()
       {       
         if(item_selected == 0)
         {
-          current_screen = 1;/*调试*/ Serial.println("1级菜单hd_value");
+          current_screen = 1;///*调试*/ Serial.println("1级菜单hd_value");
         }
         if(item_selected == 1)
         {
-          current_screen = 2;/*调试*/ Serial.println("1级菜单t_lr90");
+          current_screen = 2;///*调试*/ Serial.println("1级菜单t_lr90");
         }
         if(item_selected == 2)
         {
-          current_screen = 3;/*调试*/ Serial.println("1级菜单car_O/C");
+          current_screen = 3;///*调试*/ Serial.println("1级菜单car_O/C");
         }
         if(item_selected == 3)
         {
-          current_screen = 4;/*调试*/ Serial.println("1级菜单wring!");
+          current_screen = 4;///*调试*/ Serial.println("1级菜单wring!");
         }
       }
     else 
-        {current_screen=0;Serial.println("主菜单");} /*就缺了个这！！！*/
+      {
+        current_screen=0;//Serial.println("主菜单"); /*就缺了个这！！！*/
+      }
     }
   }
     if((digitalRead(43)==HIGH) && (button_select_clicked==1))
@@ -931,56 +951,6 @@ void OLED_button_read()
     if(item_sel_previous < 0)          {item_sel_previous = NUM_ITEMS-1;}
     item_sel_next = item_selected+1;
     if(item_sel_next >= NUM_ITEMS) {item_sel_next = 0;}
-    /*调试*/Serial.println("按键刷新完");
+
 }
 
-
-
-
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `u8g2'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `setup'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `loop'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `button_down_clicked'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `item_selected'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `button_up_clicked'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `button_select_clicked'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `current_screen'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `item_sel_previous'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `item_sel_next'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `menu_items'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `bitmap_icons'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `demo_mode'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `demo_mode_state'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// .pio\build\megaatmega2560\src\oled_text.cpp.o (symbol from plugin): In function `u8g2':
-// (.text+0x0): multiple definition of `demo_mode_delay'
-// .pio\build\megaatmega2560\src\main.cpp.o (symbol from plugin):(.text+0x0): first defined here
-// collect2.exe: error: ld returned 1 exit status
-// *** [.pio\build\megaatmega2560\firmware.elf] Error 1

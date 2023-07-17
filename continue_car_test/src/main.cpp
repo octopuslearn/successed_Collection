@@ -4,80 +4,81 @@
  */
 
 #include <Arduino.h>
-#include <FlexiTimer2.h>
-#include <TimerThree.h>
+// #include <FlexiTimer2.h>
+// #include <TimerThree.h>
 /*以下，OLED相关文件*/
 #include <U8g2lib.h>
+#include <U8x8lib.h>
 #include <Wire.h>
 
 /*OLED配置*/
 //SCL-8 SDA-9
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ 8, /* data=*/ 9, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
-const unsigned char bitmap_icon_wushousign [] PROGMEM = 
-{
-0x00,0x00,0x00,0x00,0x80,0x01,0x80,0x01,0x40,0x02,0x20,0x04,0x0C,0x30,0x48,0x12,0x08,0x10,0x80,0x01,0x48,0x12,0x20,0x04,0x24,0x24,0x22,0x44,0x12,0x48,0x00,0x00,/*"C:\Users\zy\Desktop\摊手图标.bmp",0*/
-/* (16 X 16 )*/
+// const unsigned char bitmap_icon_wushousign [] PROGMEM = 
+// {
+// 0x00,0x00,0x00,0x00,0x80,0x01,0x80,0x01,0x40,0x02,0x20,0x04,0x0C,0x30,0x48,0x12,0x08,0x10,0x80,0x01,0x48,0x12,0x20,0x04,0x24,0x24,0x22,0x44,0x12,0x48,0x00,0x00,/*"C:\Users\zy\Desktop\摊手图标.bmp",0*/
+// /* (16 X 16 )*/
 
-};
-
-
-const unsigned char bitmap_item_sel_outline[] PROGMEM = //所选项中框 
-{
-0xF8,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x01,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
-0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
-0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
-0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x06,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0xF8,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x01,
-0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,/*"C:\Users\zy\Desktop\中框 (1).bmp",0*/
-/* (128 X 21 )*/
-
-};
+// };
 
 
-const unsigned char bitmap_scrollbar_background[] PROGMEM = //滚动列表背景
-{
-0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,/*"C:\Users\zy\Desktop\滚动列表线.bmp",0*/
-/* (2 X 64 )*/
+// const unsigned char bitmap_item_sel_outline[] PROGMEM = //所选项中框 
+// {
+// 0xF8,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x01,0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x02,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
+// 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
+// 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,
+// 0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x04,0x06,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0xF8,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0x01,
+// 0x20,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,/*"C:\Users\zy\Desktop\中框 (1).bmp",0*/
+// /* (128 X 21 )*/
 
-};
-
-
-int item_sel_previous; // previous item - used in the menu screen to draw the item before the selected one  //上一项 - 在菜单屏幕中用于在所选项目之前绘制项目
-int item_sel_next; // next item - used in the menu screen to draw next item after the selected one  //下一项 - 在菜单屏幕中用于在所选项目之后绘制下一项
-int item_selected = 0;//选择了菜单中的那个项目，即但前按键项目
-
-int current_screen = 0; //屏幕，如截屏，二维码
-
-int demo_mode_delay = 0;//屏幕切换速度，即屏幕延时时间
-int demo_mode_state = 0;//屏幕数  //即直接模式下，界面的个数
+// };
 
 
+// const unsigned char bitmap_scrollbar_background[] PROGMEM = //滚动列表背景
+// {
+// 0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,0xFE,0xFC,/*"C:\Users\zy\Desktop\滚动列表线.bmp",0*/
+// /* (2 X 64 )*/
 
-int demo_mode = 0;//屏幕模式选择
+// };
+
+
+// int item_sel_previous; // previous item - used in the menu screen to draw the item before the selected one  //上一项 - 在菜单屏幕中用于在所选项目之前绘制项目
+// int item_sel_next; // next item - used in the menu screen to draw next item after the selected one  //下一项 - 在菜单屏幕中用于在所选项目之后绘制下一项
+// int item_selected = 0;//选择了菜单中的那个项目，即但前按键项目
+
+// int current_screen = 0; //屏幕，如截屏，二维码
+
+// int demo_mode_delay = 0;//屏幕切换速度，即屏幕延时时间
+// int demo_mode_state = 0;//屏幕数  //即直接模式下，界面的个数
 
 
 
-int button_up_clicked = 0;//向上，单击按键，等到再次按下，即只按一次
-int button_down_clicked = 0;//向下，单击按键，等到再次按下，即只按一次
-int button_select_clicked = 0;//确定
+// int demo_mode = 0;//屏幕模式选择
 
 
-const unsigned char* bitmap_icons[3]={
-  bitmap_icon_wushousign,       //握手标志
-  bitmap_item_sel_outline,      //所选项中框
-  bitmap_scrollbar_background,  //滚动列表背景
-};
+
+// int button_up_clicked = 0;//向上，单击按键，等到再次按下，即只按一次
+// int button_down_clicked = 0;//向下，单击按键，等到再次按下，即只按一次
+// int button_select_clicked = 0;//确定
 
 
-const int NUM_ITEMS = 4;      //列表中的项目数，即行数
-const int MAX_ITEM_LENGTH = 20;//项目名称的最大数组，即menu_items列数
+// const unsigned char* bitmap_icons[3]={
+//   bitmap_icon_wushousign,       //握手标志
+//   bitmap_item_sel_outline,      //所选项中框
+//   bitmap_scrollbar_background,  //滚动列表背景
+// };
 
-char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
-  { "hd_value" }, 
-  { "Aim" }, 
-  { "ZY" }, 
-  { "wring!" }, 
- };
-/*以上，OLED相关文件*/
+
+// const int NUM_ITEMS = 4;      //列表中的项目数，即行数
+// const int MAX_ITEM_LENGTH = 20;//项目名称的最大数组，即menu_items列数
+
+// char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
+//   { "hd_value" }, 
+//   { "Aim" }, 
+//   { "ZY" }, 
+//   { "wring!" }, 
+//  };
+// /*以上，OLED相关文件*/
 
 
 
@@ -87,7 +88,7 @@ char menu_items [NUM_ITEMS] [MAX_ITEM_LENGTH] = {  // array with item names
 
 
 /*以下，需要调试的各种参数*/
-#define lj_60cm_go 500 //60cm前进累计
+#define lj_60cm_go 1000 //60cm前进累计
 #define lj_60cm_lr 500 //60cm左右累计
 
 #define Advance_black_ms 500 //到黑线上前
@@ -199,14 +200,14 @@ void setup()
   /*以上，OLED部分*/
 
   /*以下，初始化定时器2*/
-  FlexiTimer2::set(50, 1.0/1000, OLED_button_read); // call every 500 1ms "ticks"
-  // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
-  FlexiTimer2::start();
-  /*以上，初始化定时器2*/
+  // FlexiTimer2::set(50, 1.0/1000, OLED_button_read); // call every 500 1ms "ticks"
+  // // FlexiTimer2::set(500, flash); // MsTimer2 style is also supported
+  // FlexiTimer2::start();
+  // /*以上，初始化定时器2*/
 
-  /*以下，初始化定时器2*/
-  Timer3.initialize(800000);//1500000-1000000-800000
-  Timer3.attachInterrupt(OLED_show);
+  // /*以下，初始化定时器2*/
+  // Timer3.initialize(800000);//1500000-1000000-800000
+  // Timer3.attachInterrupt(OLED_show);
   /*以上，初始化定时器2*/
 }
 
@@ -215,48 +216,67 @@ void setup()
 void loop()
 {
   Serial.println("程序开始： ");
-  OpenmvRead();//读取目的地编号 
+  u8g2.firstPage();
+  do {
+  // u8g2.clearBuffer();                //清除内部缓冲区
+          u8g2.setFont(u8g_font_7x14); //设置字体
+          u8g2.drawStr(0,10,"hd_value: ");
+          ////hd_read_value();//读取灰度值 /*在此不能调用此函数*/
+          u8g2.setCursor((10*0), 10*2.5); u8g2.print(hd_value[1]);
+          u8g2.setCursor((10*1), 10*2.5); u8g2.print(hd_value[2]);
+          u8g2.setCursor((10*2), 10*2.5); u8g2.print(hd_value[3]);
+          u8g2.setCursor((10*3), 10*2.5); u8g2.print(hd_value[4]);
+          u8g2.setCursor((10*4), 10*2.5); u8g2.print(hd_value[5]);
+          u8g2.setCursor((10*5), 10*2.5); u8g2.print(hd_value[6]);
+          u8g2.setCursor((10*6), 10*2.5); u8g2.print(hd_value[7]);
+          u8g2.setCursor((10*7), 10*2.5); u8g2.print(hd_value[8]);
+
+        u8g2.drawStr(0,45,"Aim: ");
+        u8g2.setCursor(sizeof("Aim: ")*8, 45);
+        u8g2.print(Aim);
+
+
+        u8g2.drawStr(0, 60, "ZY: ");
+        u8g2.setCursor(sizeof("ZY: ")*8, 60);
+        u8g2.print(ZY);
+    } while ( u8g2.nextPage() );
+    // u8g2.sendBuffer();
+
+   OpenmvRead();//读取目的地编号 
 /*以下，近端*/
   if(Aim==1)//目的地编号1  ////1号位置在左边
   {
-    /*调试*/Serial.println("目标1-/*前进*/");
-    /*调试*/delay(1000);
-    /*前进*/
+    /*调试*///Serial.println("目标1-/*前进*/");
     black_Search();                   //前进找到黑色(终点)停下
+    /*调试*/  //Serial.println("前进找到黑色(终点)停下");
     Advance_black(Advance_black_ms);                //到黑线，上前
+    /*调试*/  //Serial.println("到黑线，上前");
     AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
+    /*调试*/  //Serial.println("左转");
     white_Search();                   //找到白色(终点)停下
-    /*调试*/
-    /*调试*/Serial.println("目标1-/*返回*/");
-    /*调试*/delay(1000);
+    /*调试*/  //Serial.println("找到白色(终点)停下");
+    /*调试*///Serial.println("目标1-/*返回*/");
     /*返回*/
     Search_black_back();              //后退找到黑线停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
     white_Search();                   //找到白色(终点)停下
-    /*调试*/Serial.println("目标1-/*完成*/");
-    /*调试*/delay(1000);
-    digitalWrite(led1,LOW);//亮红灯
+    /*调试*///Serial.println("目标1-/*完成*/");
   }
 
   if(Aim==2)//目的地编号2  ////2号位置在右边
   {
-    /*调试*/Serial.println("目标2-/*前进*/");
-    /*调试*/delay(1000);
     /*前进*/
     black_Search();                   //前进找到黑色(终点)停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
-    /*调试*/Serial.println("目标2-/*返回*/");
-    /*调试*/delay(1000);
+
     /*返回*/
     Search_black_back();              //后退找到黑线停下
     Advance_black(Advance_black_ms);                //到黑线，上前
     Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); //右转
     white_Search();                   //找到白色(终点)停下
-    /*调试*/Serial.println("目标2-/*完成*/");
-    /*调试*/delay(1000);
   }
 /*以上，近端*/
 
@@ -266,13 +286,15 @@ void loop()
   {
     black_Search();                   //前进找到黑色(终点)停下  //到达近端十字路口
     lj_60cm(lj_60cm_go);              //60cm前进累计-向前
-    Serial.println("中端开始读取：  ");
+    /*调试*///Serial.println("中端开始读取：  ");
     OpenmvZY();                     //比对，分左右
-
+    /*调试*///Serial.println("中端读取完成###");
     /*开始中端*/
     switch(ZY)//中端找到了目的地编号
     {
+      // Serial.println("中端左转LLL");
       case 0://中端左转
+      /*调试*///Serial.println("中端左转LLL");
         black_Search();                   //前进找到黑色(终点)停下
         Advance_black(Advance_black_ms);                //到黑线，上前
         AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms);  //左转
@@ -285,6 +307,7 @@ void loop()
       break;
 
       case 1://中端右转
+      /*调试*/Serial.println("中端右转RRR");
         /*前进*/
         black_Search();                   //前进找到黑色(终点)停下
         Advance_black(Advance_black_ms);                //到黑线，上前
@@ -506,14 +529,15 @@ void leri_chooise(int target_1or2_choose)
 
 /*60cm前进累计*/
 void lj_60cm(int lj_60cm_ms)
-{ 
-  track_Q();
-  delay(lj_60cm_ms);
+{
+  while(lj_60cm_ms--)
+  {track_Q();}
 }
 
 /*到黑线，上前*/
 void Advance_black(int Advance_go)
 {
+  /*调试*/  Serial.println("找黑线，上前");
   motor_Exercise_status(RUN, 100, 100); 
   delay(Advance_go);
   motor_Exercise_status(BACK, 100, 100); 
@@ -546,11 +570,15 @@ void white_Search()
 /*前进找到黑色(终点)停下*/
 void black_Search()
 {
+  /*调试*/  //Serial.println("前进找黑线");
   int x = 1;
   while(x==1)
   {
+    /*调试*/  //Serial.println("//前进循迹");
     track_Q();//前进循迹
+    /*调试*/  //Serial.println("//前进循迹---完成");
     hd_read_value();
+    /*调试*/  //Serial.println("222222222222222222");
     if(hd_value[1]==0 && hd_value[2]==0 && hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==0 && hd_value[6]==0 && hd_value[7]==0 && hd_value[8]==0)
     {
       x = 0;
@@ -589,6 +617,7 @@ void Search_black_back()
 /*前进循迹*/
 void track_Q()
 {
+    /*调试*/  //Serial.println("track_Q()---开始");
     hd_read_value();//读取灰度值
 
     if(hd_value[3]==0 && hd_value[4]==0 && hd_value[5]==1 && hd_value[6]==1)  //右偏-小      0011 //左转
@@ -614,8 +643,7 @@ void track_Q()
     }
     
     motor_Exercise_status(RUN, 100, 100); //前进
-    /*调试*/Serial.println("正轨");
-
+    /*调试*/ // Serial.println("track_Q()---完成");    
 }
 
 /*倒退循迹*/
@@ -662,16 +690,31 @@ void hd_read_value()
   hd_value[7] = digitalRead(hd7);
   hd_value[8] = digitalRead(hd8);
 
-/*以下，调试*/
-   Serial.print(hd_value[1]); Serial.print('\t');
-    Serial.print(hd_value[2]); Serial.print('\t');
-     Serial.print(hd_value[3]); Serial.print('\t');
-      Serial.print(hd_value[4]); Serial.print('\t');
-        Serial.print(hd_value[5]); Serial.print('\t');
-         Serial.print(hd_value[6]); Serial.print('\t');
-          Serial.print(hd_value[7]); Serial.print('\t');
-            Serial.print(hd_value[8]); Serial.println('\t');
-/*以上，调试*/
+// /*以下，调试*/
+//    Serial.print(hd_value[1]); Serial.print('\t');
+//     Serial.print(hd_value[2]); Serial.print('\t');
+//      Serial.print(hd_value[3]); Serial.print('\t');
+//       Serial.print(hd_value[4]); Serial.print('\t');
+//         Serial.print(hd_value[5]); Serial.print('\t');
+//          Serial.print(hd_value[6]); Serial.print('\t');
+//           Serial.print(hd_value[7]); Serial.print('\t');
+//             Serial.print(hd_value[8]); Serial.println('\t');
+// /*以上，调试*/
+
+  // u8g2.firstPage();
+  // do {
+  //         u8g2.setFont(u8g_font_7x14);
+  //         u8g2.drawStr(0,10,"hd_value: ");
+  //         hd_read_value();//读取灰度值
+  //         u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
+  //         u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
+  //         u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
+  //         u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
+  //         u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
+  //         u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
+  //         u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
+  //         u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
+  //     } while ( u8g2.nextPage() );
 }
 
 
@@ -746,7 +789,25 @@ void OpenmvRead()
     /*绝对不可以在此打印，否则只能识别1*/// Serial.println("outoutout!!!");
   }
   while(Serial1.read()>=0); //清空缓冲区
+  // while(Serial1.read()>=0){;} //清空缓冲区
+  u8g2.firstPage();
+  do {
+    // u8g2.clearBuffer();
+        u8g2.setFont(u8g_font_7x14); //设置字体
+        u8g2.drawStr(0,45,"Aim: ");
+        u8g2.setCursor(sizeof("Aim: ")*8, 45);
+        u8g2.print(Aim);
+      } while ( u8g2.nextPage() );
+    // u8g2.sendBuffer();
 }
+
+//this 'while' clause does not guard... [-Wmisleading-indentation]
+// src\main.cpp: In function 'void OpenmvRead()':
+// src\main.cpp:761:3: warning: this 'while' clause does not guard... [-Wmisleading-indentation]
+//    while(Serial1.read()>=0); //清空缓冲区
+//    ^~~~~
+// src\main.cpp:762:5: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'while'
+//      u8g2.firstPage();
 
 /*k210确定左右，有无*/
 void OpenmvZY()
@@ -776,181 +837,193 @@ void OpenmvZY()
     Serial.println("进入成功-读取");
     // OLED_show();
   }
-  while(Serial1.read()>=0); //清空缓冲区
-}
-
-/*OELD显示*/
-void OLED_show()
-{
-  // /*调试*/Serial.println("进入OLED刷新");
-  // /*调试*/Serial.println("进入OLED刷新1");
-  // /*调试*/Serial.println("进入OLED刷新2");
-  // /*调试*/Serial.println("进入OLED刷新3");
-  /*分页模式*/
+  while(Serial1.read()>=0);//清空缓冲区
+  // while(Serial1.read()>=0){;}//清空缓冲区
   u8g2.firstPage();
   do {
-      if(current_screen == 0) //菜单屏幕
-      {
-        u8g2.drawXBMP(0, 22, 128, 21, bitmap_item_sel_outline);  //绘制所选项中框
-
-        /*将上一项设定为淡色*/
-        u8g2.setFont(u8g_font_7x14); //设置字体
-        u8g2.drawStr(25, 15, menu_items[item_sel_previous]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        // /*调试*/Serial.println("上一项前面++");
-        // /*调试*/ Serial.print("上一项，图标："); /*调试*/Serial.println("上一项后面--");Serial.println(item_sel_previous);
-
-        /*将当前项设定为深色*/
-        u8g2.setFont(u8g_font_7x14B); //设置字体 //B代表粗体
-        u8g2.drawStr(25, 15+20+2, menu_items[item_selected]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        // /*调试*/  Serial.print("当前项，图标："); Serial.println(item_selected);
-        /*将下一项设定为浅色*/
-        u8g2.setFont(u8g_font_7x14); //设置字体 //B代表粗体
-        u8g2.drawStr(25, 15+20+20+2+2, menu_items[item_sel_next]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
-        u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[0]);  //绘制握手图标
-        // /*调试*/  Serial.print("下一项，图标："); Serial.println(item_sel_next);
-
-        u8g2.drawXBMP(128-2, 0, 2, 64, bitmap_scrollbar_background);  //绘制滚动列表背景
-        u8g2.drawBox(125, 64/NUM_ITEMS * item_selected, 3, 64/NUM_ITEMS);  //绘制滚动条 //drawBox是绘制啥的，为啥绘制滚动条的时候要用？？？
-      }
-      if(current_screen == 1)  //直接跳转到hd_value
-      {
-        // /*调试*/Serial.println("hd_value: ");
-          u8g2.drawStr(0,10,"hd_value: ");
-          hd_read_value();//读取灰度值
-          u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
-          u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
-          u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
-          u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
-          u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
-          u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
-          u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
-          u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
-      }
-      else if(current_screen == 2)  //直接跳转到t_lr90
-      {
-        // /*调试*/Serial.println("Aim: ");
-        u8g2.drawStr(0,10,"Aim: ");
-        u8g2.setCursor(sizeof("Aim: ")*8, 20);
-        u8g2.print(Aim);
-      }
-      else if(current_screen == 3)  //直接跳转到car_O/C
-      {
-        // /*调试*/Serial.println("ZY: ");
-        u8g2.drawStr(0, 10, "ZY: ");
-        u8g2.setCursor(sizeof("ZY: ")*8, 20);
-        u8g2.print(ZY);
-      }
-      else if(current_screen == 4)  //直接跳转到wring!
-      {
-        // /*调试*/Serial.println("wring!");
-          u8g2.drawStr(0,10,"hd_value: ");
-          hd_read_value();//读取灰度值
-          u8g2.setCursor((10*0), 10*2.5); u8g2.print(hd_value[1]);
-          u8g2.setCursor((10*1), 10*2.5); u8g2.print(hd_value[2]);
-          u8g2.setCursor((10*2), 10*2.5); u8g2.print(hd_value[3]);
-          u8g2.setCursor((10*3), 10*2.5); u8g2.print(hd_value[4]);
-          u8g2.setCursor((10*4), 10*2.5); u8g2.print(hd_value[5]);
-          u8g2.setCursor((10*5), 10*2.5); u8g2.print(hd_value[6]);
-          u8g2.setCursor((10*6), 10*2.5); u8g2.print(hd_value[7]);
-          u8g2.setCursor((10*7), 10*2.5); u8g2.print(hd_value[8]);
-
-        u8g2.drawStr(0,45,"Aim: ");
-        u8g2.setCursor(sizeof("Aim: ")*8, 45);
-        u8g2.print(Aim);
-
-
+    // u8g2.clearBuffer(); 
+        u8g2.setFont(u8g_font_7x14);
         u8g2.drawStr(0, 60, "ZY: ");
         u8g2.setCursor(sizeof("ZY: ")*8, 60);
         u8g2.print(ZY);
-      }
-
-  } while ( u8g2.nextPage() );
-   ///*调试*/Serial.println("结束");
+      } while ( u8g2.nextPage() );
+    // u8g2.sendBuffer();
 }
 
 
 
-void OLED_button_read()
-{
-    if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
-    {
-      delay(50);
-      if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
-      {
-        button_down_clicked = 1;
-        item_selected++;//当前按键项目++
-        /*调试*/
-        //Serial.print("down按下: "); Serial.println(item_selected);
-        if(item_selected>=NUM_ITEMS)  //划到低了
-        {
-          item_selected = 0;
-        }
-      }
-    }
-    else if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
-    {
-      delay(50);
-      if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
-      {
-        button_up_clicked = 1;
-        item_selected--;//当前按键项目++
-        /*调试*/
-        //Serial.print("up按下: "); Serial.println(item_selected);
-        if(item_selected < 0)  //划到顶了 //为啥不是<=1???
-        {
-          item_selected = NUM_ITEMS-1;  //我认为是跳转到最后一项 NUM_ITEMS-1  //引用下标
-        }
-      }
-    }
+// /*OELD显示*/
+// void OLED_show()
+// {
+//   // /*调试*/Serial.println("进入OLED刷新");
+//   // /*调试*/Serial.println("进入OLED刷新1");
+//   // /*调试*/Serial.println("进入OLED刷新2");
+//   // /*调试*/Serial.println("进入OLED刷新3");
+//   /*分页模式*/
+//   u8g2.firstPage();
+//   do {
+//       if(current_screen == 0) //菜单屏幕
+//       {
+//         u8g2.drawXBMP(0, 22, 128, 21, bitmap_item_sel_outline);  //绘制所选项中框
+
+//         /*将上一项设定为淡色*/
+//         u8g2.setFont(u8g_font_7x14); //设置字体
+//         u8g2.drawStr(25, 15, menu_items[item_sel_previous]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+//         u8g2.drawXBMP(4, 2, 16, 16, bitmap_icons[0]);  //绘制握手图标
+//         // /*调试*/Serial.println("上一项前面++");
+//         // /*调试*/ Serial.print("上一项，图标："); /*调试*/Serial.println("上一项后面--");Serial.println(item_sel_previous);
+
+//         /*将当前项设定为深色*/
+//         u8g2.setFont(u8g_font_7x14B); //设置字体 //B代表粗体
+//         u8g2.drawStr(25, 15+20+2, menu_items[item_selected]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+//         u8g2.drawXBMP(4, 24, 16, 16, bitmap_icons[0]);  //绘制握手图标
+//         // /*调试*/  Serial.print("当前项，图标："); Serial.println(item_selected);
+//         /*将下一项设定为浅色*/
+//         u8g2.setFont(u8g_font_7x14); //设置字体 //B代表粗体
+//         u8g2.drawStr(25, 15+20+20+2+2, menu_items[item_sel_next]);  //绘制选项中框中的选项文字 //二维数组为啥这样使用？？？  //drawStr绘制字符
+//         u8g2.drawXBMP(4, 46, 16, 16, bitmap_icons[0]);  //绘制握手图标
+//         // /*调试*/  Serial.print("下一项，图标："); Serial.println(item_sel_next);
+
+//         u8g2.drawXBMP(128-2, 0, 2, 64, bitmap_scrollbar_background);  //绘制滚动列表背景
+//         u8g2.drawBox(125, 64/NUM_ITEMS * item_selected, 3, 64/NUM_ITEMS);  //绘制滚动条 //drawBox是绘制啥的，为啥绘制滚动条的时候要用？？？
+//       }
+//       if(current_screen == 1)  //直接跳转到hd_value
+//       {
+//         // /*调试*/Serial.println("hd_value: ");
+//           u8g2.drawStr(0,10,"hd_value: ");
+//           hd_read_value();//读取灰度值
+//           u8g2.setCursor((10*0), 10*3); u8g2.print(hd_value[1]);
+//           u8g2.setCursor((10*1), 10*3); u8g2.print(hd_value[2]);
+//           u8g2.setCursor((10*2), 10*3); u8g2.print(hd_value[3]);
+//           u8g2.setCursor((10*3), 10*3); u8g2.print(hd_value[4]);
+//           u8g2.setCursor((10*4), 10*3); u8g2.print(hd_value[5]);
+//           u8g2.setCursor((10*5), 10*3); u8g2.print(hd_value[6]);
+//           u8g2.setCursor((10*6), 10*3); u8g2.print(hd_value[7]);
+//           u8g2.setCursor((10*7), 10*3); u8g2.print(hd_value[8]);
+//       }
+//       else if(current_screen == 2)  //直接跳转到t_lr90
+//       {
+//         // /*调试*/Serial.println("Aim: ");
+//         u8g2.drawStr(0,10,"Aim: ");
+//         u8g2.setCursor(sizeof("Aim: ")*8, 20);
+//         u8g2.print(Aim);
+//       }
+//       else if(current_screen == 3)  //直接跳转到car_O/C
+//       {
+//         // /*调试*/Serial.println("ZY: ");
+//         u8g2.drawStr(0, 10, "ZY: ");
+//         u8g2.setCursor(sizeof("ZY: ")*8, 20);
+//         u8g2.print(ZY);
+//       }
+//       else if(current_screen == 4)  //直接跳转到wring!
+//       {
+//         // /*调试*/Serial.println("wring!");
+//           u8g2.drawStr(0,10,"hd_value: ");
+//           hd_read_value();//读取灰度值
+//           u8g2.setCursor((10*0), 10*2.5); u8g2.print(hd_value[1]);
+//           u8g2.setCursor((10*1), 10*2.5); u8g2.print(hd_value[2]);
+//           u8g2.setCursor((10*2), 10*2.5); u8g2.print(hd_value[3]);
+//           u8g2.setCursor((10*3), 10*2.5); u8g2.print(hd_value[4]);
+//           u8g2.setCursor((10*4), 10*2.5); u8g2.print(hd_value[5]);
+//           u8g2.setCursor((10*5), 10*2.5); u8g2.print(hd_value[6]);
+//           u8g2.setCursor((10*6), 10*2.5); u8g2.print(hd_value[7]);
+//           u8g2.setCursor((10*7), 10*2.5); u8g2.print(hd_value[8]);
+
+//         u8g2.drawStr(0,45,"Aim: ");
+//         u8g2.setCursor(sizeof("Aim: ")*8, 45);
+//         u8g2.print(Aim);
+
+
+//         u8g2.drawStr(0, 60, "ZY: ");
+//         u8g2.setCursor(sizeof("ZY: ")*8, 60);
+//         u8g2.print(ZY);
+//       }
+
+//   } while ( u8g2.nextPage() );
+//    ///*调试*/Serial.println("结束");
+// }
+
+
+
+// void OLED_button_read()
+// {
+//     if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
+//     {
+//       delay(50);
+//       if((digitalRead(41)==0) && (button_down_clicked==0))//down按下&&？  单击向下按钮 // && (button_down_clicked==0)-我认为是避免误触的方法
+//       {
+//         button_down_clicked = 1;
+//         item_selected++;//当前按键项目++
+//         /*调试*/
+//         //Serial.print("down按下: "); Serial.println(item_selected);
+//         if(item_selected>=NUM_ITEMS)  //划到低了
+//         {
+//           item_selected = 0;
+//         }
+//       }
+//     }
+//     else if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
+//     {
+//       delay(50);
+//       if((digitalRead(42)==0) && (button_up_clicked==0))//up按下&&？  单击向下按钮
+//       {
+//         button_up_clicked = 1;
+//         item_selected--;//当前按键项目++
+//         /*调试*/
+//         //Serial.print("up按下: "); Serial.println(item_selected);
+//         if(item_selected < 0)  //划到顶了 //为啥不是<=1???
+//         {
+//           item_selected = NUM_ITEMS-1;  //我认为是跳转到最后一项 NUM_ITEMS-1  //引用下标
+//         }
+//       }
+//     }
     
-    if((digitalRead(42)==HIGH) && (button_up_clicked==1))   {button_up_clicked = 0;};  //取消点击  //up
+//     if((digitalRead(42)==HIGH) && (button_up_clicked==1))   {button_up_clicked = 0;};  //取消点击  //up
 
-    if((digitalRead(41)==HIGH) && (button_down_clicked==1)) {button_down_clicked = 0;};  //down
+//     if((digitalRead(41)==HIGH) && (button_down_clicked==1)) {button_down_clicked = 0;};  //down
 
 
-  if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
-  {
-    delay(50);
-    if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
-    {
-      button_select_clicked = 1;
-      if(current_screen==0) 
-      {       
-        if(item_selected == 0)
-        {
-          current_screen = 1;///*调试*/ Serial.println("1级菜单hd_value");
-        }
-        if(item_selected == 1)
-        {
-          current_screen = 2;///*调试*/ Serial.println("1级菜单t_lr90");
-        }
-        if(item_selected == 2)
-        {
-          current_screen = 3;///*调试*/ Serial.println("1级菜单car_O/C");
-        }
-        if(item_selected == 3)
-        {
-          current_screen = 4;///*调试*/ Serial.println("1级菜单wring!");
-        }
-      }
-    else 
-      {
-        current_screen=0;//Serial.println("主菜单"); /*就缺了个这！！！*/
-      }
-    }
-  }
-    if((digitalRead(43)==HIGH) && (button_select_clicked==1))
-    {
-      button_select_clicked = 0;//取消点击
-    }
+//   if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
+//   {
+//     delay(50);
+//     if((digitalRead(43)==LOW) && (button_select_clicked==0)) //enter
+//     {
+//       button_select_clicked = 1;
+//       if(current_screen==0) 
+//       {       
+//         if(item_selected == 0)
+//         {
+//           current_screen = 1;///*调试*/ Serial.println("1级菜单hd_value");
+//         }
+//         if(item_selected == 1)
+//         {
+//           current_screen = 2;///*调试*/ Serial.println("1级菜单t_lr90");
+//         }
+//         if(item_selected == 2)
+//         {
+//           current_screen = 3;///*调试*/ Serial.println("1级菜单car_O/C");
+//         }
+//         if(item_selected == 3)
+//         {
+//           current_screen = 4;///*调试*/ Serial.println("1级菜单wring!");
+//         }
+//       }
+//     else 
+//       {
+//         current_screen=0;//Serial.println("主菜单"); /*就缺了个这！！！*/
+//       }
+//     }
+//   }
+//     if((digitalRead(43)==HIGH) && (button_select_clicked==1))
+//     {
+//       button_select_clicked = 0;//取消点击
+//     }
 
-    /*确定上一项，下一项的值*/
-    item_sel_previous = item_selected-1;//上一项=当前项-1
-    if(item_sel_previous < 0)          {item_sel_previous = NUM_ITEMS-1;}
-    item_sel_next = item_selected+1;
-    if(item_sel_next >= NUM_ITEMS) {item_sel_next = 0;}
+//     /*确定上一项，下一项的值*/
+//     item_sel_previous = item_selected-1;//上一项=当前项-1
+//     if(item_sel_previous < 0)          {item_sel_previous = NUM_ITEMS-1;}
+//     item_sel_next = item_selected+1;
+//     if(item_sel_next >= NUM_ITEMS) {item_sel_next = 0;}
 
-}
+// }
 

@@ -24,7 +24,7 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/8, /* data=*/9, /* 
 
 #define Advance_black_ms 100 * 6 // 到黑线上前
 
-#define AnitClockwise_ms 100 * 5 // 左转时间
+#define AnitClockwise_ms 100 * 4.3 // 左转时间
 #define AnitClockwise_pwm_le 80  // 左转pwm-左
 #define AnitClockwise_pwm_ri 80
 #define Clockwise_ms 100 * 10 // 右转时间
@@ -240,14 +240,17 @@ void loop()
     /*调试*/ motor_Exercise_status(STOP, 0, 0);
     /*调试*/ //while(1);
     OpenmvZY(); // 比对，分左右
-    /*调试*/    while(1);
+    /*调试*/    //while(1);
     switch (ZY) // 远端找到了目的地编号
     {
     case 0:// 远端左转 
     {                                                                             
       black_Search();                                                                    // 前进找到黑色(终点)停下
-      Advance_black(Advance_black_ms + 500);                                             // 到黑线，上前
+      Advance_black(Advance_black_ms + 300);                                             // 到黑线，上前
       AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
+    /*调试*/ motor_Exercise_status(BACK, 100, 100);
+    /*调试*/ delay(100);
+    /*调试*/ motor_Exercise_status(STOP, 0, 0);
       /*调试*/break;
       lj_60cm(lj_60cm_lr); // 60cm左右累计
       OpenmvZY(); // 比对，分左右
@@ -324,6 +327,7 @@ void loop()
       }
     break;
     }
+    /*调试*/while(1);
   }
   /*以上，中端和远端*/
 }

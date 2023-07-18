@@ -238,12 +238,13 @@ void loop()
     /*调试*/ motor_Exercise_status(BACK, 100, 100);
     /*调试*/ delay(100);
     /*调试*/ motor_Exercise_status(STOP, 0, 0);
-    /*调试*///delay(1000);
+    /*调试*/ while(1);
     OpenmvZY(); // 比对，分左右
-    /*调试*/    // while(1);
+    /*调试*/    //while(1);
     switch (ZY) // 远端找到了目的地编号
     {
-    case 0:// 远端左转                                                                              
+    case 0:// 远端左转 
+    {                                                                             
       black_Search();                                                                    // 前进找到黑色(终点)停下
       Advance_black(Advance_black_ms + 500);                                             // 到黑线，上前
       AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
@@ -275,9 +276,12 @@ void loop()
         leri_chooise(4); // 远端-右(实际右转)
         white_Search();  // 找到白色(终点)停下
       }
-      break;
+    }
+      //  /*调试*/while(1);
+      // break;
 
-    case 1:                                                               // 远端右转
+    case 1:       
+    {                                                        // 远端右转
       black_Search();                                                     // 前进找到黑色(终点)停下
       Advance_black(Advance_black_ms);                                    // 到黑线，上前
       Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
@@ -308,12 +312,18 @@ void loop()
         leri_chooise(3); // 远端-右(实际右转)
         white_Search();  // 找到白色(终点)停下
       }
-      break;
-
-    default:
-      break;
     }
-    /*调试*/while(1);
+    break;
+
+    default://ZY=2,停车
+      {
+      motor_Exercise_status(BACK, 100, 100); //
+      delay(100); 
+      motor_Exercise_status(STOP, 0, 0); //
+      delay(3000); 
+      }
+    break;
+    }
   }
   /*以上，中端和远端*/
 }

@@ -234,13 +234,13 @@ void loop()
     /*远端测试*/
     /*开始远端*/
     black_Search();      // 到达中端十字路口上
-    lj_60cm(lj_60cm_go); // 60cm前进累计
+    lj_60cm(lj_60cm_go+100); // 60cm前进累计
     /*调试*/ motor_Exercise_status(BACK, 100, 100);
     /*调试*/ delay(100);
     /*调试*/ motor_Exercise_status(STOP, 0, 0);
-    /*调试*/ while(1);
+    /*调试*/ //while(1);
     OpenmvZY(); // 比对，分左右
-    /*调试*/    //while(1);
+    /*调试*/    while(1);
     switch (ZY) // 远端找到了目的地编号
     {
     case 0:// 远端左转 

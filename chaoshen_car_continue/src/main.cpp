@@ -20,7 +20,7 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/8, /* data=*/9, /* 
 
 /*以下，需要调试的各种参数*/
 #define lj_60cm_go 1000 * 4.2 // 60cm前进累计
-#define lj_60cm_lr 1000 * 4.2 // 60cm左右累计
+#define lj_60cm_lr 1000 * 3 // 60cm左右累计
 
 #define Advance_black_ms 100 * 6 // 到黑线上前
 
@@ -79,6 +79,8 @@ void hd_read_value();                                                      /*读
 void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm); /*电机运动状态*/
 void OpenmvZY();                                                           /*k210确定左右，有无*/
 void OpenmvRead();                                                         /*k210读取目标病房*/
+
+/*调试*/void OpenmvZY_sss();
 /*以上，函数声明*/
 
 void setup()
@@ -238,97 +240,100 @@ void loop()
     /*调试*/ motor_Exercise_status(BACK, 100, 100);
     /*调试*/ delay(100);
     /*调试*/ motor_Exercise_status(STOP, 0, 0);
-    /*调试*/ //while(1);
-    OpenmvZY(); // 比对，分左右
-    /*调试*/    //while(1);
+    // /*调试*/ //while(1);
+    OpenmvZY_sss(); // 比对，分左右
+    // /*调试*/    //while(1);
     switch (ZY) // 远端找到了目的地编号
     {
-    case 0:// 远端左转 
-    {                                                                             
-      black_Search();                                                                    // 前进找到黑色(终点)停下
-      Advance_black(Advance_black_ms + 300);                                             // 到黑线，上前
-      AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
-    /*调试*/ motor_Exercise_status(BACK, 100, 100);
-    /*调试*/ delay(100);
-    /*调试*/ motor_Exercise_status(STOP, 0, 0);
-      /*调试*/break;
-      lj_60cm(lj_60cm_lr); // 60cm左右累计
-      OpenmvZY(); // 比对，分左右
-      /*远端分支*/
-      if (ZY == 0) // 远端左分支-左转
-      {
+      case 0:// 远端左转 
+      {                                                                             
         black_Search();                                                                    // 前进找到黑色(终点)停下
-        Advance_black(Advance_black_ms);                                                   // 到黑线，上前
+        Advance_black(Advance_black_ms + 300);                                             // 到黑线，上前
         AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
-        white_Search();                                                                    // 找到白色(终点)停下
+      /*调试*/ motor_Exercise_status(BACK, 100, 100);
+      /*调试*/ delay(100);
+      /*调试*/ motor_Exercise_status(STOP, 0, 0);
+        lj_60cm(lj_60cm_lr); //60左右累计
+      /*调试*/ motor_Exercise_status(BACK, 100, 100);
+      /*调试*/ delay(100);
+      /*调试*/ motor_Exercise_status(STOP, 0, 0);
+        OpenmvZY(); // 比对，分左右
+      /*调试*/  Serial.println("比对，分左右结束");
+        /*远端分支*/
+        if (ZY == 0) // 远端左分支-左转
+        {
+          black_Search();                                                                    // 前进找到黑色(终点)停下
+          Advance_black(Advance_black_ms);                                                   // 到黑线，上前
+          AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
+          white_Search();                                                                    // 找到白色(终点)停下
 
-        /*远端返回*/
-        leri_chooise(1); // 远端分支-左
-        leri_chooise(4); // 远端-左(实际右转)
-        white_Search();  // 找到白色(终点)停下
+          /*远端返回*/
+          leri_chooise(1); // 远端分支-左
+          leri_chooise(4); // 远端-左(实际右转)
+          white_Search();  // 找到白色(终点)停下
+        }
+        else if (ZY == 1) // 远端左分支-右转
+        {
+          black_Search();                                                     // 前进找到黑色(终点)停下
+          Advance_black(Advance_black_ms);                                    // 到黑线，上前
+          Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
+          white_Search();                                                     // 找到白色(终点)停下
+
+          /*远端返回*/
+          leri_chooise(2); // 远端分支-右
+          leri_chooise(4); // 远端-右(实际右转)
+          white_Search();  // 找到白色(终点)停下
+        }
       }
-      else if (ZY == 1) // 远端左分支-右转
-      {
+      break;
+
+      case 1:       
+      {                                                        // 远端右转
         black_Search();                                                     // 前进找到黑色(终点)停下
         Advance_black(Advance_black_ms);                                    // 到黑线，上前
         Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
-        white_Search();                                                     // 找到白色(终点)停下
+        lj_60cm(lj_60cm_lr);                                                // 60cm左右累计
+        OpenmvZY();                                                         // 比对，分左右
+        /*远端分支*/
+        if (ZY == 0) // 远端右分支-左转
+        {
+          black_Search();                                                                    // 前进找到黑色(终点)停下
+          Advance_black(Advance_black_ms);                                                   // 到黑线，上前
+          AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
+          white_Search();                                                                    // 找到白色(终点)停下
 
-        /*远端返回*/
-        leri_chooise(2); // 远端分支-右
-        leri_chooise(4); // 远端-右(实际右转)
-        white_Search();  // 找到白色(终点)停下
+          /*远端返回*/
+          leri_chooise(1); // 远端分支-左
+          leri_chooise(3); // 远端-左(实际左转)
+          white_Search();  // 找到白色(终点)停下
+        }
+        else if (ZY == 1) // 右转
+        {
+          black_Search();                                                     // 前进找到黑色(终点)停下
+          Advance_black(Advance_black_ms);                                    // 到黑线，上前
+          Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
+          white_Search();                                                     // 找到白色(终点)停下
+
+          /*远端返回*/
+          leri_chooise(2); // 远端分支-右
+          leri_chooise(3); // 远端-右(实际右转)
+          white_Search();  // 找到白色(终点)停下
+        }
       }
+      break;
+
+      default://ZY=2,停车
+        // {
+        // motor_Exercise_status(BACK, 100, 100); //
+        // delay(100); 
+        // motor_Exercise_status(STOP, 0, 0); //
+        // delay(3000); 
+        // }
+      break;
+      }
+      /*在此结束*/
+      /*调试*/ while(1);
     }
-      //  /*调试*/while(1);
-      // break;
-
-    case 1:       
-    {                                                        // 远端右转
-      black_Search();                                                     // 前进找到黑色(终点)停下
-      Advance_black(Advance_black_ms);                                    // 到黑线，上前
-      Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
-      lj_60cm(lj_60cm_lr);                                                // 60cm左右累计
-      OpenmvZY();                                                         // 比对，分左右
-      /*远端分支*/
-      if (ZY == 0) // 远端右分支-左转
-      {
-        black_Search();                                                                    // 前进找到黑色(终点)停下
-        Advance_black(Advance_black_ms);                                                   // 到黑线，上前
-        AnitClockwise(LEFT, AnitClockwise_pwm_le, AnitClockwise_pwm_ri, AnitClockwise_ms); // 左转
-        white_Search();                                                                    // 找到白色(终点)停下
-
-        /*远端返回*/
-        leri_chooise(1); // 远端分支-左
-        leri_chooise(3); // 远端-左(实际左转)
-        white_Search();  // 找到白色(终点)停下
-      }
-      else if (ZY == 1) // 右转
-      {
-        black_Search();                                                     // 前进找到黑色(终点)停下
-        Advance_black(Advance_black_ms);                                    // 到黑线，上前
-        Clockwise(RIGHT, Clockwise_pwm_le, Clockwise_pwm_ri, Clockwise_ms); // 右转
-        white_Search();                                                     // 找到白色(终点)停下
-
-        /*远端返回*/
-        leri_chooise(2); // 远端分支-右
-        leri_chooise(3); // 远端-右(实际右转)
-        white_Search();  // 找到白色(终点)停下
-      }
-    }
-    break;
-
-    default://ZY=2,停车
-      {
-      motor_Exercise_status(BACK, 100, 100); //
-      delay(100); 
-      motor_Exercise_status(STOP, 0, 0); //
-      delay(3000); 
-      }
-    break;
-    }
-    /*调试*/while(1);
-  }
   /*以上，中端和远端*/
 }
 
@@ -675,10 +680,8 @@ void motor_Exercise_status(char motro_state, int left_pwm, int right_pwm)
 /*k210读取目标病房*/
 void OpenmvRead()
 {
-  while (Serial1.read() >= 0)
-    ; // 清空缓冲区
-  while (Serial1.available() == 0)
-    ;                      // 等待信号传输
+  while (Serial1.read() >= 0); // 清空缓冲区
+  while (Serial1.available() == 0);                      // 等待信号传输
   if (Serial1.available()) // 读取k210目标病房
   {
     /*绝对不可以在此打印，否则只能识别1*/ // Serial.println("inininin!!!");
@@ -737,8 +740,9 @@ void OpenmvZY()
 {
   while (Serial1.read() >= 0); // 清空缓冲区
   while (Serial1.available() == 0);                          // 等待信号传输
-  if (Serial1.available() > 0) // 读取k210确定左右，有无
+  if(Serial1.available() > 0) // 读取k210确定左右，有无  
   {
+    // Serial1.read();
     char Aim_choose_in = Serial1.read();
     Serial.print("********Aim_choose_in*******");
     Serial.println(Aim_choose_in);
@@ -757,8 +761,48 @@ void OpenmvZY()
     }
     Serial.println("进入成功-读取");
   }
-  while (Serial1.read() >= 0)
-    ; // 清空缓冲区
+  while (Serial1.read() >= 0); // 清空缓冲区
+  // while(Serial1.read()>=0){;}//清空缓冲区
+  u8g2.firstPage();
+  do
+  {
+    // u8g2.clearBuffer();
+    u8g2.setFont(u8g_font_7x14);
+    u8g2.drawStr(0, 60, "ZY: ");
+    u8g2.setCursor(sizeof("ZY: ") * 8, 60);
+    u8g2.print(ZY);
+  } while (u8g2.nextPage());
+  /*调试*/  Serial.println("结束");
+  // u8g2.sendBuffer();
+}
+
+/*k210确定左右，有无*/
+void OpenmvZY_sss()
+{
+  while (Serial1.read() >= 0); // 清空缓冲区
+  while (Serial1.available() == 0);                          // 等待信号传输
+  if(Serial1.available() > 0) // 读取k210确定左右，有无  
+  {
+    while(Serial1.read()!='0' || Serial1.read()!='1');
+    char Aim_choose_in = Serial1.read();
+    Serial.print("********Aim_choose_in*******");
+    Serial.println(Aim_choose_in);
+    Serial.print("********Aim_choose_in*******");
+    if (Aim_choose_in == '0')
+    {
+      ZY = 0;
+    }
+    if (Aim_choose_in == '1')
+    {
+      ZY = 1;
+    }
+    if (Aim_choose_in == '2')
+    {
+      ZY = 2;
+    }
+    Serial.println("进入成功-读取");
+  }
+  while (Serial1.read() >= 0); // 清空缓冲区
   // while(Serial1.read()>=0){;}//清空缓冲区
   u8g2.firstPage();
   do
@@ -771,3 +815,4 @@ void OpenmvZY()
   } while (u8g2.nextPage());
   // u8g2.sendBuffer();
 }
+

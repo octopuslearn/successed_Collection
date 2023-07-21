@@ -3,6 +3,10 @@
 		{
 			"name": "ploatformio_continue_OLED_IIC_yutube",
 			"path": "E:/project/successed_project/ploatformio_continue_OLED_IIC_yutube"
+		},
+		{
+			"name": "ploatformio_continue_OLED_IIC_yutube",
+			"path": "../ploatformio_continue_OLED_IIC_yutube"
 		}
 	],
 	"settings": {}

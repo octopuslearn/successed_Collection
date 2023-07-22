@@ -2,7 +2,7 @@
 #include "PinChangeInt.h"
 
 
-unsigned long Motor_ncoder_count_right_a;//右电机脉冲
+unsigned long Motor_encoder_count_right_a;//右电机脉冲
 unsigned long Motor_encoder_count_left_a;//左电机脉冲
 
 void EncoderCountRightA();//获取右电机脉冲
@@ -18,7 +18,7 @@ void Motor_Encoder_init()//读取编码电机脉冲
 //Getting Right Wheel Speed.
 void EncoderCountRightA()//获取右电机脉冲
 {
-  Motor_ncoder_count_right_a++;
+  Motor_encoder_count_right_a++;
 }
 
 

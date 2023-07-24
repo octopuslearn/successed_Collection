@@ -1,25 +1,19 @@
 #include <Arduino.h>
-#include <Servo.h>
 
+/*以下，编码电机相关*/
+#define AIN1 3
+#define AIN2 4
+#define PWMA_LEFT 5//NC
+#define ENCODER_LEFT_A_PIN 2 //编码器
+int PPR = 11;              //一圈11个脉冲
+volatile long encoderCount=0;//存储电机脉冲数
+int rpm = 0; int setRPM=0;   //rpm: 实际测到的转速， setRPM:目标转速
 
-/*以下，超声波相关*/
-#define trig 8//控制
-#define echo 9//信号
+/*以上，编码电机相关*/
 
-float distance;//胶带位置
-/*以上，超声波相关*/
-
-
-
-/*以下，舵机相关*/
-#define Servo1 10//舵机
-
-Servo Servo_1;//创建舵机对象
-
-int angle;//舵机角度
-/*以上，舵机相关*/
-
-
+/*以下，电位器*/
+#define  pot A0//电位器
+/*以上，电位器*/
 
 unsigned int last_time;//上一次时间
 
@@ -34,7 +28,7 @@ float kp=10;
 float ki=0.05;
 float kd=50;
 
-unsigned int dt=50;//没50ms进行一次计算
+unsigned int dt=50;//每50ms进行一次计算
 
 float P;
 float I;
@@ -47,6 +41,7 @@ float PID;
 /*以下，函数声明*/
 void hc_sr04_read();
 void PID_contrl();
+void ISR_Encoder();
 /*以上，函数声明*/
 
 
@@ -54,55 +49,50 @@ void PID_contrl();
 
 void setup() {
   Serial.begin(9600);
-  pinMode(trig, OUTPUT);
-  pinMode(echo,INPUT);
-  pinMode(Servo1,OUTPUT);
-  Servo_1.attach(10);
+
+
+  /*以下，编码电机*/
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(PWMA_LEFT, OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(ENCODER_LEFT_A_PIN), ISR_Encoder, CHANGE);
+  /*以上，编码电机*/
+
+
   last_time = millis();//获取上一次时间
   // put your setup code here, to run once:
 
 }
 
 void loop() {
+  setRPM = map(analogRead(pot), 0, 1023, 2000, 10000);//设定转速
+  digitalWrite(AIN1, HIGH); digitalWrite(AIN2,LOW);   //电机方向
   if(millis() > last_time+dt)
   {
     last_time = millis();//更新上一次时间
-    hc_sr04_read();//获取超声波参数
-    PID_contrl();  //PID控制
+    Serial.print("encoderCount: ");    Serial.print(encoderCount);
+    rpm = (float)((encoderCount/PPR)*(1000/dt)*60);//实际转速
+    Serial.print("起始Measured RPM: ");    Serial.print(rpm);   
+    PID_contrl();
+    analogWrite(PWMA_LEFT, PID); //调整马达转速
 
-    /*调试*/
+        // 串口监视器上显示目标，Arduino 输出的 PWM， 以及测量到的RPM
+      Serial.print("Set RPM: ");         Serial.print(setRPM);
+      Serial.print('\t');
+      Serial.print("Measured RPM: ");    Serial.print(rpm);
+      Serial.print('\t');
+      Serial.print("PID: ");             Serial.println(PID);
 
-    Serial.print("distance:  ");Serial.print(distance);     
-    Serial.print("Error: ");   Serial.print(error);    
-    Serial.print("   P: ");     Serial.print(P); 
-    Serial.print("   D: ");     Serial.print(D);
-    Serial.print("   I: ");     Serial.print(I);
-    Serial.print("   PID: ");   Serial.print(PID);
-    
-    angle = map(PID,-200,200,150,20);
-    Serial.print("   angle: ");   Serial.println(angle);
-    // put your main code here, to run repeatedly:
-    Servo_1.write(angle);
+      //encoderCount = 0;// 累计脉冲数量重置,为下一秒测量做准备  
   }
 }
 
 
 
 
-void hc_sr04_read(){
-  digitalWrite(trig, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(40);
-  
-  digitalWrite(trig, LOW);
-
-  distance=pulseIn(echo, HIGH)/58;//获取高电平-距离
-
-}
 
 void PID_contrl(){
-  error=distance-setPoint;          //计算误差
+  error=rpm-setRPM;          //计算误差
   P=kp*error;                       //P项
   if(-4<error && error<4)
   {
@@ -120,4 +110,9 @@ void PID_contrl(){
   if(PID<-200){PID=-200;}
 
   previous_error = error;//更新上一刻误差
+}
+
+
+void ISR_Encoder(){
+  encoderCount++;
 }

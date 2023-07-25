@@ -2,6 +2,10 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"name": "test_0",
+			"path": "../../../vscode_test/test_0"
 		}
 	],
 	"settings": {}

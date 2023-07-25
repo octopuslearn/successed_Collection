@@ -36,8 +36,9 @@ int User_Input=120;            //设定角度
 // double kp=1,ki=1,kd=0.01;//kp=5,ki=1,kd=0.01;
 // double kp=1,ki=0.8,kd=0.01;//kp=5,ki=1,kd=0.01;
 // double kp=6,ki=0.8,kd=0.01;//kp=5,ki=1,kd=0.01;
-// double kp=1,ki=1,kd=0.01;//kp=5,ki=1,kd=0.01;
-double kp=0.4,ki=0,kd=0.001;//kp=5,ki=1,kd=0.01;//成功
+ //double kp=3*0.6,ki=0.1,kd=0.01;//kp=5,ki=1,kd=0.01;
+  double kp=1.6*0.6,ki=0.03,kd=0.01;//kp=5,ki=1,kd=0.01;
+// double kp=0.4,ki=0,kd=0.001;//kp=5,ki=1,kd=0.01;//成功
 double input=0,output=0,setpoint=0;
 PID motor_A_PID(&input, &output, &setpoint, kp, ki, kd, DIRECT);
 /*以上，PID相关*/
@@ -90,15 +91,14 @@ void setup() {
 void loop() {
 // /*调试*/Serial.print("目标角度: "); Serial.print(User_Input); Serial.print("\t");
 // set_REV = map (User_Input, 0, 360, 0, 506); //将度数映射为脉冲
-set_REV=11*46*2*6;
+set_REV=11*46*2*2;
 setpoint=set_REV;//PID工作时达到此值视为SET值
 /*调试*/Serial.print("目标角度对应脉冲数: "); Serial.print(setpoint); Serial.print("\t");
 input=now_encoder;//来自编码器的数据被视为过程值
-/*调试*/Serial.print("当前脉冲数: "); Serial.print(input); Serial.print("\t");
 motor_A_PID.Compute();//计算新的值输出
-/*调试*/Serial.print("output: "); Serial.print(output); Serial.println("\t");
+/*调试*/Serial.print("被调值: "); Serial.print(input); Serial.print("\t");
 pwmOut(output);
-//  /*调试*/Serial.print("输出情况: "); Serial.println(output); 
+/*调试*/Serial.print("输出情况: "); Serial.println(output); 
 //  brakeA();
 // Serial.println("调整完成###");
 }
@@ -189,7 +189,6 @@ void forwardA(int pwm){
   digitalWrite(AIN1, LOW);
   digitalWrite(AIN2, HIGH);
   analogWrite(PWMA_LEFT, pwm);
-  Serial.print("pwm: ");Serial.print(pwm);
 }
 
 

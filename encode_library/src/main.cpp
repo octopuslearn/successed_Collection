@@ -43,13 +43,14 @@ void brakeA();/*停车*/
 void setup()
 {
   Serial.begin(9600);
-
+/*调试*/  initMotors();//电机初始化
 }
 
 void loop()
 { 
-  resetEncoder();
-  Serial.print("当前值");Serial.print("\t");Serial.println(leftPosition);
+/*调试*/   pwmOut(100);
+/*调试*/   resetEncoder();
+/*调试*/   Serial.print("当前值");Serial.print("\t");Serial.println(leftPosition);
 }
 
 

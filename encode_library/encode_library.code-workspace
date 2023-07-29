@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "encode_library",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"test_1": "cpp"
+		}
+	}
+}

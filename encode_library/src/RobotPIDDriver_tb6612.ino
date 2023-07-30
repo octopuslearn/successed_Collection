@@ -114,28 +114,28 @@ int runCommand() {
   char *p = argv1;
   char *str;
   int pid_args[4];
-  arg1 = atoi(argv1);
+  arg1 = atoi(argv1);//atoi() 是一个标准库函数，用于将字符串转换为整数（int）。atoi 表示 "ASCII to Integer"，它的声明位于 stdlib.h 头文件中。
   arg2 = atoi(argv2);
   switch (cmd) {
-    case GET_BAUDRATE:
+    case GET_BAUDRATE://'b'
       Serial.println(BAUDRATE);
       break;
-    case ANALOG_READ:
+    case ANALOG_READ://'a'
       Serial.println(analogRead(arg1));
       break;
-    case DIGITAL_READ:
+    case DIGITAL_READ://'d'
       Serial.println(digitalRead(arg1));
       break;
-    case ANALOG_WRITE:
+    case ANALOG_WRITE://'x'
       analogWrite(arg1, arg2);
       Serial.println("OK");
       break;
-    case DIGITAL_WRITE:
+    case DIGITAL_WRITE://'w'
       if (arg2 == 0) digitalWrite(arg1, LOW);
       else if (arg2 == 1) digitalWrite(arg1, HIGH);
       Serial.println("OK");
       break;
-    case PIN_MODE:
+    case PIN_MODE:'c'
       if (arg2 == 0) pinMode(arg1, INPUT);
       else if (arg2 == 1) pinMode(arg1, OUTPUT);
       Serial.println("OK");
@@ -145,7 +145,7 @@ int runCommand() {
       Serial.print(" ");
       Serial.println(readEncoder(RIGHT));
       break;
-    case RESET_ENCODERS:
+    case RESET_ENCODERS://'r'
       resetEncoders();
       resetPIDInfo();
       Serial.println("OK");
@@ -155,10 +155,10 @@ int runCommand() {
       setTargetTicksPerFrame(arg1, arg2);
       Serial.println("OK");
       break;
-    case UPDATE_PID:
+    case UPDATE_PID://'u'
       Serial.println("OK");
       break;
-    case DISPLAY_PIDS:
+    case DISPLAY_PIDS://'f'
       Serial.print("Kp_L:");
       Serial.print(Kp_L);
       Serial.print(" Kd_L:");
@@ -166,7 +166,7 @@ int runCommand() {
       Serial.print(" Ki_L:");
       Serial.print(Ki_L);
       break;
-    case READ_RANGE:
+    case READ_RANGE://'g'
       Serial.println(Ultra_Range_cm);
       break; 
     default:
@@ -205,11 +205,11 @@ void loop()
   {
     // Read the next character
     chr = Serial.read();
-    // Terminate a command with a CR
-    if (chr == 13)
+    // Terminate a command with a CR//用 CR 终止命令
+    if (chr == 13)////13-回车
     {
       if (arg == 1)
-        argv1[index] = 0 ;//NULL;
+        argv1[index] = 0 ;//NULL;//无效的;
       else if (arg == 2)
         argv2[index] = 0; //NULL;
       runCommand();
@@ -232,7 +232,7 @@ void loop()
     {
       if (arg == 0)
       {
-        // The first arg is the single-letter command
+        // The first arg is the single-letter command//第一个arg是单字母命令
         cmd = chr;
       }
       else if (arg == 1)

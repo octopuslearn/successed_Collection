@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "VL53L0X",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"test_1": "cpp",
+			"test_0": "c",
+			"test_3": "cpp",
+			"test_4": "cpp"
+		}
+	}
+}

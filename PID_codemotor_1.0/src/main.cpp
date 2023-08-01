@@ -78,7 +78,7 @@ void setMotor(int dir, int pwmVal, int pwm, int in1, int in2);
 /****************以下，函数声明****************/
 /*以下，声明电机，运动相关*/
 void initMotors();/*初始化电机*/
-void pwmOut(int out);/*pwm输出*/
+void pwmOut(int dir,int pwr);/*pwm输出*/
 void forwardA(int pwm);/*前进*/
 void reverseA(int pwm);/*后退*/
 void brakeA();/*停车*/
@@ -269,23 +269,17 @@ void loop() {
   
   float u = kp*e + ki*eintegral;
 
-  // Set the motor speed and direction
-  // int dir = 1;
-  // if (u<0){
-  //   dir = -1;
-  // }
-  // int pwr = (int) fabs(u);
-  // if(pwr > 255){
-  //   pwr = 255;
-  // }
+  //Set the motor speed and direction
+  int dir = 1;
+  if (u<0){
+    dir = -1;
+  }
+  int pwr = (int) fabs(u);
+  if(pwr > 255){
+    pwr = 255;
+  }
   // setMotor(dir,pwr,PWM,IN1,IN2);
-
-  pwr=u;//pwm输出
-  if(pwr>255)//pwm限幅
-    pwr=255;
-  else if(pwr<-255)
-    pwr=-255;
-  pwmOut(pwr);
+  pwmOut(dir,pwr);
 
   Serial.print(vt);
   Serial.print(" ");
@@ -328,15 +322,15 @@ void initMotors(){
 
 
 /*pwm输出*/
-void pwmOut(int out)
+void pwmOut(int dir,int pwr)
 {
-  if(out>0)
+  if(dir<0)
   {
-    forwardA(out);
+    forwardA(pwr);
   }
   else
   {
-    reverseA(abs(out));
+    reverseA(pwr);
   }
 }
 

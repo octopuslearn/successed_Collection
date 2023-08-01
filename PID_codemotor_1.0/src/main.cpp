@@ -33,8 +33,9 @@ volatile int now_encoder=0; //当前编码器数值
 
 /*******************以下，PID调参相关**********************/
 /*以下，速度环调参*/                                     
-double kp_speed=5,ki_speed=0.2,kd_speed=0.8;                  //速度环-kp,ki,kd-参数
-
+// double kp_speed=5,ki_speed=0.2,kd_speed=0.8;                  //速度环-kp,ki,kd-参数
+// double kp_speed=1.1,ki_speed=0.05,kd_speed=0.4; 
+double kp_speed=10,ki_speed=0,kd_speed=0.001; 
 float output_speed=0,setpoint_speed=0;
 int pos = 0;//当前脉冲数 
 int e;//误差
@@ -50,6 +51,9 @@ float eintergal=0;//微分项
 long currT;   //当前时间
 float deltaT; //迭代时间
 long prevT=0; //更新上一次的时间
+
+
+int spped_stop=50;
 /*以下，速度环调参*/
 /*******************以上，PID调参相关**********************/
 
@@ -117,8 +121,21 @@ void loop() {
 /************以下，可爱的小姐**************/
 /*pid解算&限幅*/
 void pid_calculate()
-{
+{ 
   e = pos-setpoint_speed;//速度环-误差
+
+  if((e>(-spped_stop)) && (e<(spped_stop)))
+  {
+    e=0;
+    eprev=0;
+    dedt=0;
+  }
+
+
+
+
+
+  // e = pos-setpoint_speed;//速度环-误差
 
   dedt=(e-eprev)/(deltaT);//积分项-用于计算积分的误差
 

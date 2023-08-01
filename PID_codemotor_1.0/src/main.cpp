@@ -35,7 +35,7 @@ volatile int now_encoder=0; //当前编码器数值
 /*以下，速度环调参*/                                     
 // double kp_speed=5,ki_speed=0.2,kd_speed=0.8;                  //速度环-kp,ki,kd-参数
 // double kp_speed=1.1,ki_speed=0.05,kd_speed=0.4; 
-double kp_speed=10,ki_speed=0,kd_speed=0.001; 
+double kp_speed=1,ki_speed=0,kd_speed=0; 
 float output_speed=0,setpoint_speed=0;
 int pos = 0;//当前脉冲数 
 int e;//误差
@@ -103,14 +103,21 @@ void setup() {
 void loop() {
 /************************以下，添加********************/
   setpoint_speed=1000;
+  //setpoint_speed= 250*sin(prevT/1e6);
   pid_get_timer();
 
-  pos=0;
-  ATOMIC_BLOCK(ATOMIC_RESTORESTATE) 
-  {
-    pos = now_encoder;
-  }
+  // pos=0;
+  // ATOMIC_BLOCK(ATOMIC_RESTORESTATE) 
+  // {
+  //   pos = now_encoder;
+  // }
+  /*以下，代替原子的方法*/
+  noInterrupts(); // 
+  pos = now_encoder;
+  interrupts(); // turn interrupts back on
+  /*以上，代替原子的方法*/
   pid_calculate();
+
 /************************以上，添加********************/
 }
 /*######################以上，主程序######################*/
@@ -124,12 +131,12 @@ void pid_calculate()
 { 
   e = pos-setpoint_speed;//速度环-误差
 
-  if((e>(-spped_stop)) && (e<(spped_stop)))
-  {
-    e=0;
-    eprev=0;
-    dedt=0;
-  }
+  // // if((e>(-spped_stop)) && (e<(spped_stop)))//此方法来自黄巧明，为了消除震荡，实测不行
+  // // {
+  // //   e=0;
+  // //   eprev=0;
+  // //   dedt=0;
+  // // }
 
 
 
@@ -152,6 +159,9 @@ void pid_calculate()
   pwmOut(pwr);
 
   eprev=e;//更新上一次误差
+
+
+
   Serial.print("setpoint_speed: "); Serial.print(setpoint_speed);
   Serial.print(" ");
   Serial.print("pos:  ");  Serial.print(pos);

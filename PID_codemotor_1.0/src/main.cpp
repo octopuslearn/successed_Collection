@@ -1,19 +1,10 @@
 #include <Arduino.h>
 /*******************以下，编码电机引脚定义*******************/
-// #define AIN1 22
-// #define AIN2 23
-// #define PWMA_LEFT  4//NC
+#define AIN1 22
+#define AIN2 23
+#define PWMA_LEFT  4//NC
 #define ENCODER_LEFT_A_1_PIN 2 //编码器
 #define ENCODER_LEFT_B_1_PIN 3 //编码器
-
-
-// #define AIN3 24
-// #define AIN4 25
-// #define PWMB_RIGHT 5
-// #define ENCODER_RIGHT_A_1_PIN 18 //编码器
-// #define ENCODER_RIGHT_B_1_PIN 19 //编码器
-// volatile int RIGHT_A_posi=0;
-// volatile int RIGHT_B_posi=0;
 /*******************以上，编码电机引脚定义*******************/
 
 
@@ -59,9 +50,9 @@
 
 
 
-#define PWM 4
-#define IN1 22
-#define IN2 23
+// #define PWM 4
+// #define IN1 22
+// #define IN2 23
 // globals//全局变量
 long prevT = 0;
 int posPrev = 0;
@@ -79,18 +70,10 @@ float v2Prev = 0;
 float eintegral = 0;
 void setMotor(int dir, int pwmVal, int pwm, int in1, int in2);
 
-
-
-
-
-
 // void counts_RPMs();/*Compute velocity with method 1//用方法1计算速度*/
 // void low_pass_filter();/*Low-pass filter (25 Hz cutoff)//低通滤波器（25 Hz 截止）*/
 /*以下，速度环调参*/
 /*******************以上，PID调参相关**********************/
-
-
-
 
 /****************以下，函数声明****************/
 /*以下，声明电机，运动相关*/
@@ -287,22 +270,22 @@ void loop() {
   float u = kp*e + ki*eintegral;
 
   // Set the motor speed and direction
-  int dir = 1;
-  if (u<0){
-    dir = -1;
-  }
-  int pwr = (int) fabs(u);
-  if(pwr > 255){
-    pwr = 255;
-  }
-  setMotor(dir,pwr,PWM,IN1,IN2);
+  // int dir = 1;
+  // if (u<0){
+  //   dir = -1;
+  // }
+  // int pwr = (int) fabs(u);
+  // if(pwr > 255){
+  //   pwr = 255;
+  // }
+  // setMotor(dir,pwr,PWM,IN1,IN2);
 
-  // pwr=u;//pwm输出
-  // if(pwr>255)//pwm限幅
-  //   pwr=255;
-  // else if(pwr<-255)
-  //   pwr=-255;
-  // pwmOut(pwr);
+  pwr=u;//pwm输出
+  if(pwr>255)//pwm限幅
+    pwr=255;
+  else if(pwr<-255)
+    pwr=-255;
+  pwmOut(pwr);
 
   Serial.print(vt);
   Serial.print(" ");
@@ -332,67 +315,53 @@ void setMotor(int dir, int pwmVal, int pwm, int in1, int in2){
 }
 
 
-
-
-
-
-
-
-
-
-
-
 /**********以下，声明电机，运动相关**********/
 /*初始化电机*/
 void initMotors(){
-  // pinMode(AIN1, OUTPUT);
-  // pinMode(AIN2, OUTPUT);
-  // pinMode(PWMA_LEFT, OUTPUT);
-  pinMode(IN1, OUTPUT);
-  pinMode(IN2, OUTPUT);
-  pinMode(PWM, OUTPUT);
-
-  // pinMode(AIN3, OUTPUT);
-  // pinMode(AIN4, OUTPUT);
-  // pinMode(PWMB_RIGHT, OUTPUT);
+  pinMode(AIN1, OUTPUT);
+  pinMode(AIN2, OUTPUT);
+  pinMode(PWMA_LEFT, OUTPUT);
+  // pinMode(IN1, OUTPUT);
+  // pinMode(IN2, OUTPUT);
+  // pinMode(PWM, OUTPUT);
 }
 
 
 /*pwm输出*/
-// void pwmOut(int out)
-// {
-//   if(out>0)
-//   {
-//     forwardA(out);
-//   }
-//   else
-//   {
-//     reverseA(abs(out));
-//   }
-// }
+void pwmOut(int out)
+{
+  if(out>0)
+  {
+    forwardA(out);
+  }
+  else
+  {
+    reverseA(abs(out));
+  }
+}
 
-// /*前进*/
-// void forwardA(int pwm)
-// {
-//   digitalWrite(AIN1, LOW);
-//   digitalWrite(AIN2, HIGH);
-//   analogWrite(PWMA_LEFT, pwm);
-// }
+/*前进*/
+void forwardA(int pwm)
+{
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, HIGH);
+  analogWrite(PWMA_LEFT, pwm);
+}
 
-// /*后退*/
-//  void reverseA(int pwm)
-//  {
-//   digitalWrite(AIN1, HIGH);
-//   digitalWrite(AIN2, LOW);
-//   analogWrite(PWMA_LEFT, pwm);
-// } 
+/*后退*/
+ void reverseA(int pwm)
+ {
+  digitalWrite(AIN1, HIGH);
+  digitalWrite(AIN2, LOW);
+  analogWrite(PWMA_LEFT, pwm);
+} 
 
-// /*停车*/
-// void brakeA()
-// {
-//   digitalWrite(AIN1, LOW);
-//   digitalWrite(AIN2, LOW);
-// }
+/*停车*/
+void brakeA()
+{
+  digitalWrite(AIN1, LOW);
+  digitalWrite(AIN2, LOW);
+}
 /**********以上，声明电机，运动相关**********/
 
 

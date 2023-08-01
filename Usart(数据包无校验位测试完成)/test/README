@@ -1,0 +1,117 @@
+
+This directory is intended for PlatformIO Test Runner and project tests.
+
+Unit Testing is a software testing method by which individual units of
+source code, sets of one or more MCU program modules together with associated
+control data, usage procedures, and operating procedures, are tested to
+determine whether they are fit for use. Unit testing finds problems early
+in the development cycle.
+
+More information about PlatformIO Unit Testing:
+- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
+
+
+
+
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B     
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B
+2B 2A 01 02 03 5B
+2B 2A 01 2B 2B 2B 
+2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B 2B
+
+
+
+
+
+
+2B 2A 01 02 03 5B
+2B 2A 01 02 03 5B
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 
+2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 
+                    2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 2B 2A 01 02 
+                    03 5B 2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 2B 2A 
+                    01 02 03 5B 2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 
+                    2B 2A 01 02 03 5B 2B 2A 01 02 03 5B 2B 2A 01 02 
+
+
+void USART2_IRQHandler(void)
+{
+	static uint8_t RxState = 0; //状态变量 分为三个状态0、1、2
+	static uint8_t pRxPacket = 0; //指示接收到哪一个了
+	if (USART_GetITStatus(USART2, USART_IT_RXNE) == SET)
+	{
+		uint8_t RxData = USART_ReceiveData(USART2);
+
+		if (RxState == 0)
+		{
+			if (RxData == 0xFF)
+			{
+				RxState = 1;
+				pRxPacket = 0;
+			}
+		}
+		else if (RxState == 1)
+		{
+			Serial_RxPacket[pRxPacket] = RxData;
+			pRxPacket++;
+			if (pRxPacket >= 4)
+			{
+				RxState = 2;
+			}
+		}
+		else if (RxState == 2)
+		{
+			if (RxData == 0xFE)
+			{
+				RxState = 0;
+				Serial_RxFlag = 1;
+			}
+		}
+		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+	}
+}
+
+
+
+if (RxState == 0)
+            {
+                if (com_data == 0xFF)
+                {
+                    RxState = 1;
+                    RxCounter1 = 0;
+                }
+            }
+        else if (RxState == 1)
+        {
+            data[RxCounter1] = com_data;
+            RxCounter1++;
+            if (RxCounter1 >= 4)
+            {
+                RxState = 2;
+            }
+        }
+        else if (RxState == 2)
+        {
+            if (com_data == 0xFE)
+            {
+                RxState = 0;
+            }
+        }
+
+        2554212325425542123254255421232542554212325425542123254255421232542552552552552552552552552552552552552552552552552552552552552552552552552552552552552552552552552

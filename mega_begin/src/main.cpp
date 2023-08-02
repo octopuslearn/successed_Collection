@@ -17,6 +17,7 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /
 #define  y_up   39
 #define  y_down 42
 
+#define test_now 40
 
 Servo myservo_x;//x轴舵机  
 Servo myservo_y; 
@@ -41,12 +42,13 @@ const int y_rArmMax = 180;
 
 
 /*以下，函数声明*/
-void reportStatus();  //舵机状态信息
+
 void armDataCmd(char serialCmd,char servoData_small, int DSD_small);//Arduino根据串行指令执行相应操作/*以下，直接到位*/
 void servoCmd(char servoName, int toPos, int servoDelay);//指挥电机运行
 void armJoyCmd(char serialCmd);//Arduino根据手柄按键执行相应操作/*以下，一点一点移动*/
 void button_fine_tuning();/*按键移动*/
 void OLED_reportStatus();/*OELD获取当前舵机信息*/
+void reportStatus();  //舵机状态信息
 /*以上，函数声明*/
 
 
@@ -63,6 +65,8 @@ void setup() {
   pinMode(x_down,INPUT_PULLUP);//x-下
   pinMode(y_up,INPUT_PULLUP);//y-上
   pinMode(y_down,INPUT_PULLUP);//y-下
+
+  pinMode(test_now,INPUT_PULLUP);//y-下
 
 
   myservo_x.attach(myservo_x_pin);//舵机连接位置 
@@ -101,8 +105,15 @@ void setup() {
 
 
 void loop() {
-   armDataCmd('x', 90, DSD);
-   armDataCmd('y', 92, DSD);
+  armDataCmd('x', 90, DSD);
+  armDataCmd('y', 92, DSD);
+  while(digitalRead(test_now) != LOW);
+
+  armDataCmd('x', 105, DSD);
+  armDataCmd('y', 106, DSD);
+  armDataCmd('x', 75, DSD);
+  armDataCmd('y', 76, DSD);
+  while(1);
   // button_fine_tuning();/*按键移动*/
 }
 

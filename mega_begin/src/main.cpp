@@ -32,9 +32,13 @@ const int y_rArmMin = 45;
 const int y_rArmMax = 180;
 
 
+
+
+
 /*以下，函数声明*/
-void servoCmd(char servoName, int toPos, int servoDelay);//指挥电机运行
 void reportStatus();  //舵机状态信息
+void armDataCmd(char serialCmd,char servoData_small, int DSD_small);//Arduino根据串行指令执行相应操作
+void servoCmd(char servoName, int toPos, int servoDelay);//指挥电机运行
 /*以上，函数声明*/
 
 
@@ -56,67 +60,35 @@ void setup() {
   myservo_y.write(90); 
   delay(10);
   
-  Serial.print("myservo_x: "); Serial.println(myservo_x.read());
-  Serial.print("myservo_y: "); Serial.println(myservo_y.read());
-  Serial.println("程序开始启动!!!");
+  // Serial.print("myservo_x: "); Serial.println(myservo_x.read());
+  // Serial.print("myservo_y: "); Serial.println(myservo_y.read());
+  // Serial.println("程序开始启动!!!");
+  int myservo_x_star=myservo_x.read();
+  int myservo_y_star=myservo_y.read();
+
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "###START###");
+
+          u8g2.drawStr(20, 35, "x_sta: ");
+          u8g2.setCursor(sizeof("x_sta: ") * 8, 35);
+          u8g2.print(myservo_x_star);
+
+          u8g2.drawStr(20, 55, "y_sta: ");
+          u8g2.setCursor(sizeof("y_sta: ") * 8, 55);
+          u8g2.print(myservo_y_star);
+
+
+        } while (u8g2.nextPage());
 }
 
 
 
+
 void loop() {
-
-        u8g2.firstPage();
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 45, "start");
-
-        } while (u8g2.nextPage());
-        
-char serialCmd='x';
-char servoData=0;
-
-  if(digitalRead(rest)==LOW)
-  {
-   
-    Serial.println("1");
-    long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    int flag_rest=1;
-    if(digitalRead(rest)==LOW)
-    {
-      Serial.println("2");
-      if(digitalRead(rest)==LOW)
-      {
-        Serial.println("3");
-        myservo_x.write(150);//舵机起始位置
-        delay(10);
-        myservo_y.write(0); 
-        delay(10);
-        int myservo_x_vlue=myservo_x.read();
-        int myservo_y_vlue=myservo_y.read();
-
-        u8g2.firstPage();
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "x: ");
-          u8g2.setCursor(sizeof("x: ") * 8, 10);
-          u8g2.print(myservo_x_vlue);
-          u8g2.drawStr(0, 40, "y: ");
-          u8g2.setCursor(sizeof("y: ") * 8, 40);
-          u8g2.print(myservo_y_vlue);
-        } while (u8g2.nextPage());
-      }
-
-    while(flag_rest);
-    } 
-  }
-  else
-  {
-    reportStatus();
-    servoCmd(serialCmd, servoData, DSD);
-  }
+  armDataCmd('x', 30, DSD);
 }
 
 
@@ -217,3 +189,44 @@ void reportStatus(){  //舵机状态信息
 //   }
 // } 
 /*以上，一点一点移动*/
+
+void armDataCmd(char serialCmd,char servoData_small, int DSD_small)//Arduino根据串行指令执行相应操作
+{                              //指令示例：b45 底盘转到45度角度位置
+                               //          o 输出机械臂舵机状态信息 
+  if(digitalRead(rest)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    int flag_rest=1;
+    if(digitalRead(rest)==LOW)
+    {   
+        myservo_x.write(150);//舵机起始位置
+        delay(10);
+        myservo_y.write(0); 
+        delay(10);
+        int myservo_x_vlue=myservo_x.read();
+        int myservo_y_vlue=myservo_y.read();
+
+
+/**以下，OLED显示**/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "x: ");
+          u8g2.setCursor(sizeof("x: ") * 8, 10);
+          u8g2.print(myservo_x_vlue);
+          u8g2.drawStr(0, 40, "y: ");
+          u8g2.setCursor(sizeof("y: ") * 8, 40);
+          u8g2.print(myservo_y_vlue);
+        } while (u8g2.nextPage());
+/**以上，OLED显示**/
+    while(flag_rest);
+    } 
+  }
+  else
+  {
+    reportStatus();
+    servoCmd(serialCmd, servoData_small, DSD_small);
+  }
+}                                 

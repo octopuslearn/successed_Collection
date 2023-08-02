@@ -131,17 +131,38 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
     }
  
   //指挥电机运行
-  if (fromPos <= toPos){  //如果“起始角度值”小于“目标角度值”
+  if (fromPos <= toPos)
+  {  //如果“起始角度值”小于“目标角度值”
     for (int i=fromPos; i<=toPos; i++){
       servo2go.write(i);
       delay (servoDelay);
     }
-  }  else { //否则“起始角度值”大于“目标角度值”
+  }  
+  else 
+  { //否则“起始角度值”大于“目标角度值”
     for (int i=fromPos; i>=toPos; i--){
       servo2go.write(i);
       delay (servoDelay);
     }
   }
+  int end_x=myservo_x.read();
+  int end_y=myservo_y.read();
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "!!!end!!!");
+
+          u8g2.drawStr(20, 35, "end_x: ");
+          u8g2.setCursor(sizeof("end_x: ") * 8, 35);
+          u8g2.print(end_x);
+
+          u8g2.drawStr(20, 55, "end_y: ");
+          u8g2.setCursor(sizeof("end_y: ") * 8, 55);
+          u8g2.print(end_y);
+
+
+        } while (u8g2.nextPage());
 }
 
 

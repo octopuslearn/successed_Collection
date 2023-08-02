@@ -12,6 +12,11 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /
 #define myservo_x_pin 8
 #define myservo_y_pin 9
 #define rest 43//按键-舵机复位
+#define  x_up   38
+#define  x_down 41
+#define  y_up   39
+#define  y_down 42
+
 
 Servo myservo_x;//x轴舵机  
 Servo myservo_y; 
@@ -37,8 +42,11 @@ const int y_rArmMax = 180;
 
 /*以下，函数声明*/
 void reportStatus();  //舵机状态信息
-void armDataCmd(char serialCmd,char servoData_small, int DSD_small);//Arduino根据串行指令执行相应操作
+void armDataCmd(char serialCmd,char servoData_small, int DSD_small);//Arduino根据串行指令执行相应操作/*以下，直接到位*/
 void servoCmd(char servoName, int toPos, int servoDelay);//指挥电机运行
+void armJoyCmd(char serialCmd);//Arduino根据手柄按键执行相应操作/*以下，一点一点移动*/
+void button_fine_tuning();/*按键移动*/
+void OLED_reportStatus();/*OELD获取当前舵机信息*/
 /*以上，函数声明*/
 
 
@@ -51,6 +59,11 @@ void setup() {
   u8g2.setColorIndex(1);
 
   pinMode(rest,INPUT_PULLUP);//舵机复位键上拉
+  pinMode(x_up,INPUT_PULLUP);//x-上
+  pinMode(x_down,INPUT_PULLUP);//x-下
+  pinMode(y_up,INPUT_PULLUP);//y-上
+  pinMode(y_down,INPUT_PULLUP);//y-下
+
 
   myservo_x.attach(myservo_x_pin);//舵机连接位置 
   myservo_y.attach(myservo_y_pin);
@@ -88,7 +101,8 @@ void setup() {
 
 
 void loop() {
-  armDataCmd('x', 30, DSD);
+  //armDataCmd('x', 30, DSD);
+  button_fine_tuning();
 }
 
 
@@ -129,7 +143,7 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
         return;        
       }
     }
- 
+
   //指挥电机运行
   if (fromPos <= toPos)
   {  //如果“起始角度值”小于“目标角度值”
@@ -175,42 +189,66 @@ void reportStatus(){  //舵机状态信息
   Serial.println("++++++++++++++++++++++++++");
   Serial.println("");
 }
+
+/*OELD获取当前舵机信息*/
+void OLED_reportStatus()
+{
+  int show_x=myservo_x.read();
+  int show_y=myservo_y.read();
+  /**以下，OLED显示**/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "show_x: ");
+          u8g2.setCursor(sizeof("show_x: ") * 8, 10);
+          u8g2.print(show_x);
+          u8g2.drawStr(0, 40, "show_y: ");
+          u8g2.setCursor(sizeof("show_y: ") * 8, 40);
+          u8g2.print(show_y);
+        } while (u8g2.nextPage());
+/**以上，OLED显示**/
+}
  
 
 
 
 
 /*以下，一点一点移动*/
-// void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
-// {
-//    switch(serialCmd){
-//     case 'a':  // x_Base向左
-//       Serial.println("x_Base向左");                
-//       baseJoyPos = myservo_x.read() - moveStep;
-//       servoCmd('x', baseJoyPos, DSD);
-//       break;  
+void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
+{
+   switch(serialCmd){
+    case 'a':  // x_Base向左
+      Serial.println("x_Base向左");                
+      baseJoyPos = myservo_x.read() - moveStep;
+      servoCmd('x', baseJoyPos, DSD);
+      break;  
       
-//     case 'd':  // x_Base向右
-//       Serial.println("x_Base向右");                
-//       baseJoyPos = myservo_x.read() + moveStep;
-//       servoCmd('x', baseJoyPos, DSD);
-//       break;        
+    case 'b':  // x_Base向右
+      Serial.println("x_Base向右");                
+      baseJoyPos = myservo_x.read() + moveStep;
+      servoCmd('x', baseJoyPos, DSD);
+      break;        
  
-//     case 's':  // y_rArm向下
-//     Serial.println("y_rArm向下");                
-//       rArmJoyPos = myservo_y.read() + moveStep;
-//       servoCmd('y', rArmJoyPos, DSD);
-//       break;  
+    case 's':  // y_rArm向下
+    Serial.println("y_rArm向下");                
+      rArmJoyPos = myservo_y.read() + moveStep;
+      servoCmd('y', rArmJoyPos, DSD);
+      break;  
                  
-//     case 'w':  // y_rArm向上
-//       Serial.println("y_rArm向上");     
-//       rArmJoyPos = myservo_y.read() - moveStep;
-//       servoCmd('y', rArmJoyPos, DSD);
-//       break;  
-//   }
-// } 
+    case 'w':  // y_rArm向上
+      Serial.println("y_rArm向上");     
+      rArmJoyPos = myservo_y.read() - moveStep;
+      servoCmd('y', rArmJoyPos, DSD);
+      break;  
+  }
+  OLED_reportStatus();
+} 
 /*以上，一点一点移动*/
 
+
+
+/*以下，直接到位*/
 void armDataCmd(char serialCmd,char servoData_small, int DSD_small)//Arduino根据串行指令执行相应操作
 {                              //指令示例：b45 底盘转到45度角度位置
                                //          o 输出机械臂舵机状态信息 
@@ -247,7 +285,56 @@ void armDataCmd(char serialCmd,char servoData_small, int DSD_small)//Arduino根�
   }
   else
   {
-    reportStatus();
+    // reportStatus();
     servoCmd(serialCmd, servoData_small, DSD_small);
   }
 }                                 
+/*以上，直接到位*/
+
+
+
+/*以下，按键移动*/
+void button_fine_tuning()
+{
+  
+  if(digitalRead(x_up)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(x_up)==LOW)
+    {   
+      armJoyCmd('b');
+    }
+  }
+  if(digitalRead(x_down)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(x_down)==LOW)
+    {   
+      armJoyCmd('a');
+    }
+  }
+
+
+
+  if(digitalRead(y_up)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(y_up)==LOW)
+    {   
+      armJoyCmd('s');
+    }
+  }
+  if(digitalRead(y_down)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(y_down)==LOW)
+    {   
+      armJoyCmd('w');
+    }
+  }
+}
+/*以上，按键移动*/

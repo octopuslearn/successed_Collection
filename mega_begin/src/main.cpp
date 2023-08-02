@@ -1,6 +1,14 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+#include <U8g2lib.h>
+#include <U8x8lib.h>
+#include <Wire.h>
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
+
+
+
+
 #define myservo_x_pin 8
 #define myservo_y_pin 9
 #define rest 43//按键-舵机复位
@@ -34,6 +42,9 @@ void reportStatus();  //舵机状态信息
 
 void setup() {
   Serial.begin(9600);
+  
+  u8g2.begin();              // 初始化演示器
+  u8g2.setColorIndex(1);
 
   pinMode(rest,INPUT_PULLUP);//舵机复位键上拉
 
@@ -44,6 +55,7 @@ void setup() {
   delay(10);
   myservo_y.write(90); 
   delay(10);
+  
   Serial.print("myservo_x: "); Serial.println(myservo_x.read());
   Serial.print("myservo_y: "); Serial.println(myservo_y.read());
   Serial.println("程序开始启动!!!");
@@ -53,6 +65,14 @@ void setup() {
 
 void loop() {
 
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 45, "start");
+
+        } while (u8g2.nextPage());
+        
 char serialCmd='x';
 char servoData=0;
 
@@ -73,7 +93,22 @@ char servoData=0;
         delay(10);
         myservo_y.write(0); 
         delay(10);
+        int myservo_x_vlue=myservo_x.read();
+        int myservo_y_vlue=myservo_y.read();
+
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "x: ");
+          u8g2.setCursor(sizeof("x: ") * 8, 10);
+          u8g2.print(myservo_x_vlue);
+          u8g2.drawStr(0, 40, "y: ");
+          u8g2.setCursor(sizeof("y: ") * 8, 40);
+          u8g2.print(myservo_y_vlue);
+        } while (u8g2.nextPage());
       }
+
     while(flag_rest);
     } 
   }

@@ -24,7 +24,7 @@ Servo myservo_y;
 
 
 int fromPos; //建立变量，存储电机起始运动角度值
-int moveStep = 3;  // 每一次按下手柄按键，舵机移动量（仅适用于手柄模式）   
+int moveStep = 6;  // 每一次按下手柄按键，舵机移动量（仅适用于手柄模式）   
 int baseJoyPos;
 int rArmJoyPos;
 int DSD = 15; //Default Servo Delay (默认电机运动延迟时间)
@@ -33,7 +33,7 @@ int DSD = 15; //Default Servo Delay (默认电机运动延迟时间)
 //存储电机极限值(const指定该数值为常量,常量数值在程序运行中不能改变)
 const int x_baseMin = 0;
 const int x_baseMax = 180;
-const int y_rArmMin = 45;
+const int y_rArmMin = 0;
 const int y_rArmMax = 180;
 
 

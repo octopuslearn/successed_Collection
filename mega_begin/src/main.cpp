@@ -55,7 +55,7 @@ void reportStatus();  //舵机状态信息
 
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
   
   u8g2.begin();              // 初始化演示器
   u8g2.setColorIndex(1);
@@ -99,20 +99,23 @@ void setup() {
 
 
         } while (u8g2.nextPage());
+
 }
 
 
 
 
 void loop() {
-  armDataCmd('x', 90, DSD);
-  armDataCmd('y', 92, DSD);
+  armDataCmd('x', 87, DSD);
+  armDataCmd('y', 90, DSD);
   while(digitalRead(test_now) != LOW);
 
-  armDataCmd('x', 105, DSD);
-  armDataCmd('y', 106, DSD);
-  armDataCmd('x', 75, DSD);
+  // armDataCmd('x', 105, DSD);
+  // armDataCmd('y', 106, DSD);
+  // armDataCmd('x', 75, DSD);
   // armDataCmd('y', 76, DSD);
+  armDataCmd('x', 87+7-1, DSD);
+  armDataCmd('y', 90+9-1, DSD);
   while(1);
   // button_fine_tuning();/*按键移动*/
 }

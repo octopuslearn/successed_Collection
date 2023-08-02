@@ -55,7 +55,7 @@ void reportStatus();  //舵机状态信息
 
 
 void setup() {
-  // Serial.begin(9600);
+  // //Serial.begin(9600);
   
   u8g2.begin();              // 初始化演示器
   u8g2.setColorIndex(1);
@@ -77,9 +77,9 @@ void setup() {
   myservo_y.write(0); 
   delay(10);
   
-  // Serial.print("myservo_x: "); Serial.println(myservo_x.read());
-  // Serial.print("myservo_y: "); Serial.println(myservo_y.read());
-  // Serial.println("程序开始启动!!!");
+  // //Serial.print("myservo_x: "); //Serial.println(myservo_x.read());
+  // //Serial.print("myservo_y: "); //Serial.println(myservo_y.read());
+  // //Serial.println("程序开始启动!!!");
   int myservo_x_star=myservo_x.read();
   int myservo_y_star=myservo_y.read();
 
@@ -99,25 +99,26 @@ void setup() {
 
 
         } while (u8g2.nextPage());
-
+  armDataCmd('x', 89, DSD);
+  armDataCmd('y', 90, DSD);
 }
 
 
 
 
 void loop() {
-  armDataCmd('x', 87, DSD);
-  armDataCmd('y', 90, DSD);
-  while(digitalRead(test_now) != LOW);
+  // armDataCmd('x', 87, DSD);
+  // armDataCmd('y', 90, DSD);
+   while(digitalRead(test_now) != LOW);
 
   // armDataCmd('x', 105, DSD);
   // armDataCmd('y', 106, DSD);
   // armDataCmd('x', 75, DSD);
   // armDataCmd('y', 76, DSD);
-  armDataCmd('x', 87+7-1, DSD);
-  armDataCmd('y', 90+9-1, DSD);
-  while(1);
-  // button_fine_tuning();/*按键移动*/
+   armDataCmd('x', 87+7-1, DSD);/*A4纸*/
+   armDataCmd('y', 90+9-1, DSD);/*A4纸*/
+  // while(1);
+  //button_fine_tuning();/*按键移动*/
 }
 
 
@@ -128,13 +129,13 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
   Servo servo2go;
 
   //串口监视器输出接收指令信息
-  Serial.println("");
-  Serial.print("舵机编号: ");
-  Serial.print(servoName);
-  Serial.print("目标值: ");
-  Serial.print(toPos);
-  Serial.print("等待舵机到达: ");
-  Serial.println(servoDelay);
+  //Serial.println("");
+  //Serial.print("舵机编号: ");
+  //Serial.print(servoName);
+  //Serial.print("目标值: ");
+  //Serial.print(toPos);
+  //Serial.print("等待舵机到达: ");
+  //Serial.println(servoDelay);
 
 
     switch(servoName){
@@ -144,7 +145,7 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
         fromPos = myservo_x.read();  // 获取当前电机角度值用于“电机运动起始角度值”
         break;
       } else {
-        Serial.println("+Warning: x_Base舵机角度超范围!");
+        //Serial.println("+Warning: x_Base舵机角度超范围!");
         return;
       }
 
@@ -154,7 +155,7 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
         fromPos = myservo_y.read();  // 获取当前电机角度值用于“电机运动起始角度值”
         break;
       } else {
-        Serial.println("+Warning: y_Claw舵机角度超范围!");
+        //Serial.println("+Warning: y_Claw舵机角度超范围!");
         return;        
       }
     }
@@ -198,11 +199,11 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
 
 
 void reportStatus(){  //舵机状态信息
-  Serial.println("+ Robot-Arm Status Report +");
-  Serial.print("myservo_x: "); Serial.println(myservo_x.read());
-  Serial.print("myservo_y: "); Serial.println(myservo_y.read());
-  Serial.println("++++++++++++++++++++++++++");
-  Serial.println("");
+  //Serial.println("+ Robot-Arm Status Report +");
+  //Serial.print("myservo_x: "); //Serial.println(myservo_x.read());
+  //Serial.print("myservo_y: "); //Serial.println(myservo_y.read());
+  //Serial.println("++++++++++++++++++++++++++");
+  //Serial.println("");
 }
 
 /*OELD获取当前舵机信息*/
@@ -234,25 +235,25 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
 {
    switch(serialCmd){
     case 'a':  // x_Base向左
-      Serial.println("x_Base向左");                
+      //Serial.println("x_Base向左");                
       baseJoyPos = myservo_x.read() - moveStep;
       servoCmd('x', baseJoyPos, DSD);
       break;  
       
     case 'b':  // x_Base向右
-      Serial.println("x_Base向右");                
+      //Serial.println("x_Base向右");                
       baseJoyPos = myservo_x.read() + moveStep;
       servoCmd('x', baseJoyPos, DSD);
       break;        
  
     case 's':  // y_rArm向下
-    Serial.println("y_rArm向下");                
+    //Serial.println("y_rArm向下");                
       rArmJoyPos = myservo_y.read() + moveStep;
       servoCmd('y', rArmJoyPos, DSD);
       break;  
                  
     case 'w':  // y_rArm向上
-      Serial.println("y_rArm向上");     
+      //Serial.println("y_rArm向上");     
       rArmJoyPos = myservo_y.read() - moveStep;
       servoCmd('y', rArmJoyPos, DSD);
       break;  
@@ -300,7 +301,6 @@ void armDataCmd(char serialCmd,char servoData_small, int DSD_small)//Arduino根�
   }
   else
   {
-    // reportStatus();
     servoCmd(serialCmd, servoData_small, DSD_small);
   }
 }                                 

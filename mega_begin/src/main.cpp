@@ -69,8 +69,8 @@ void setup() {
   pinMode(test_now,INPUT_PULLUP);//y-下
 
 
-  myservo_x.attach(myservo_x_pin);//舵机连接位置 
-  myservo_y.attach(myservo_y_pin);
+  myservo_x.attach(myservo_x_pin,500,2500);//舵机连接位置/*此处更改了默认的180-2400*/
+  myservo_y.attach(myservo_y_pin,500,2500);
 
   myservo_x.write(0);//舵机起始位置
   delay(10);
@@ -112,7 +112,7 @@ void loop() {
   armDataCmd('x', 105, DSD);
   armDataCmd('y', 106, DSD);
   armDataCmd('x', 75, DSD);
-  armDataCmd('y', 76, DSD);
+  // armDataCmd('y', 76, DSD);
   while(1);
   // button_fine_tuning();/*按键移动*/
 }

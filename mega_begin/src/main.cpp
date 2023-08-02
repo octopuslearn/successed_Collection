@@ -3,6 +3,7 @@
 
 #define myservo_x_pin 8
 #define myservo_y_pin 9
+#define rest 43//按键-舵机复位
 
 Servo myservo_x;//x轴舵机  
 Servo myservo_y; 
@@ -34,6 +35,8 @@ void reportStatus();  //舵机状态信息
 void setup() {
   Serial.begin(9600);
 
+  pinMode(rest,INPUT_PULLUP);//舵机复位键上拉
+
   myservo_x.attach(myservo_x_pin);//舵机连接位置 
   myservo_y.attach(myservo_y_pin);
 
@@ -51,10 +54,34 @@ void setup() {
 void loop() {
 
 char serialCmd='x';
-char servoData=100;
-reportStatus();
-servoCmd(serialCmd, servoData, DSD);
+char servoData=0;
 
+  if(digitalRead(rest)==LOW)
+  {
+   
+    Serial.println("1");
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    int flag_rest=1;
+    if(digitalRead(rest)==LOW)
+    {
+      Serial.println("2");
+      if(digitalRead(rest)==LOW)
+      {
+        Serial.println("3");
+        myservo_x.write(150);//舵机起始位置
+        delay(10);
+        myservo_y.write(0); 
+        delay(10);
+      }
+    while(flag_rest);
+    } 
+  }
+  else
+  {
+    reportStatus();
+    servoCmd(serialCmd, servoData, DSD);
+  }
 }
 
 

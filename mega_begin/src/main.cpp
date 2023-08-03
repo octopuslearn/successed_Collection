@@ -44,12 +44,18 @@ void OLED_reportStatus();/*OELD获取当前舵机信息*/
 /*以上，函数声明*/
 
 
-
+/*以下，新添*/
+void contal_pulse(char servoName,int toPos,int servoDelay);/*直接到位*/
+void contrl_reading(char serialCmd,int servoDelay);/*一点一点动*/
+void writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+int contrl_reading_baseJoyPos=500;
+int contrl_reading_moveStep=1;
+/*以上，新添*/
 
 
 
 void setup() {
-  // Serial.begin(9600);
+  Serial.begin(9600);
   
   u8g2.begin();              // 初始化演示器
   u8g2.setColorIndex(1);
@@ -103,7 +109,17 @@ void loop() {
   // armDataCmd('x', 87+7-1, DSD);
   // armDataCmd('y', 90+9-1, DSD);
   // while(1);
-  button_fine_tuning();/*按键移动*/
+  // button_fine_tuning();/*按键移动*/
+
+
+
+
+
+
+
+
+
+  writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 
 
@@ -305,3 +321,161 @@ void button_fine_tuning()
   }
 }
 /*以上，按键移动*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*直接到位*/
+void contal_pulse(char servoName,int toPos,int servoDelay)
+{
+    switch(servoName){
+    case 'x':
+      if(toPos >= 500 && toPos <= 2500){
+        myservo_x.writeMicroseconds(toPos);
+        delay(servoDelay);
+        break;
+      } else {
+        Serial.println("+Warning: x_Base舵机角度超范围!");
+        return;
+      }
+
+    case 'y':
+      if(toPos >= 500 && toPos <= 2500){    
+        myservo_y.writeMicroseconds(toPos);
+        delay(servoDelay);
+        break;
+      } else {
+        Serial.println("+Warning: y_Claw舵机角度超范围!");
+        return;        
+      }
+    }
+
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contal_pulse");
+
+          u8g2.drawStr(20, 35, "cp_x: ");
+          u8g2.setCursor(sizeof("cp__x: ") * 8, 35);
+          u8g2.print(toPos);
+
+          u8g2.drawStr(20, 55, "cp_y: ");
+          u8g2.setCursor(sizeof("cp_y: ") * 8, 55);
+          u8g2.print(toPos);
+        } while (u8g2.nextPage());
+}
+
+
+
+
+
+/*一点一点动*/
+void contrl_reading(char serialCmd,int servoDelay)
+{
+  
+   switch(serialCmd){
+    case 'a':  // x_Base向左
+        Serial.println("x_Base向左");                
+      contrl_reading_baseJoyPos += contrl_reading_moveStep;
+            if(contrl_reading_baseJoyPos>2500)  contrl_reading_baseJoyPos=2500;
+            if(contrl_reading_baseJoyPos<500)  contrl_reading_baseJoyPos=500;
+      myservo_x.writeMicroseconds(contrl_reading_baseJoyPos);
+      delay(servoDelay);
+            Serial.print("x_Base向左: ");Serial.println(contrl_reading_baseJoyPos); 
+            Serial.println("x_Base向左###");
+      break;  
+      
+    case 'b':  // x_Base向右
+        Serial.println("x_Base向右");                
+      contrl_reading_baseJoyPos -= contrl_reading_moveStep;
+            if(contrl_reading_baseJoyPos>2500)  contrl_reading_baseJoyPos=2500;
+            if(contrl_reading_baseJoyPos<500)  contrl_reading_baseJoyPos=500;
+      myservo_x.writeMicroseconds(contrl_reading_baseJoyPos);
+      delay(servoDelay);
+            Serial.print("x_Base向右: ");Serial.println(contrl_reading_baseJoyPos); 
+            Serial.println("x_Base向右###"); 
+      break;        
+ 
+    case 's':  // y_rArm向下
+        Serial.println("y_rArm向下");                
+      contrl_reading_baseJoyPos += contrl_reading_moveStep;
+            if(contrl_reading_baseJoyPos>2500)  contrl_reading_baseJoyPos=2500;
+            if(contrl_reading_baseJoyPos<500)  contrl_reading_baseJoyPos=500;
+      myservo_y.writeMicroseconds(contrl_reading_baseJoyPos);
+      delay(servoDelay);
+            Serial.print("y_rArm向下: ");Serial.println(contrl_reading_baseJoyPos);
+            Serial.println("y_rArm向下###");
+      break;  
+                 
+    case 'w':  // y_rArm向上
+        Serial.println("y_rArm向上");     
+      contrl_reading_baseJoyPos -= contrl_reading_moveStep;
+            if(contrl_reading_baseJoyPos>2500)  contrl_reading_baseJoyPos=2500;
+            if(contrl_reading_baseJoyPos<500)  contrl_reading_baseJoyPos=500;
+      myservo_y.writeMicroseconds(contrl_reading_baseJoyPos);
+      delay(servoDelay);
+            Serial.print("y_rArm向上: ");Serial.println(contrl_reading_baseJoyPos);
+            Serial.println("y_rArm向上###"); 
+      break;  
+  }
+}
+
+/*以下，法2，按键移动调试*/
+void writeMicroseconds_button_fine_tuning()
+{
+  
+  if(digitalRead(x_up)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(x_up)==LOW)
+    {   
+      /*调试*/ Serial.println("(x_up)==LOW");
+      contrl_reading('a',15);
+    }
+  }
+  if(digitalRead(x_down)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(x_down)==LOW)
+    {   
+      contrl_reading('b',15);
+    }
+  }
+
+
+
+  if(digitalRead(y_up)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(y_up)==LOW)
+    {   
+      contrl_reading('s',15);
+    }
+  }
+  if(digitalRead(y_down)==LOW)
+  {
+    long last_button_time=millis();
+    while((millis()-last_button_time)<50);
+    if(digitalRead(y_down)==LOW)
+    {   
+      contrl_reading('w',15);
+    }
+  }
+}
+/*以上，法2，按键移动调试*/

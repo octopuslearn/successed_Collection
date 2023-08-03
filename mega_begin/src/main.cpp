@@ -487,37 +487,37 @@ void writeMic_servoCmd(char servoName, int toPos, int servoDelay)//指挥电机�
 
 
 /*以下，法2，一点点移动*/
-void writeMicroseconds_armJoyCmd(int serialCmd)
+void writeMicroseconds_armJoyCmd(char serialCmd)
 {
-   int writeMic_baseJoyPos_int_x=myservo_x.read();//获取当前角度
-   int writeMic_baseJoyPos_change_x=map(writeMic_baseJoyPos_int_x,0,180,500,2500);//角度转换为脉冲
+  //  int writeMic_baseJoyPos_int_x=myservo_x.read();//获取当前角度
+  //  int writeMic_baseJoyPos_change_x=map(myservo_x.read(),0,180,500,2500);//角度转换为脉冲
 
-   int writeMic_baseJoyPos_int_y=myservo_y.read();//获取当前角度
-   int writeMic_baseJoyPos_change_y=map(writeMic_baseJoyPos_int_y,0,180,500,2500);//角度转换为脉冲
-/*调试*/  Serial.println("writeMicroseconds_armJoyCmd");
+  //  int writeMic_baseJoyPos_int_y=myservo_y.read();//获取当前角度
+  //  int writeMic_baseJoyPos_change_y=map(writeMic_baseJoyPos_int_y,0,180,500,2500);//角度转换为脉冲
+// /*调试*/  Serial.println("writeMicroseconds_armJoyCmd");
    switch(serialCmd){
       case 'a':  // x_Base向左
-        /*调试*/  Serial.println("x_Base向左");                
-        writeMic_baseJoyPos = writeMic_baseJoyPos_change_x - writeMic_moveStep;//调整输出
+        // /*调试*/  Serial.println("x_Base向左");                
+        writeMic_baseJoyPos = map(myservo_x.read(),0,180,500,2500) - writeMic_moveStep;//调整输出
         writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);//开始调整
-        /*调试*/  Serial.println("x_Base向左-完成"); 
+        // /*调试*/  Serial.println("x_Base向左-完成"); 
       break; 
 
       case 'b':  // x_Base向右
         //Serial.println("x_Base向右");                
-        writeMic_baseJoyPos = writeMic_baseJoyPos_change_x + writeMic_moveStep;
+        writeMic_baseJoyPos = map(myservo_x.read(),0,180,500,2500) + writeMic_moveStep;
         writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);
       break;        
  
       case 's':  // y_rArm向下
         //Serial.println("y_rArm向下");                
-        writeMic_baseJoyPos = writeMic_baseJoyPos_change_y + moveStep;
+        writeMic_baseJoyPos = map(myservo_y.read(),0,180,500,2500) + writeMic_moveStep;
         writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
       break;  
                  
       case 'w':  // y_rArm向上
         //Serial.println("y_rArm向上");     
-        writeMic_baseJoyPos = writeMic_baseJoyPos_change_y - moveStep;
+        writeMic_baseJoyPos = map(myservo_y.read(),0,180,500,2500) - writeMic_moveStep;
         writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
       break;  
   }
@@ -538,7 +538,7 @@ void writeMicroseconds_button_fine_tuning()
     while((millis()-last_button_time)<50);
     if(digitalRead(x_up)==LOW)
     {   
-      /*调试*/ Serial.println("(x_up)==LOW");
+      // /*调试*/ Serial.println("(x_up)==LOW");
       writeMicroseconds_armJoyCmd('b');
     }
   }

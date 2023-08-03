@@ -67,3 +67,41 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
           u8g2.setCursor(sizeof("y: ") * 6+60, 40);
           u8g2.print(writeMic_myservo_y_vlue);
         } while (u8g2.nextPage());
+
+
+
+
+
+
+
+        /*以下，法1，一点一点移动*/
+void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
+{
+   switch(serialCmd){
+    case 'a':  // x_Base向左
+      //Serial.println("x_Base向左");                
+      baseJoyPos = myservo_x.read() - moveStep;
+      servoCmd('x', baseJoyPos, DSD);
+      break;  
+      
+    case 'b':  // x_Base向右
+      //Serial.println("x_Base向右");                
+      baseJoyPos = myservo_x.read() + moveStep;
+      servoCmd('x', baseJoyPos, DSD);
+      break;        
+ 
+    case 's':  // y_rArm向下
+    //Serial.println("y_rArm向下");                
+      rArmJoyPos = myservo_y.read() + moveStep;
+      servoCmd('y', rArmJoyPos, DSD);
+      break;  
+                 
+    case 'w':  // y_rArm向上
+      //Serial.println("y_rArm向上");     
+      rArmJoyPos = myservo_y.read() - moveStep;
+      servoCmd('y', rArmJoyPos, DSD);
+      break;  
+  }
+  OLED_reportStatus();
+} 
+/*以下，法1，一点一点移动*/

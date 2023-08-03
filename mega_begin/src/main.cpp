@@ -117,6 +117,8 @@ void setup() {
     delay(15);
   } while (0);
   delay(500);
+  // contal_pulse('x',1260,DSD);/*直接到位*/
+  // contal_pulse('y',1470,DSD);/*直接到位*/
 }
 
 
@@ -146,6 +148,7 @@ void loop() {
   // get_angle();//获取当前脉冲
   contal_pulse('x',1260,DSD);/*直接到位*/
   contal_pulse('y',1470,DSD);/*直接到位*/
+  contal_pulse('x',1560,DSD);/*直接到位*/
   while(1);
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }

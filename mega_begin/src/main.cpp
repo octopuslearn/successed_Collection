@@ -149,6 +149,7 @@ void loop() {
   contal_pulse('x',1260,DSD);/*直接到位*/
   contal_pulse('y',1470,DSD);/*直接到位*/
   contal_pulse('x',1560,DSD);/*直接到位*/
+  contal_pulse('y',1193,DSD);/*直接到位*/
   while(1);
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }

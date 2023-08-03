@@ -51,8 +51,10 @@ int get_angle_y;
 /*以上，获取当前脉冲*/
 
 
-int start_x=1410;
-int start_y=1330;
+// int start_x=1410;
+// int start_y=1330;
+int start_x=1452;
+int start_y=1402;
 
 /*以下，新添*/
 void contal_pulse(char servoName,int toPos,int servoDelay);/*直接到位*/
@@ -146,11 +148,22 @@ void loop() {
 
 
   // get_angle();//获取当前脉冲
-  contal_pulse('x',1260,DSD);/*直接到位*/
-  contal_pulse('y',1470,DSD);/*直接到位*/
-  contal_pulse('x',1560,DSD);/*直接到位*/
-  contal_pulse('y',1193,DSD);/*直接到位*/
-  while(1);
+  // contal_pulse('x',1260,DSD);/*直接到位*/
+  // contal_pulse('y',1470,DSD);/*直接到位*/
+  // contal_pulse('x',1560,DSD);/*直接到位*/
+  // contal_pulse('y',1193,DSD);/*直接到位*/
+  // while(1);
+
+
+  contal_pulse('x',1292,DSD);/*直接到位*/contal_pulse('y',1542,DSD);/*直接到位*/
+  
+  contal_pulse('y',1275,DSD);/*直接到位*/
+
+  contal_pulse('x',1602,DSD);/*直接到位*/
+
+  contal_pulse('y',1542,DSD);/*直接到位*/
+
+  contal_pulse('x',1338,DSD);/*直接到位*/
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 

@@ -64,15 +64,15 @@ void writeMic_OLED_reportStatus();                                              
 
 
 
-
+/*以下，复位*/
 void rest_is_stop();/*以下，复位*/
 void interruptFunction();
 volatile bool flag = 0;
-
+/*以上，复位*/
 
 /*#################以下，主程序开始#################*/
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
   pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
   attachInterrupt(digitalPinToInterrupt(3), interruptFunction, FALLING);
   
@@ -140,20 +140,22 @@ void loop() {
   //  armDataCmd('x', 87+7-1, DSD);/*A4纸*/
   //  armDataCmd('y', 90+9-1, DSD);/*A4纸*/
   // while(1);
-  //button_fine_tuning();/*按键移动*/
+  // button_fine_tuning();/*按键移动*/
 /*((((((((((((((((((((((((以上，法1调试))))))))))))))))))))))))*/
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以下，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
-Serial.print("flag: ");Serial.println(flag);
+// /*调试*/Serial.print("flag: ");Serial.println(flag);
 rest_is_stop();
-Serial.print("flagsss: ");Serial.println(flag);
+// /*调试*/Serial.print("flagsss: ");Serial.println(flag);
   //  while(digitalRead(test_now) != LOW){;}
 
 /*以下，直接到位*/
-    writeMicroseconds_armDataCmd('x', 1000, DSD);/*A4纸*/
-    writeMicroseconds_armDataCmd('y', 2000, DSD);/*A4纸*/
+    // writeMicroseconds_armDataCmd('x', 1000, DSD);/*直接到位，已经完成*/
+    // writeMicroseconds_armDataCmd('y', 2000, DSD);
 /*以上，直接到位*/
-// writeMicroseconds_button_fine_tuning();//按键移动调试
+
+
+writeMicroseconds_button_fine_tuning();//按键移动调试
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以上，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
 }
@@ -492,12 +494,13 @@ void writeMicroseconds_armJoyCmd(int serialCmd)
 
    int writeMic_baseJoyPos_int_y=myservo_y.read();//获取当前角度
    int writeMic_baseJoyPos_change_y=map(writeMic_baseJoyPos_int_y,0,180,500,2500);//角度转换为脉冲
-
+/*调试*/  Serial.println("writeMicroseconds_armJoyCmd");
    switch(serialCmd){
       case 'a':  // x_Base向左
-        //Serial.println("x_Base向左");                
+        /*调试*/  Serial.println("x_Base向左");                
         writeMic_baseJoyPos = writeMic_baseJoyPos_change_x - writeMic_moveStep;//调整输出
         writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);//开始调整
+        /*调试*/  Serial.println("x_Base向左-完成"); 
       break; 
 
       case 'b':  // x_Base向右
@@ -518,7 +521,7 @@ void writeMicroseconds_armJoyCmd(int serialCmd)
         writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
       break;  
   }
-  OLED_reportStatus(); 
+  writeMic_OLED_reportStatus(); 
 }
 /*以上，法2，一点点移动*/
 
@@ -535,6 +538,7 @@ void writeMicroseconds_button_fine_tuning()
     while((millis()-last_button_time)<50);
     if(digitalRead(x_up)==LOW)
     {   
+      /*调试*/ Serial.println("(x_up)==LOW");
       writeMicroseconds_armJoyCmd('b');
     }
   }
@@ -638,11 +642,18 @@ void rest_is_stop()/*以下，复位*/
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "show_x: ");
-          u8g2.setCursor(sizeof("show_x: ") * 8, 10);
+          u8g2.drawStr(0, 10, "writeMic_OLED");
+
+          u8g2.drawStr(0, 25, "wMOLD_x: ");
+          u8g2.setCursor(sizeof("wMOLD_x: ") * 6, 25);
+          u8g2.print(showx);
+          u8g2.setCursor(sizeof("wMOLD_x: ") * 6+40, 25);
           u8g2.print(show_x);
-          u8g2.drawStr(0, 40, "show_y: ");
-          u8g2.setCursor(sizeof("show_y: ") * 8, 40);
+
+          u8g2.drawStr(0, 40, "wMOLD_y: ");
+          u8g2.setCursor(sizeof("wMOLD_y: ") * 6, 40);
+          u8g2.print(showy);
+          u8g2.setCursor(sizeof("wMOLD_y: ") * 6+40, 40);
           u8g2.print(show_y);
         } while (u8g2.nextPage());
 /**以上，OLED显示**/

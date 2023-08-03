@@ -46,11 +46,19 @@ void OLED_reportStatus();/*OELD获取当前舵机信息*/
 
 /*以下，新添*/
 void contal_pulse(char servoName,int toPos,int servoDelay);/*直接到位*/
-void contrl_reading(char serialCmd,int servoDelay);/*一点一点动*/
-void writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+void contrl_reading(char serialCmd,int servoDelay); /*一点一点动*/
+void writeMicroseconds_button_fine_tuning();        /*以下，法2，按键移动调试*/
 int contrl_reading_baseJoyPos=500;
 int contrl_reading_moveStep=1;
 /*以上，新添*/
+
+
+/*以下，获取当前脉冲*/
+void get_angle();/*获取当前脉冲*/
+int get_angle_x;//当前脉冲
+int get_angle_y;
+/*以上，获取当前脉冲*/
+
 
 
 
@@ -72,10 +80,10 @@ void setup() {
   myservo_x.attach(myservo_x_pin,500,2500);//舵机连接位置/*此处更改了默认的180-2400*/
   myservo_y.attach(myservo_y_pin,500,2500);
 
-  myservo_x.write(0);//舵机起始位置
-  delay(10);
-  myservo_y.write(0); 
-  delay(10);
+  // myservo_x.write(0);//舵机起始位置
+  // delay(10);
+  // myservo_y.write(0); 
+  // delay(10);
 
   int myservo_x_star=myservo_x.read();
   int myservo_y_star=myservo_y.read();
@@ -117,16 +125,16 @@ void loop() {
 
 
 
-
-  contal_pulse('x',1000,DSD);
+  // get_angle();//获取当前脉冲
+  // contal_pulse('x',1000,DSD);/*直接到位*/
   // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 
 
 
 
-
-
+/*？？？？？？？？？？？？？？？？？？？以上，法1，读数控制？？？？？？？？？？？？？？？？？？？？？？？？*/
+/*以下，法1，读数控制*/
 void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
 {
   Servo servo2go;
@@ -185,7 +193,6 @@ void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
           u8g2.print(end_y);
         } while (u8g2.nextPage());
 }
-
 
 /*OELD获取当前舵机信息*/
 void OLED_reportStatus()
@@ -321,6 +328,7 @@ void button_fine_tuning()
   }
 }
 /*以上，按键移动*/
+/*？？？？？？？？？？？？？？？？？？？以上，法1，读数控制？？？？？？？？？？？？？？？？？？？？？？？？*/
 
 
 
@@ -336,8 +344,7 @@ void button_fine_tuning()
 
 
 
-
-
+/*##########################以下，法2，脉冲控制###########################*/
 /*直接到位*/
 void contal_pulse(char servoName,int toPos,int servoDelay)
 {
@@ -385,10 +392,6 @@ void contal_pulse(char servoName,int toPos,int servoDelay)
       }
     }
 }
-
-
-
-
 
 /*一点一点动*/
 void contrl_reading(char serialCmd,int servoDelay)
@@ -531,3 +534,32 @@ void writeMicroseconds_button_fine_tuning()
   }
 }
 /*以上，法2，按键移动调试*/
+/*##########################以上，法2，脉冲控制###########################*/
+
+
+
+
+
+
+/*获取当前脉冲*/
+void get_angle()
+{
+  get_angle_x=map(myservo_x.read(),0,180,500,2500);
+  get_angle_y=map(myservo_y.read(),0,180,500,2500);
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "get_angle");
+          u8g2.drawStr(0,25, "ga_x");
+          u8g2.setCursor(sizeof("ga_x: ") * 6, 25);
+          u8g2.print(get_angle_x);
+
+          u8g2.drawStr(0,40, "ga_y");
+          u8g2.setCursor(sizeof("ga_y: ") * 6, 40);
+          u8g2.print(get_angle_y);
+
+        } while (u8g2.nextPage());
+/*以上，显示*/
+}

@@ -153,3 +153,28 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
           u8g2.print(contrl_reading_baseJoyPos);
         } while (u8g2.nextPage());
 /*以上，显示*/
+
+
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,25, "cr_x");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+
+
+
+                u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "x: ");
+          u8g2.setCursor(sizeof("x: ") * 8, 10);
+          u8g2.print(myservo_x_vlue);
+          u8g2.drawStr(0, 40, "y: ");
+          u8g2.setCursor(sizeof("y: ") * 8, 40);
+          u8g2.print(myservo_y_vlue);
+        } while (u8g2.nextPage());

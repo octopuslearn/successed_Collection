@@ -24,7 +24,7 @@
 
 
 // int fromPos; //建立变量，存储电机起始运动角度值
-// int moveStep = 6;  // 每一次按下手柄按键，舵机移动量（仅适用于手柄模式）   
+// int moveStep = 1;  // 每一次按下手柄按键，舵机移动量（仅适用于手柄模式）   
 // int baseJoyPos;
 // int rArmJoyPos;
 // int DSD = 15; //Default Servo Delay (默认电机运动延迟时间)
@@ -41,7 +41,6 @@
 
 
 // /*以下，函数声明*/
-// void reportStatus();  //舵机状态信息
 // void armDataCmd(char serialCmd,char servoData_small, int DSD_small);//Arduino根据串行指令执行相应操作/*以下，直接到位*/
 // void servoCmd(char servoName, int toPos, int servoDelay);//指挥电机运行
 // void armJoyCmd(char serialCmd);//Arduino根据手柄按键执行相应操作/*以下，一点一点移动*/
@@ -52,9 +51,9 @@
 
 
 
+
 // void setup() {
 //   Serial.begin(9600);
-  
 //   u8g2.begin();              // 初始化演示器
 //   u8g2.setColorIndex(1);
 
@@ -64,7 +63,6 @@
 //   pinMode(y_up,INPUT_PULLUP);//y-上
 //   pinMode(y_down,INPUT_PULLUP);//y-下
 
-
 //   myservo_x.attach(myservo_x_pin);//舵机连接位置 
 //   myservo_y.attach(myservo_y_pin);
 
@@ -72,12 +70,6 @@
 //   delay(10);
 //   myservo_y.write(90); 
 //   delay(10);
-  
-//   // Serial.print("myservo_x: "); Serial.println(myservo_x.read());
-//   // Serial.print("myservo_y: "); Serial.println(myservo_y.read());
-//   // Serial.println("程序开始启动!!!");
-//   int myservo_x_star=myservo_x.read();
-//   int myservo_y_star=myservo_y.read();
 
 //         u8g2.firstPage();
 //         do
@@ -87,16 +79,13 @@
 
 //           u8g2.drawStr(20, 35, "x_sta: ");
 //           u8g2.setCursor(sizeof("x_sta: ") * 8, 35);
-//           u8g2.print(myservo_x_star);
+//           u8g2.print(myservo_x.read());
 
 //           u8g2.drawStr(20, 55, "y_sta: ");
 //           u8g2.setCursor(sizeof("y_sta: ") * 8, 55);
-//           u8g2.print(myservo_y_star);
-
-
+//           u8g2.print(myservo_y.read());
 //         } while (u8g2.nextPage());
 // }
-
 
 
 
@@ -111,16 +100,6 @@
 // void servoCmd(char servoName, int toPos, int servoDelay)//指挥电机运行
 // {
 //   Servo servo2go;
-
-//   //串口监视器输出接收指令信息
-//   Serial.println("");
-//   Serial.print("舵机编号: ");
-//   Serial.print(servoName);
-//   Serial.print("目标值: ");
-//   Serial.print(toPos);
-//   Serial.print("等待舵机到达: ");
-//   Serial.println(servoDelay);
-
 
 //     switch(servoName){
 //     case 'x':
@@ -159,8 +138,7 @@
 //       delay (servoDelay);
 //     }
 //   }
-//   int end_x=myservo_x.read();
-//   int end_y=myservo_y.read();
+
 //         u8g2.firstPage();
 //         do
 //         {
@@ -169,32 +147,18 @@
 
 //           u8g2.drawStr(20, 35, "end_x: ");
 //           u8g2.setCursor(sizeof("end_x: ") * 8, 35);
-//           u8g2.print(end_x);
+//           u8g2.print(myservo_x.read());
 
 //           u8g2.drawStr(20, 55, "end_y: ");
 //           u8g2.setCursor(sizeof("end_y: ") * 8, 55);
-//           u8g2.print(end_y);
-
-
+//           u8g2.print(myservo_y.read());
 //         } while (u8g2.nextPage());
 // }
 
 
-
-
-// void reportStatus(){  //舵机状态信息
-//   Serial.println("+ Robot-Arm Status Report +");
-//   Serial.print("myservo_x: "); Serial.println(myservo_x.read());
-//   Serial.print("myservo_y: "); Serial.println(myservo_y.read());
-//   Serial.println("++++++++++++++++++++++++++");
-//   Serial.println("");
-// }
-
 // /*OELD获取当前舵机信息*/
 // void OLED_reportStatus()
 // {
-//   int show_x=myservo_x.read();
-//   int show_y=myservo_y.read();
 //   /**以下，OLED显示**/
 //         u8g2.firstPage();
 //         do
@@ -202,10 +166,10 @@
 //           u8g2.setFont(u8g_font_7x14); // 设置字体
 //           u8g2.drawStr(0, 10, "show_x: ");
 //           u8g2.setCursor(sizeof("show_x: ") * 8, 10);
-//           u8g2.print(show_x);
+//           u8g2.print(myservo_y.read());
 //           u8g2.drawStr(0, 40, "show_y: ");
 //           u8g2.setCursor(sizeof("show_y: ") * 8, 40);
-//           u8g2.print(show_y);
+//           u8g2.print(myservo_y.read());
 //         } while (u8g2.nextPage());
 // /**以上，OLED显示**/
 // }
@@ -274,20 +238,17 @@
 //           u8g2.setFont(u8g_font_7x14); // 设置字体
 //           u8g2.drawStr(0, 10, "x: ");
 //           u8g2.setCursor(sizeof("x: ") * 8, 10);
-//           u8g2.print(myservo_x_vlue);
+//           u8g2.print(myservo_x.read());
 //           u8g2.drawStr(0, 40, "y: ");
 //           u8g2.setCursor(sizeof("y: ") * 8, 40);
-//           u8g2.print(myservo_y_vlue);
+//           u8g2.print(myservo_y.read());
 //         } while (u8g2.nextPage());
 // /**以上，OLED显示**/
-//     while(flag_rest);
+//     while(flag_rest);///////////////////////////卡在这
 //     } 
 //   }
 //   else
-//   {
-//     // reportStatus();
 //     servoCmd(serialCmd, servoData_small, DSD_small);
-//   }
 // }                                 
 // /*以上，直接到位*/
 

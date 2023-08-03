@@ -155,15 +155,15 @@ void loop() {
   // while(1);
 
 
-  contal_pulse('x',1292,DSD);/*直接到位*/contal_pulse('y',1542,DSD);/*直接到位*/
-  
-  contal_pulse('y',1275,DSD);/*直接到位*/
+  contal_pulse('x',1300,DSD);/*直接到位*/contal_pulse('y',1275,DSD);/*直接到位*/
 
   contal_pulse('x',1602,DSD);/*直接到位*/
 
   contal_pulse('y',1542,DSD);/*直接到位*/
 
-  contal_pulse('x',1338,DSD);/*直接到位*/
+  contal_pulse('x',1300,DSD);/*直接到位*/
+
+  contal_pulse('y',1402,DSD);/*直接到位*/
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 

@@ -65,14 +65,17 @@ void writeMic_OLED_reportStatus();                                              
 
 
 
-
-
-
+void rest_is_stop();/*以下，复位*/
+void interruptFunction();
+volatile bool flag = 0;
 
 
 /*#################以下，主程序开始#################*/
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
+  pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
+  attachInterrupt(digitalPinToInterrupt(3), interruptFunction, FALLING);
+  
   
   u8g2.begin();              // 初始化演示器
   u8g2.setColorIndex(1);
@@ -97,21 +100,26 @@ void setup() {
 
   int myservo_x_star=myservo_x.read();
   int myservo_y_star=myservo_y.read();
+  int writeMic_myservo_x_star=map(myservo_x_star,0,180,500,2500);
+  int writeMic_myservo_y_star=map(myservo_y_star,0,180,500,2500);
 
         u8g2.firstPage();
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "###START###");
+          u8g2.drawStr(0, 10, "#SET_UP#");
 
-          u8g2.drawStr(20, 35, "x_sta: ");
-          u8g2.setCursor(sizeof("x_sta: ") * 8, 35);
+          u8g2.drawStr(0, 35, "x_s: ");
+          u8g2.setCursor(sizeof("x_s: ") * 8, 35);
           u8g2.print(myservo_x_star);
+          u8g2.setCursor(sizeof("x_s: ") * 8+40, 35);
+          u8g2.print(writeMic_myservo_x_star);
 
-          u8g2.drawStr(20, 55, "y_sta: ");
-          u8g2.setCursor(sizeof("y_sta: ") * 8, 55);
+          u8g2.drawStr(0, 55, "y_s: ");
+          u8g2.setCursor(sizeof("y_s: ") * 8, 55);
           u8g2.print(myservo_y_star);
-
+          u8g2.setCursor(sizeof("y_s: ") * 8+40, 55);
+          u8g2.print(writeMic_myservo_y_star);
 
         } while (u8g2.nextPage());
   armDataCmd('x', 89, DSD);
@@ -138,12 +146,18 @@ void loop() {
 /*((((((((((((((((((((((((以上，法1调试))))))))))))))))))))))))*/
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以下，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
+Serial.print("flag: ");Serial.print(flag);
+rest_is_stop();
+Serial.print("flagsss: ");Serial.print(flag);
+Serial.println("bbbbbb");
+  //  while(digitalRead(test_now) != LOW){;}
 
-   while(digitalRead(test_now) != LOW){;}
-
+/*以下，直接到位*/
     writeMicroseconds_armDataCmd('x', 1000, DSD);/*A4纸*/
-
     writeMicroseconds_armDataCmd('y', 2000, DSD);/*A4纸*/
+    Serial.println("aaaaaa");
+/*以上，直接到位*/
+// writeMicroseconds_button_fine_tuning();//按键移动调试
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以上，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
 }
@@ -200,20 +214,26 @@ void servoCmd(char servoName, int toPos, int servoDelay)
   }
   int end_x=myservo_x.read();
   int end_y=myservo_y.read();
+  int writeMic_end_x=map(end_x,0,180,500,2500);
+  int writeMic_end_y=map(end_y,0,180,500,2500);
         u8g2.firstPage();
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "!!!end!!!");
+          u8g2.drawStr(0, 10, "!servoCmd!");
 
-          u8g2.drawStr(20, 35, "end_x: ");
-          u8g2.setCursor(sizeof("end_x: ") * 8, 35);
+          u8g2.drawStr(0, 35, "SeC_x: ");
+          u8g2.setCursor(sizeof("SeC_x: ") * 6, 35);
           u8g2.print(end_x);
+          u8g2.setCursor(sizeof("SeC_x: ") * 6+40, 35);
+          u8g2.print(writeMic_end_x);
 
-          u8g2.drawStr(20, 55, "end_y: ");
-          u8g2.setCursor(sizeof("end_y: ") * 8, 55);
+
+          u8g2.drawStr(0, 55, "SeC_y: ");
+          u8g2.setCursor(sizeof("SeC_y: ") * 6, 55);
           u8g2.print(end_y);
-
+          u8g2.setCursor(sizeof("SeC_y: ") * 6+40, 55);
+          u8g2.print(writeMic_end_y);
 
         } while (u8g2.nextPage());
 }
@@ -272,19 +292,27 @@ void armDataCmd(char serialCmd,char servoData_small, int DSD_small)//Arduino根�
         delay(10);
         int myservo_x_vlue=myservo_x.read();
         int myservo_y_vlue=myservo_y.read();
-
+        int writeMic_myservo_x_vlue=map(myservo_x_vlue,0,180,500,2500);
+        int writeMic_myservo_y_vlue=map(myservo_y_vlue,0,180,500,2500);
+    
 
         /**以下，OLED显示**/
         u8g2.firstPage();
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "x: ");
-          u8g2.setCursor(sizeof("x: ") * 8, 10);
+          u8g2.drawStr(0, 10, "@REST@");
+          u8g2.drawStr(0, 25, "x: ");
+          u8g2.setCursor(sizeof("x: ") * 6, 10);
           u8g2.print(myservo_x_vlue);
+          u8g2.setCursor(sizeof("x: ") * 6+40, 10);
+          u8g2.print(writeMic_myservo_x_vlue);
+
           u8g2.drawStr(0, 40, "y: ");
-          u8g2.setCursor(sizeof("y: ") * 8, 40);
+          u8g2.setCursor(sizeof("y: ") * 6, 40);
           u8g2.print(myservo_y_vlue);
+          u8g2.setCursor(sizeof("y: ") * 6+40, 40);
+          u8g2.print(writeMic_myservo_y_vlue);
         } while (u8g2.nextPage());
         /**以上，OLED显示**/
     while(flag_rest);
@@ -438,14 +466,18 @@ void writeMic_servoCmd(char servoName, int toPos, int servoDelay)//指挥电机�
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "!!!end!!!");
-
-          u8g2.drawStr(20, 35, "end_x: ");
-          u8g2.setCursor(sizeof("end_x: ") * 8, 35);
+          u8g2.drawStr(0, 10, "!writeMic_servoCmd!");
+          
+          u8g2.drawStr(0, 35, "wmsc_x: ");
+          u8g2.setCursor(sizeof("wmsc_x: ") * 6, 35);
+          u8g2.print(endx);
+          u8g2.setCursor(sizeof("wmsc_x: ") * 6+40, 35);
           u8g2.print(end_x);
 
-          u8g2.drawStr(20, 55, "end_y: ");
-          u8g2.setCursor(sizeof("end_y: ") * 8, 55);
+          u8g2.drawStr(0, 55, "wmsc_x: ");
+          u8g2.setCursor(sizeof("wmsc_x: ") * 6, 55);
+          u8g2.print(endy);
+          u8g2.setCursor(sizeof("wmsc_x: ") * 6+40, 55);
           u8g2.print(end_y);
 
 
@@ -549,14 +581,20 @@ void writeMicroseconds_button_fine_tuning()
 void writeMicroseconds_armDataCmd(char serialCmd,int servoData_small, int DSD_small)//Arduino根据串行指令执行相应操作
 {                              //指令示例：b45 底盘转到45度角度位置
                                //          o 输出机械臂舵机状态信息 
-  ///*调试*/  Serial.println("4");
-  if(digitalRead(rest)==LOW)
+    writeMic_servoCmd(serialCmd, servoData_small, DSD_small);
+}                                 
+/*以上，法2，直接到位*/
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~以下，复位~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+void rest_is_stop()/*以下，复位*/
+{
+  Serial.println("sssssssssssssssssss");
+  if(flag==1)
   {
+    flag=0;
     long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    int flag_rest=1;
-    if(digitalRead(rest)==LOW)
-    {   
+    while((millis()-last_button_time)<50){;}
         myservo_x.write(150);//舵机起始位置
         delay(10);
         myservo_y.write(0); 
@@ -570,24 +608,25 @@ void writeMicroseconds_armDataCmd(char serialCmd,int servoData_small, int DSD_sm
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "x: ");
-          u8g2.setCursor(sizeof("x: ") * 8, 10);
+          u8g2.drawStr(0, 10, "@@wMc_REST@@");
+          
+          u8g2.drawStr(0, 25, "REST_x: ");
+          u8g2.setCursor(sizeof("REST_x: ") * 6, 25);
+          u8g2.print(myservo_xvlue);
+          u8g2.setCursor(sizeof("REST_x: ") * 6+40, 25);
           u8g2.print(myservo_x_vlue);
-          u8g2.drawStr(0, 40, "y: ");
-          u8g2.setCursor(sizeof("y: ") * 8, 40);
+
+          u8g2.drawStr(0, 40, "REST_y: ");
+          u8g2.setCursor(sizeof("REST_x: ") * 6, 40);
+          u8g2.print(myservo_yvlue);
+          u8g2.setCursor(sizeof("REST_y: ") * 6+40, 40);
           u8g2.print(myservo_y_vlue);
         } while (u8g2.nextPage());
         /**以上，OLED显示**/
-    while(flag_rest);
-    } 
-  }
-  else
-  {
-    ///*调试*/  Serial.println("5");
-    writeMic_servoCmd(serialCmd, servoData_small, DSD_small);
-  }
-}                                 
-/*以上，法2，直接到位*/
+   }
+
+}
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~以上，复位~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 
 
@@ -622,3 +661,7 @@ void writeMicroseconds_armDataCmd(char serialCmd,int servoData_small, int DSD_sm
 
 
 
+void interruptFunction()
+{
+  flag=1;
+}

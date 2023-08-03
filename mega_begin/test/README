@@ -44,3 +44,26 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
   OLED_reportStatus();
 } 
 /*以上，一点一点移动*/
+
+
+
+        int myservo_x_vlue=myservo_x.read();
+        int myservo_y_vlue=myservo_y.read();
+        int writeMic_myservo_x_vlue=map(myservo_x_vlue,0,180,500,2500);
+        int writeMic_myservo_y_vlue=map(myservo_y_vlue,0,180,500,2500);
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "x: ");
+          u8g2.setCursor(sizeof("x: ") * 6, 10);
+          u8g2.print(myservo_x_vlue);
+          u8g2.setCursor(sizeof("x: ") * 6+60, 10);
+          u8g2.print(writeMic_myservo_x_vlue);
+
+          u8g2.drawStr(0, 40, "y: ");
+          u8g2.setCursor(sizeof("y: ") * 6, 40);
+          u8g2.print(myservo_y_vlue);
+          u8g2.setCursor(sizeof("y: ") * 6+60, 40);
+          u8g2.print(writeMic_myservo_y_vlue);
+        } while (u8g2.nextPage());

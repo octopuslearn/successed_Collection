@@ -54,7 +54,7 @@ void OLED_reportStatus();                                           /*以下，�
 int writeMic_fromPos;         //建立变量，存储电机起始运动角度值-输入
 int writeMic_fromPos_change;  //建立变量，存储电机起始运动脉冲值-转换输出
 int writeMic_moveStep=10;     //调整程度
-int writeMic_baseJoyPos;      //调整输出
+
 void writeMicroseconds_armDataCmd(char serialCmd,int servoData_small, int DSD_small);/*以下，法2，直接到位*/
 void writeMicroseconds_armJoyCmd(int serialCmd);                                      /*以下，法2，一点点移动*/
 void writeMicroseconds_button_fine_tuning();                                          /*以下，法2，按键移动调试*/
@@ -145,13 +145,13 @@ void loop() {
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以下，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
 // /*调试*/Serial.print("flag: ");Serial.println(flag);
-rest_is_stop();
 // /*调试*/Serial.print("flagsss: ");Serial.println(flag);
   //  while(digitalRead(test_now) != LOW){;}
 
 /*以下，直接到位*/
     // writeMicroseconds_armDataCmd('x', 1000, DSD);/*直接到位，已经完成*/
     // writeMicroseconds_armDataCmd('y', 2000, DSD);
+    // while(1);
 /*以上，直接到位*/
 
 
@@ -455,11 +455,6 @@ void writeMic_servoCmd(char servoName, int toPos, int servoDelay)//指挥电机�
   }
 
   /*以下，显示*/
-  int endx=myservo_x.read();
-  int endy=myservo_y.read();
-
-  int end_x=map(endx,0,180,500,2500);
-  int end_y=map(endy,0,180,500,2500);
         u8g2.firstPage();
         do
         {
@@ -468,15 +463,15 @@ void writeMic_servoCmd(char servoName, int toPos, int servoDelay)//指挥电机�
           
           u8g2.drawStr(0, 35, "wmsc_x: ");
           u8g2.setCursor(sizeof("wmsc_x: ") * 6, 35);
-          u8g2.print(endx);
+          u8g2.print(myservo_x.read());
           u8g2.setCursor(sizeof("wmsc_x: ") * 6+40, 35);
-          u8g2.print(end_x);
+          u8g2.print(map(myservo_x.read(),0,180,500,2500));
 
           u8g2.drawStr(0, 55, "wmsc_x: ");
           u8g2.setCursor(sizeof("wmsc_x: ") * 6, 55);
-          u8g2.print(endy);
+          u8g2.print(myservo_y.read());
           u8g2.setCursor(sizeof("wmsc_x: ") * 6+40, 55);
-          u8g2.print(end_y);
+          u8g2.print(map(myservo_y.read(),0,180,500,2500));
 
 
         } while (u8g2.nextPage());
@@ -485,43 +480,63 @@ void writeMic_servoCmd(char servoName, int toPos, int servoDelay)//指挥电机�
 /*以上，法2，指挥舵机运行*/
 
 
-
 /*以下，法2，一点点移动*/
 void writeMicroseconds_armJoyCmd(char serialCmd)
 {
-  //  int writeMic_baseJoyPos_int_x=myservo_x.read();//获取当前角度
-  //  int writeMic_baseJoyPos_change_x=map(myservo_x.read(),0,180,500,2500);//角度转换为脉冲
+//    int writeMic_baseJoyPos;      //调整输出
 
-  //  int writeMic_baseJoyPos_int_y=myservo_y.read();//获取当前角度
-  //  int writeMic_baseJoyPos_change_y=map(writeMic_baseJoyPos_int_y,0,180,500,2500);//角度转换为脉冲
-// /*调试*/  Serial.println("writeMicroseconds_armJoyCmd");
-   switch(serialCmd){
-      case 'a':  // x_Base向左
-        // /*调试*/  Serial.println("x_Base向左");                
-        writeMic_baseJoyPos = map(myservo_x.read(),0,180,500,2500) - writeMic_moveStep;//调整输出
-        writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);//开始调整
-        // /*调试*/  Serial.println("x_Base向左-完成"); 
-      break; 
+//    int writeMic_baseJoyPos_int_x=myservo_x.read();//获取当前角度
+//    int writeMic_baseJoyPos_change_x=map(writeMic_baseJoyPos_int_x,0,180,500,2500);//角度转换为脉冲
 
-      case 'b':  // x_Base向右
-        //Serial.println("x_Base向右");                
-        writeMic_baseJoyPos = map(myservo_x.read(),0,180,500,2500) + writeMic_moveStep;
-        writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);
-      break;        
+//    int writeMic_baseJoyPos_int_y=myservo_y.read();//获取当前角度
+//    int writeMic_baseJoyPos_change_y=map(writeMic_baseJoyPos_int_y,0,180,500,2500);//角度转换为脉冲
+// // /*调试*/  Serial.println("writeMicroseconds_armJoyCmd");
+//    switch(serialCmd){
+//       case 'a':  // x_Base向左
+//         // /*调试*/  Serial.println("x_Base向左");                
+//         writeMic_baseJoyPos = writeMic_baseJoyPos_change_x - writeMic_moveStep;//调整输出
+//         writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);//开始调整
+//         // /*调试*/  Serial.println("x_Base向左-完成"); 
+//       break; 
+
+//       case 'b':  // x_Base向右
+//         //Serial.println("x_Base向右");                
+//         writeMic_baseJoyPos = writeMic_baseJoyPos_change_x + writeMic_moveStep;
+//         writeMic_servoCmd('x', writeMic_baseJoyPos, DSD);
+//       break;        
  
-      case 's':  // y_rArm向下
-        //Serial.println("y_rArm向下");                
-        writeMic_baseJoyPos = map(myservo_y.read(),0,180,500,2500) + writeMic_moveStep;
-        writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
-      break;  
+//       case 's':  // y_rArm向下
+//         //Serial.println("y_rArm向下");                
+//         writeMic_baseJoyPos = writeMic_baseJoyPos_change_y + writeMic_moveStep;
+//         writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
+//       break;  
                  
-      case 'w':  // y_rArm向上
-        //Serial.println("y_rArm向上");     
-        writeMic_baseJoyPos = map(myservo_y.read(),0,180,500,2500) - writeMic_moveStep;
-        writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
-      break;  
-  }
-  writeMic_OLED_reportStatus(); 
+//       case 'w':  // y_rArm向上
+//         //Serial.println("y_rArm向上");     
+//         writeMic_baseJoyPos = writeMic_baseJoyPos_change_y - writeMic_moveStep;
+//         writeMic_servoCmd('y', writeMic_baseJoyPos, DSD);
+//       break;  
+//   }
+//   // writeMic_OLED_reportStatus(); 
+//   /**以下，OLED显示**/
+//         u8g2.firstPage();
+//         do
+//         {
+//           u8g2.setFont(u8g_font_7x14); // 设置字体
+//           u8g2.drawStr(0, 10, "wMc_aJCmd");
+
+//           u8g2.drawStr(0, 25, "wMOLD_x: ");
+//           u8g2.setCursor(sizeof("wMOLD_x: ") * 6, 25);
+//           u8g2.print(writeMic_baseJoyPos_int_x);
+//           u8g2.setCursor(sizeof("wMOLD_x: ") * 6+40, 25);
+//           u8g2.print(writeMic_baseJoyPos_change_x);
+
+//           u8g2.drawStr(0, 40, "wMOLD_y: ");
+//           u8g2.setCursor(sizeof("wMOLD_y: ") * 6, 40);
+//           u8g2.print(writeMic_baseJoyPos_int_y);
+//           u8g2.setCursor(sizeof("wMOLD_y: ") * 6+40, 40);
+//           u8g2.print(writeMic_baseJoyPos_change_y);
+//         } while (u8g2.nextPage());
 }
 /*以上，法2，一点点移动*/
 
@@ -532,46 +547,46 @@ void writeMicroseconds_armJoyCmd(char serialCmd)
 void writeMicroseconds_button_fine_tuning()
 {
   
-  if(digitalRead(x_up)==LOW)
-  {
-    long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    if(digitalRead(x_up)==LOW)
-    {   
-      // /*调试*/ Serial.println("(x_up)==LOW");
-      writeMicroseconds_armJoyCmd('b');
-    }
-  }
-  if(digitalRead(x_down)==LOW)
-  {
-    long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    if(digitalRead(x_down)==LOW)
-    {   
-      writeMicroseconds_armJoyCmd('a');
-    }
-  }
+  // if(digitalRead(x_up)==LOW)
+  // {
+  //   long last_button_time=millis();
+  //   while((millis()-last_button_time)<50);
+  //   if(digitalRead(x_up)==LOW)
+  //   {   
+  //     // /*调试*/ Serial.println("(x_up)==LOW");
+  //     writeMicroseconds_armJoyCmd('b');
+  //   }
+  // }
+  // if(digitalRead(x_down)==LOW)
+  // {
+  //   long last_button_time=millis();
+  //   while((millis()-last_button_time)<50);
+  //   if(digitalRead(x_down)==LOW)
+  //   {   
+  //     writeMicroseconds_armJoyCmd('a');
+  //   }
+  // }
 
 
 
-  if(digitalRead(y_up)==LOW)
-  {
-    long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    if(digitalRead(y_up)==LOW)
-    {   
-      writeMicroseconds_armJoyCmd('s');
-    }
-  }
-  if(digitalRead(y_down)==LOW)
-  {
-    long last_button_time=millis();
-    while((millis()-last_button_time)<50);
-    if(digitalRead(y_down)==LOW)
-    {   
-      writeMicroseconds_armJoyCmd('w');
-    }
-  }
+  // if(digitalRead(y_up)==LOW)
+  // {
+  //   long last_button_time=millis();
+  //   while((millis()-last_button_time)<50);
+  //   if(digitalRead(y_up)==LOW)
+  //   {   
+  //     writeMicroseconds_armJoyCmd('s');
+  //   }
+  // }
+  // if(digitalRead(y_down)==LOW)
+  // {
+  //   long last_button_time=millis();
+  //   while((millis()-last_button_time)<50);
+  //   if(digitalRead(y_down)==LOW)
+  //   {   
+  //     writeMicroseconds_armJoyCmd('w');
+  //   }
+  // }
 }
 /*以上，法2，按键移动调试*/
 
@@ -633,29 +648,29 @@ void rest_is_stop()/*以下，复位*/
 /*以下，法2，OELD获取当前舵机信息*/
  void writeMic_OLED_reportStatus()
  {
-  int showx=myservo_x.read();
-  int showy=myservo_y.read();
-  int show_x=map(showx,0,180,500,2500);
-  int show_y=map(showy,0,180,500,2500);
-/**以下，OLED显示**/
-        u8g2.firstPage();
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "writeMic_OLED");
+//   int showx=myservo_x.read();
+//   int showy=myservo_y.read();
+//   int show_x=map(showx,0,180,500,2500);
+//   int show_y=map(showy,0,180,500,2500);
+// /**以下，OLED显示**/
+//         u8g2.firstPage();
+//         do
+//         {
+//           u8g2.setFont(u8g_font_7x14); // 设置字体
+//           u8g2.drawStr(0, 10, "writeMic_OLED");
 
-          u8g2.drawStr(0, 25, "wMOLD_x: ");
-          u8g2.setCursor(sizeof("wMOLD_x: ") * 6, 25);
-          u8g2.print(showx);
-          u8g2.setCursor(sizeof("wMOLD_x: ") * 6+40, 25);
-          u8g2.print(show_x);
+//           u8g2.drawStr(0, 25, "wMOLD_x: ");
+//           u8g2.setCursor(sizeof("wMOLD_x: ") * 6, 25);
+//           u8g2.print(showx);
+//           u8g2.setCursor(sizeof("wMOLD_x: ") * 6+40, 25);
+//           u8g2.print(show_x);
 
-          u8g2.drawStr(0, 40, "wMOLD_y: ");
-          u8g2.setCursor(sizeof("wMOLD_y: ") * 6, 40);
-          u8g2.print(showy);
-          u8g2.setCursor(sizeof("wMOLD_y: ") * 6+40, 40);
-          u8g2.print(show_y);
-        } while (u8g2.nextPage());
+//           u8g2.drawStr(0, 40, "wMOLD_y: ");
+//           u8g2.setCursor(sizeof("wMOLD_y: ") * 6, 40);
+//           u8g2.print(showy);
+//           u8g2.setCursor(sizeof("wMOLD_y: ") * 6+40, 40);
+//           u8g2.print(show_y);
+//         } while (u8g2.nextPage());
 /**以上，OLED显示**/
  }
  /*以下，法2，OELD获取当前舵机信息*/
@@ -672,3 +687,12 @@ void interruptFunction()
 {
   flag=!flag;
 }
+
+
+
+
+
+
+
+
+

@@ -91,11 +91,6 @@ void setup() {
   myservo_y.write(0); 
   delay(10);
   
-  // myservo_x.writeMicroseconds(start_x);
-  // delay(15);
-  // myservo_y.writeMicroseconds(start_y);
-  // delay(15);
-
   int myservo_x_star=myservo_x.read();
   int myservo_y_star=myservo_y.read();
 
@@ -113,11 +108,7 @@ void setup() {
           u8g2.setCursor(sizeof("y_sta: ") * 8, 55);
           u8g2.print(myservo_y_star);
         } while (u8g2.nextPage());
-}
-
-
-void loop() {
-  do
+  do//自动回正
   {
     /* code */
     myservo_x.writeMicroseconds(start_x);
@@ -125,6 +116,12 @@ void loop() {
     myservo_y.writeMicroseconds(start_y);
     delay(15);
   } while (0);
+  delay(500);
+}
+
+
+void loop() {
+
   
 
   // armDataCmd('x', 87, DSD);
@@ -147,8 +144,10 @@ void loop() {
 
 
   // get_angle();//获取当前脉冲
-  // contal_pulse('x',1000,DSD);/*直接到位*/
-   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+  contal_pulse('x',1260,DSD);/*直接到位*/
+  contal_pulse('y',1470,DSD);/*直接到位*/
+  while(1);
+  writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 
 

@@ -118,8 +118,8 @@ void loop() {
 
 
 
-
-  writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+  contal_pulse('x',1000,DSD);
+  // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 
 
@@ -346,6 +346,17 @@ void contal_pulse(char servoName,int toPos,int servoDelay)
       if(toPos >= 500 && toPos <= 2500){
         myservo_x.writeMicroseconds(toPos);
         delay(servoDelay);
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contal_pulse");
+          u8g2.drawStr(0,25, "cp_x");
+          u8g2.setCursor(sizeof("cp_x: ") * 6, 25);
+          u8g2.print(toPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
         break;
       } else {
         Serial.println("+Warning: x_Base舵机角度超范围!");
@@ -356,26 +367,23 @@ void contal_pulse(char servoName,int toPos,int servoDelay)
       if(toPos >= 500 && toPos <= 2500){    
         myservo_y.writeMicroseconds(toPos);
         delay(servoDelay);
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,25, "cr_x");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.print(toPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
         break;
       } else {
         Serial.println("+Warning: y_Claw舵机角度超范围!");
         return;        
       }
     }
-
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "contal_pulse");
-
-          u8g2.drawStr(20, 35, "cp_x: ");
-          u8g2.setCursor(sizeof("cp__x: ") * 8, 35);
-          u8g2.print(toPos);
-
-          u8g2.drawStr(20, 55, "cp_y: ");
-          u8g2.setCursor(sizeof("cp_y: ") * 8, 55);
-          u8g2.print(toPos);
-        } while (u8g2.nextPage());
 }
 
 
@@ -396,6 +404,17 @@ void contrl_reading(char serialCmd,int servoDelay)
       delay(servoDelay);
             Serial.print("x_Base向左: ");Serial.println(contrl_reading_baseJoyPos); 
             Serial.println("x_Base向左###");
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,25, "cr_x");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
       break;  
       
     case 'b':  // x_Base向右
@@ -407,6 +426,17 @@ void contrl_reading(char serialCmd,int servoDelay)
       delay(servoDelay);
             Serial.print("x_Base向右: ");Serial.println(contrl_reading_baseJoyPos); 
             Serial.println("x_Base向右###"); 
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,25, "cr_x");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
       break;        
  
     case 's':  // y_rArm向下
@@ -418,6 +448,17 @@ void contrl_reading(char serialCmd,int servoDelay)
       delay(servoDelay);
             Serial.print("y_rArm向下: ");Serial.println(contrl_reading_baseJoyPos);
             Serial.println("y_rArm向下###");
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,40, "cr_y");
+          u8g2.setCursor(sizeof("cr_y: ") * 6, 40);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
       break;  
                  
     case 'w':  // y_rArm向上
@@ -429,6 +470,17 @@ void contrl_reading(char serialCmd,int servoDelay)
       delay(servoDelay);
             Serial.print("y_rArm向上: ");Serial.println(contrl_reading_baseJoyPos);
             Serial.println("y_rArm向上###"); 
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,40, "cr_y");
+          u8g2.setCursor(sizeof("cr_y: ") * 6, 40);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
       break;  
   }
 }

@@ -105,3 +105,51 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
   OLED_reportStatus();
 } 
 /*以下，法1，一点一点移动*/
+
+
+
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(30,10, "contrl_reading");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 10);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/
+
+
+
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "@@wMc_REST@@");
+          
+          u8g2.drawStr(0, 25, "REST_x: ");
+          u8g2.setCursor(sizeof("REST_x: ") * 6, 25);
+          u8g2.print(myservo_xvlue);
+          u8g2.setCursor(sizeof("REST_x: ") * 6+40, 25);
+          u8g2.print(myservo_x_vlue);
+
+          u8g2.drawStr(0, 40, "REST_y: ");
+          u8g2.setCursor(sizeof("REST_x: ") * 6, 40);
+          u8g2.print(myservo_yvlue);
+          u8g2.setCursor(sizeof("REST_y: ") * 6+40, 40);
+          u8g2.print(myservo_y_vlue);
+        } while (u8g2.nextPage());
+
+
+
+/*以下，显示*/
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "contrl_reading");
+          u8g2.drawStr(0,25, "cr_x");
+          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.print(contrl_reading_baseJoyPos);
+        } while (u8g2.nextPage());
+/*以上，显示*/

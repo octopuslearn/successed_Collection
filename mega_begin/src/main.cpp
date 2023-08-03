@@ -92,9 +92,9 @@ void setup() {
   myservo_x.attach(myservo_x_pin,500,2500);//舵机连接位置/*此处更改了默认的180-2400*/
   myservo_y.attach(myservo_y_pin,500,2500);
 
-  myservo_x.write(0);//舵机起始位置
+  myservo_x.write(90);//舵机起始位置
   delay(10);
-  myservo_y.write(0); 
+  myservo_y.write(90); 
   delay(10);
   
 
@@ -122,8 +122,6 @@ void setup() {
           u8g2.print(writeMic_myservo_y_star);
 
         } while (u8g2.nextPage());
-  armDataCmd('x', 89, DSD);
-  armDataCmd('y', 90, DSD);
 
   ///*调试*/  Serial.println("程序初始化完成");
 }
@@ -146,16 +144,14 @@ void loop() {
 /*((((((((((((((((((((((((以上，法1调试))))))))))))))))))))))))*/
 
 /*{{{{{{{{{{{{{{{{{{{{{{{{以下，法2调试}}}}}}}}}}}}}}}}}}}}}}}}*/
-Serial.print("flag: ");Serial.print(flag);
+Serial.print("flag: ");Serial.println(flag);
 rest_is_stop();
-Serial.print("flagsss: ");Serial.print(flag);
-Serial.println("bbbbbb");
+Serial.print("flagsss: ");Serial.println(flag);
   //  while(digitalRead(test_now) != LOW){;}
 
 /*以下，直接到位*/
     writeMicroseconds_armDataCmd('x', 1000, DSD);/*A4纸*/
     writeMicroseconds_armDataCmd('y', 2000, DSD);/*A4纸*/
-    Serial.println("aaaaaa");
 /*以上，直接到位*/
 // writeMicroseconds_button_fine_tuning();//按键移动调试
 
@@ -589,10 +585,9 @@ void writeMicroseconds_armDataCmd(char serialCmd,int servoData_small, int DSD_sm
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~以下，复位~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 void rest_is_stop()/*以下，复位*/
 {
-  Serial.println("sssssssssssssssssss");
   if(flag==1)
   {
-    flag=0;
+    // flag=0;
     long last_button_time=millis();
     while((millis()-last_button_time)<50){;}
         myservo_x.write(150);//舵机起始位置
@@ -622,6 +617,7 @@ void rest_is_stop()/*以下，复位*/
           u8g2.setCursor(sizeof("REST_y: ") * 6+40, 40);
           u8g2.print(myservo_y_vlue);
         } while (u8g2.nextPage());
+        while(flag);
         /**以上，OLED显示**/
    }
 
@@ -663,5 +659,5 @@ void rest_is_stop()/*以下，复位*/
 
 void interruptFunction()
 {
-  flag=1;
+  flag=!flag;
 }

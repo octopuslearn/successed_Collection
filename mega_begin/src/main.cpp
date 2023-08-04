@@ -1,5 +1,4 @@
 #include <Arduino.h>
-//#include <Servo.h>
 #include <U8g2lib.h>
 #include <Wire.h>
 #include <VarSpeedServo.h> 
@@ -61,6 +60,17 @@ void Task_2();/*任务2*/
 void Task_3();/*任务3*/
 /*++++++++++++++++++++++++++++++以上，任务+++++++++++++++++++++++++++++*/
 
+
+
+
+
+/**************以下，函数声明******************/
+void ReceiveDate(uint8_t num); //接收函数,每次调用只接收四个数据包里准确的数据刷新进全局data数组，接收正确就消亡了，要再接收必须重新调用。
+unsigned int data[4];
+/**************以上，函数声明******************/
+
+
+
 // int start_x=1410;
 // int start_y=1330;
 int start_x=1452;//原点位置
@@ -82,7 +92,8 @@ volatile bool flag_rest=0;
 
 
 void setup() {
-  // Serial.begin(9600);
+  Serial.begin(9600);
+  Serial1.begin(115200);    // 初始化虚拟串口
   pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
   pinMode(48,OUTPUT);
   attachInterrupt(digitalPinToInterrupt(3), interruptFunction, FALLING);
@@ -157,7 +168,11 @@ void setup() {
  
 
 void loop() {
-
+    ReceiveDate(4);            //规定只接收四个数据
+    Serial.print(data[0]);   Serial.print('\t');//打印第三个数据 Serial.print(data[0]);
+    Serial.print(data[1]);   Serial.print('\t');//打印第三个数据 
+    Serial.print(data[2]);   Serial.print('\t');//打印第三个数据 
+    Serial.println(data[3]);   //打印第三个数据 
   
 
   // armDataCmd('x', 87, DSD);
@@ -189,8 +204,8 @@ void loop() {
 
 
   // Task_2();/*任务2*/
-  Task_3();/*任务3*/
-  writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+  // Task_3();/*任务3*/
+  // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 
 }
 
@@ -777,5 +792,47 @@ void get_angle()
 
 
 
+
+
+void ReceiveDate(uint8_t num){
+    uint8_t Flag =1;
+    unsigned int RxState = 0;
+    unsigned int RxCounter1 = 0;
+    while (Flag)
+    {
+      while(Serial1.available() > 0) {   
+          uint16_t com_data = Serial1.read();
+          if (RxState == 0)
+              {
+                  if (com_data == 0xFF)
+                  {
+                      RxState = 1;
+                      RxCounter1 = 0;
+                      
+                  }
+              }
+          else if (RxState == 1)
+          {
+              data[RxCounter1] = com_data;
+              RxCounter1++;
+              
+              if (RxCounter1 >= num) //数据校验数据有多少就写多少
+              {
+                  RxState = 2;
+              }
+          }
+          else if (RxState == 2)
+          {
+              if (com_data == 0xFE)
+              {
+                  RxState = 0;
+                  Flag = 0;
+              }
+          }
+      }
+
+  }
+  
+}
 
 

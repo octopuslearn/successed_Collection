@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Servo.h>
-
 #include <U8g2lib.h>
 #include <U8x8lib.h>
 #include <Wire.h>
@@ -9,7 +8,7 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /
 
 #define myservo_x_pin 8
 #define myservo_y_pin 9
-#define rest 43//按键-舵机复位
+#define rest 3//按键-舵机复位
 #define  x_up   38
 #define  x_down 41
 #define  y_up   39
@@ -51,9 +50,19 @@ int get_angle_y;
 /*以上，获取当前脉冲*/
 
 
+/*以下，复位*/
+void interruptFunction();
+volatile bool flag = 0;
+/*以上，复位*/
+
+
+/*++++++++++++++++++++++++++++++以下，任务+++++++++++++++++++++++++++++*/
+void Task_2();/*任务2*/
+/*++++++++++++++++++++++++++++++以上，任务+++++++++++++++++++++++++++++*/
+
 // int start_x=1410;
 // int start_y=1330;
-int start_x=1452;
+int start_x=1452;//原点位置
 int start_y=1402;
 
 /*以下，新添*/
@@ -66,13 +75,18 @@ int contrl_reading_moveStep=3;
 /*以上，新添*/
 
 
+volatile bool flag_rest=0;
 
 
 
 
 void setup() {
   // Serial.begin(9600);
-  
+  pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
+  pinMode(48,OUTPUT);
+  attachInterrupt(digitalPinToInterrupt(3), interruptFunction, FALLING);
+
+
   u8g2.begin();              // 初始化演示器
   u8g2.setColorIndex(1);
 
@@ -130,9 +144,14 @@ void setup() {
       myservo_y.writeMicroseconds(i);
       delay(15);
     }
-
+    delay(500);
   } while (0);
-  delay(500);
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(20, 40, "+++GO+++");
+        } while (u8g2.nextPage());
   // contal_pulse('x',1260,DSD);/*直接到位*/
   // contal_pulse('y',1470,DSD);/*直接到位*/
 }
@@ -173,20 +192,13 @@ void loop() {
   // contal_pulse('x',1560,DSD);/*直接到位*/
   // contal_pulse('y',1193,DSD);/*直接到位*/
   // while(1);
+  // Rest_origin();/*自动回中*/
 
-// /*调试*/Serial.println("1");
-  contal_pulse('x',start_x,1300,DSD);/*直接到位*//*调试*/Serial.println("2");contal_pulse('y',start_y,1275,DSD);/*直接到位*/
-// /*调试*/Serial.println("3");
-  contal_pulse('x',1300,1602,DSD);/*直接到位*/
-// /*调试*/Serial.println("4");
-  contal_pulse('y',1275,1542,DSD);/*直接到位*/
-// /*调试*/Serial.println("5");
-  contal_pulse('x',1602,1300,DSD);/*直接到位*/
-// /*调试*/Serial.println("6");
-  contal_pulse('y',1542,1402,DSD);/*直接到位*/
-// /*调试*/Serial.println("7");
-while(1){;}
+
+  Task_2();/*任务2*/
+
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+
 }
 
 
@@ -403,6 +415,8 @@ void button_fine_tuning()
 
 
 
+
+
 /*##########################以下，法2，脉冲控制###########################*/
 /*直接到位*/
 void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
@@ -414,6 +428,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         {
           for(int i=last_pos;i<toPos;i+=5)
           {
+            while(flag_rest);
             myservo_x.writeMicroseconds(i);
             delay(servoDelay-5);
           }
@@ -422,6 +437,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         {
           for(int i=last_pos;i>toPos;i-=5)
           {
+            while(flag_rest);
             myservo_x.writeMicroseconds(i);
             delay(servoDelay-5);
           }
@@ -433,7 +449,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "contal_pulse");
+          u8g2.drawStr(0, 10, "contrl_pulse");
           u8g2.drawStr(0,25, "cp_x");
           u8g2.setCursor(sizeof("cp_x: ") * 6, 25);
           u8g2.print(toPos);
@@ -451,6 +467,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         {
           for(int i=last_pos;i<toPos;i+=5)
           {
+            while(flag_rest);
             myservo_y.writeMicroseconds(i);
             delay(servoDelay-5);
           }
@@ -459,6 +476,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         {
           for(int i=last_pos;i>toPos;i-=5)
           {
+            while(flag_rest);
             myservo_y.writeMicroseconds(i);
             delay(servoDelay-5);
           }
@@ -630,6 +648,70 @@ void writeMicroseconds_button_fine_tuning()
 
 
 
+/*任务2*/
+void Task_2()
+{
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "---Task_2_STAR---");
+        } while (u8g2.nextPage());
+  // /*调试*/Serial.println("1");
+  while(flag_rest);
+  contal_pulse('x',start_x,1300,DSD);/*直接到位*//*调试*/Serial.println("2");contal_pulse('y',start_y,1275,DSD);/*直接到位*/
+// /*调试*/Serial.println("3");
+  while(flag_rest);
+  contal_pulse('x',1300,1602,DSD);/*直接到位*/
+// /*调试*/Serial.println("4");
+  while(flag_rest);
+  contal_pulse('y',1275,1542,DSD);/*直接到位*/
+// /*调试*/Serial.println("5");
+  while(flag_rest);
+  contal_pulse('x',1602,1300,DSD);/*直接到位*/
+// /*调试*/Serial.println("6");
+  while(flag_rest);
+  contal_pulse('y',1542,1402,DSD);/*直接到位*/
+  while(flag_rest){;}
+// /*调试*/Serial.println("7");
+// while(1){;}
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "+++Task_2_END+++");
+        } while (u8g2.nextPage());
+}
+
+
+
+void interruptFunction()
+{
+  delay(500);
+  if(digitalRead(rest)==LOW)
+  {
+    delay(500);
+    if(digitalRead(rest)==LOW)
+    {
+      digitalWrite(48,digitalRead(48));
+      myservo_x.writeMicroseconds(start_x);
+      myservo_y.writeMicroseconds(start_y);
+  /*以下，显示*/
+          u8g2.firstPage();
+          do
+          {
+            u8g2.setFont(u8g_font_7x14); // 设置字体
+            u8g2.drawStr(20, 40, "@@@REST@@@");
+          } while (u8g2.nextPage());
+  /*以上，显示*/
+      flag_rest=1;
+    }
+  }
+}
+
+
+
+
 /*获取当前脉冲*/
 void get_angle()
 {
@@ -652,3 +734,9 @@ void get_angle()
         } while (u8g2.nextPage());
 /*以上，显示*/
 }
+
+
+
+
+
+

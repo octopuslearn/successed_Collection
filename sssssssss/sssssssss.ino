@@ -773,9 +773,3 @@ void get_angle()
         } while (u8g2.nextPage());
 /*以上，显示*/
 }
-
-
-
-
-
-

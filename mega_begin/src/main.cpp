@@ -415,7 +415,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
           for(int i=last_pos;i<toPos;i+=5)
           {
             myservo_x.writeMicroseconds(i);
-            delay(servoDelay);
+            delay(servoDelay-5);
           }
         }
         else if(toPos<last_pos)
@@ -423,7 +423,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
           for(int i=last_pos;i>toPos;i-=5)
           {
             myservo_x.writeMicroseconds(i);
-            delay(servoDelay);
+            delay(servoDelay-5);
           }
         }
 
@@ -452,7 +452,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
           for(int i=last_pos;i<toPos;i+=5)
           {
             myservo_y.writeMicroseconds(i);
-            delay(servoDelay);
+            delay(servoDelay-5);
           }
         }
         else if(toPos<last_pos)
@@ -460,7 +460,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
           for(int i=last_pos;i>toPos;i-=5)
           {
             myservo_y.writeMicroseconds(i);
-            delay(servoDelay);
+            delay(servoDelay-5);
           }
         }   
 /*以下，显示*/

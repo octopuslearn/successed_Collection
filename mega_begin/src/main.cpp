@@ -58,6 +58,7 @@ volatile bool flag = 0;
 
 /*++++++++++++++++++++++++++++++以下，任务+++++++++++++++++++++++++++++*/
 void Task_2();/*任务2*/
+void Task_3();/*任务3*/
 /*++++++++++++++++++++++++++++++以上，任务+++++++++++++++++++++++++++++*/
 
 // int start_x=1410;
@@ -126,14 +127,6 @@ void setup() {
         } while (u8g2.nextPage());
   do//自动回正
   {
-    /* code */
-
-    /*以下，自动回中*/
-    // myservo_x.writeMicroseconds(start_x);
-    // delay(15);
-    // myservo_y.writeMicroseconds(start_y);
-    // delay(15);
-    /*以上，自动回中*/
     for(int i=0;i<start_x;i+=10)
     {
       myservo_x.writeMicroseconds(i);
@@ -195,8 +188,8 @@ void loop() {
   // Rest_origin();/*自动回中*/
 
 
-  Task_2();/*任务2*/
-
+  // Task_2();/*任务2*/
+  Task_3();/*任务3*/
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 
 }
@@ -674,7 +667,6 @@ void Task_2()
   contal_pulse('y',1542,1402,DSD);/*直接到位*/
   while(flag_rest){;}
 // /*调试*/Serial.println("7");
-// while(1){;}
         u8g2.firstPage();
         do
         {
@@ -682,7 +674,54 @@ void Task_2()
           u8g2.drawStr(0, 40, "+++Task_2_END+++");
         } while (u8g2.nextPage());
 }
+/*任务3*/
+void Task_3()
+{
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "-33Task_3_STAR33-");
+        } while (u8g2.nextPage());
 
+
+
+  // /*调试*/Serial.println("1");
+  while(flag_rest);
+  contal_pulse('x',start_x,1360,DSD);/*直接到位*//*调试*/contal_pulse('y',start_y,1360,DSD);/*直接到位*/
+  
+// /*调试*/Serial.println("3");
+  while(flag_rest);
+  contal_pulse('x',1360,1545,DSD);/*直接到位*/
+ 
+// /*调试*/Serial.println("4");
+  while(flag_rest);
+  contal_pulse('y',1360,1459,DSD);/*直接到位*/
+
+
+// /*调试*/Serial.println("5");
+  while(flag_rest);
+  contal_pulse('x',1545,1360,DSD);/*直接到位*/
+   
+
+// /*调试*/Serial.println("6");
+  while(flag_rest);
+  contal_pulse('y',1459,1402,DSD);/*直接到位*/
+  while(flag_rest){;}
+
+  while(1){;}
+// /*调试*/Serial.println("7");
+
+
+
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "-33Task_3_END33-");
+        } while (u8g2.nextPage());
+
+}
 
 
 void interruptFunction()

@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
 #include <U8g2lib.h>
-#include <U8x8lib.h>
 #include <Wire.h>
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
 

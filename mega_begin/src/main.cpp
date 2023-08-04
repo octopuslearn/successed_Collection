@@ -412,7 +412,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
       if(toPos >= 500 && toPos <= 2500){
         if(toPos>last_pos)
         {
-          for(int i=last_pos;i<toPos;i+=10)
+          for(int i=last_pos;i<toPos;i+=5)
           {
             myservo_x.writeMicroseconds(i);
             delay(servoDelay);
@@ -420,7 +420,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         }
         else if(toPos<last_pos)
         {
-          for(int i=last_pos;i>toPos;i-=10)
+          for(int i=last_pos;i>toPos;i-=5)
           {
             myservo_x.writeMicroseconds(i);
             delay(servoDelay);
@@ -449,7 +449,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
       if(toPos >= 500 && toPos <= 2500){ 
         if(toPos>last_pos)
         {
-          for(int i=last_pos;i<toPos;i+=10)
+          for(int i=last_pos;i<toPos;i+=5)
           {
             myservo_y.writeMicroseconds(i);
             delay(servoDelay);
@@ -457,7 +457,7 @@ void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
         }
         else if(toPos<last_pos)
         {
-          for(int i=last_pos;i>toPos;i-=10)
+          for(int i=last_pos;i>toPos;i-=5)
           {
             myservo_y.writeMicroseconds(i);
             delay(servoDelay);

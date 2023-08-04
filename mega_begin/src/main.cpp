@@ -57,7 +57,7 @@ int start_x=1452;
 int start_y=1402;
 
 /*以下，新添*/
-void contal_pulse(char servoName,int toPos,int servoDelay);/*直接到位*/
+void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay);/*直接到位*/
 void contrl_reading(char serialCmd,int servoDelay); /*一点一点动*/
 void writeMicroseconds_button_fine_tuning();        /*以下，法2，按键移动调试*/
 int contrl_reading_baseJoyPos_x=start_x;
@@ -113,16 +113,36 @@ void setup() {
   do//自动回正
   {
     /* code */
-    myservo_x.writeMicroseconds(start_x);
-    delay(15);
-    myservo_y.writeMicroseconds(start_y);
-    delay(15);
+
+    /*以下，自动回中*/
+    // myservo_x.writeMicroseconds(start_x);
+    // delay(15);
+    // myservo_y.writeMicroseconds(start_y);
+    // delay(15);
+    /*以上，自动回中*/
+    for(int i=0;i<start_x;i+=10)
+    {
+      myservo_x.writeMicroseconds(i);
+      delay(15);
+    }
+    for(int i=0;i<start_y;i+=10)
+    {
+      myservo_y.writeMicroseconds(i);
+      delay(15);
+    }
+
   } while (0);
   delay(500);
   // contal_pulse('x',1260,DSD);/*直接到位*/
   // contal_pulse('y',1470,DSD);/*直接到位*/
 }
 
+
+ 
+
+
+
+ 
 
 void loop() {
 
@@ -154,16 +174,18 @@ void loop() {
   // contal_pulse('y',1193,DSD);/*直接到位*/
   // while(1);
 
-
-  contal_pulse('x',1300,DSD);/*直接到位*/contal_pulse('y',1275,DSD);/*直接到位*/
-
-  contal_pulse('x',1602,DSD);/*直接到位*/
-
-  contal_pulse('y',1542,DSD);/*直接到位*/
-
-  contal_pulse('x',1300,DSD);/*直接到位*/
-
-  contal_pulse('y',1402,DSD);/*直接到位*/
+// /*调试*/Serial.println("1");
+  contal_pulse('x',start_x,1300,DSD);/*直接到位*//*调试*/Serial.println("2");contal_pulse('y',start_y,1275,DSD);/*直接到位*/
+// /*调试*/Serial.println("3");
+  contal_pulse('x',1300,1602,DSD);/*直接到位*/
+// /*调试*/Serial.println("4");
+  contal_pulse('y',1275,1542,DSD);/*直接到位*/
+// /*调试*/Serial.println("5");
+  contal_pulse('x',1602,1300,DSD);/*直接到位*/
+// /*调试*/Serial.println("6");
+  contal_pulse('y',1542,1402,DSD);/*直接到位*/
+// /*调试*/Serial.println("7");
+while(1){;}
   writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 }
 
@@ -383,13 +405,29 @@ void button_fine_tuning()
 
 /*##########################以下，法2，脉冲控制###########################*/
 /*直接到位*/
-void contal_pulse(char servoName,int toPos,int servoDelay)
+void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay)
 {
     switch(servoName){
     case 'x':
       if(toPos >= 500 && toPos <= 2500){
-        myservo_x.writeMicroseconds(toPos);
-        delay(servoDelay);
+        if(toPos>last_pos)
+        {
+          for(int i=last_pos;i<toPos;i+=10)
+          {
+            myservo_x.writeMicroseconds(i);
+            delay(servoDelay);
+          }
+        }
+        else if(toPos<last_pos)
+        {
+          for(int i=last_pos;i>toPos;i-=10)
+          {
+            myservo_x.writeMicroseconds(i);
+            delay(servoDelay);
+          }
+        }
+
+
 /*以下，显示*/
         u8g2.firstPage();
         do
@@ -408,17 +446,31 @@ void contal_pulse(char servoName,int toPos,int servoDelay)
       }
 
     case 'y':
-      if(toPos >= 500 && toPos <= 2500){    
-        myservo_y.writeMicroseconds(toPos);
-        delay(servoDelay);
+      if(toPos >= 500 && toPos <= 2500){ 
+        if(toPos>last_pos)
+        {
+          for(int i=last_pos;i<toPos;i+=10)
+          {
+            myservo_y.writeMicroseconds(i);
+            delay(servoDelay);
+          }
+        }
+        else if(toPos<last_pos)
+        {
+          for(int i=last_pos;i>toPos;i-=10)
+          {
+            myservo_y.writeMicroseconds(i);
+            delay(servoDelay);
+          }
+        }   
 /*以下，显示*/
         u8g2.firstPage();
         do
         {
           u8g2.setFont(u8g_font_7x14); // 设置字体
           u8g2.drawStr(0, 10, "contrl_reading");
-          u8g2.drawStr(0,25, "cr_x");
-          u8g2.setCursor(sizeof("cr_x: ") * 6, 25);
+          u8g2.drawStr(0,25, "cr_y");
+          u8g2.setCursor(sizeof("cr_y: ") * 6, 25);
           u8g2.print(toPos);
         } while (u8g2.nextPage());
 /*以上，显示*/
@@ -535,7 +587,7 @@ void writeMicroseconds_button_fine_tuning()
     while((millis()-last_button_time)<50);
     if(digitalRead(x_up)==LOW)
     {   
-      /*调试*/ Serial.println("(x_up)==LOW");
+      // /*调试*/ Serial.println("(x_up)==LOW");
       contrl_reading('a',15);
     }
   }

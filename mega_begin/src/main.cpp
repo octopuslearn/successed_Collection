@@ -62,15 +62,6 @@ void Task_3();/*任务3*/
 
 
 
-
-
-/**************以下，函数声明******************/
-void ReceiveDate(uint8_t num); //接收函数,每次调用只接收四个数据包里准确的数据刷新进全局data数组，接收正确就消亡了，要再接收必须重新调用。
-unsigned int data[4];
-/**************以上，函数声明******************/
-
-
-
 // int start_x=1410;
 // int start_y=1330;
 int start_x=1452;//原点位置
@@ -89,6 +80,13 @@ int contrl_reading_moveStep=3;
 volatile bool flag_rest=0;
 
 
+/*以下，读取K210值-任务3*/
+void read_Task_3(int x,int y,int w,int h);
+int data_out[4];//将十六进制转换为十进制
+void ReceiveDate(uint8_t num); //接收函数,每次调用只接收四个数据包里准确的数据刷新进全局data数组，接收正确就消亡了，要再接收必须重新调用。
+unsigned int data[4];
+int hextoDec(int hex);
+/*以上，读取K210值-任务3*/
 
 
 void setup() {
@@ -168,29 +166,37 @@ void setup() {
  
 
 void loop() {
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, ".....loop.....");
+        } while (u8g2.nextPage());
     ReceiveDate(4);            //规定只接收四个数据
     Serial.print(data[0]);   Serial.print('\t');//打印第三个数据 Serial.print(data[0]);
     Serial.print(data[1]);   Serial.print('\t');//打印第三个数据 
-    Serial.print(data[2]);   Serial.print('\t');//打印第三个数据 
+    Serial.print(data[2]);   Serial.println('\t');//打印第三个数据 
     Serial.println(data[3]);   //打印第三个数据 
-  
-
-  // armDataCmd('x', 87, DSD);
-  // armDataCmd('y', 90, DSD);
-  // while(digitalRead(test_now) != LOW);
-
-  // armDataCmd('x', 105, DSD);
-  // armDataCmd('y', 106, DSD);
-  // armDataCmd('x', 75, DSD);
-  // armDataCmd('y', 76, DSD);
-  // armDataCmd('x', 87+7-1, DSD);
-  // armDataCmd('y', 90+9-1, DSD);
-  // while(1);
-  // button_fine_tuning();/*按键移动*/
-
-
-
-
+for(int i=0;i<4;i++)
+{
+  data_out[i]=hextoDec(data[i]); 
+}
+Serial.print("data_out[0]: ");Serial.print(data_out[0]);
+Serial.print("data_out[1]: ");Serial.print(data_out[1]);
+Serial.print("data_out[2]: ");Serial.print(data_out[2]);
+Serial.print("data_out[3]: ");Serial.print(data_out[3]);
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 10, "data_out[i]:");
+          u8g2.setCursor(0, 30);  u8g2.print(data_out[0]);
+          u8g2.setCursor(30, 30);  u8g2.print(data_out[1]);
+          u8g2.setCursor(50, 30);  u8g2.print(data_out[2]);
+          u8g2.setCursor(70, 30);  u8g2.print(data_out[3]);
+        } while (u8g2.nextPage());
+    
+// read_Task_3(data_out[0],data_out[1],data_out[2],data_out[3]);
 
 
 
@@ -205,7 +211,7 @@ void loop() {
 
   // Task_2();/*任务2*/
   // Task_3();/*任务3*/
-  // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
+  writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 
 }
 
@@ -738,6 +744,53 @@ void Task_3()
 
 }
 
+void read_Task_3(int x,int y,int w,int h)
+{
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "-read_Task_3START-");
+        } while (u8g2.nextPage());
+
+
+
+  // /*调试*/Serial.println("1");
+  while(flag_rest);
+  contal_pulse('x',0,x,DSD);/*直接到位*//*调试*/contal_pulse('y',0,y,DSD);/*直接到位*/
+  
+// /*调试*/Serial.println("3");
+  while(flag_rest);
+  contal_pulse('x',x,x+w,DSD);/*直接到位*/
+ 
+// /*调试*/Serial.println("4");
+  while(flag_rest);
+  contal_pulse('y',y,y+4,DSD);/*直接到位*/
+
+
+// /*调试*/Serial.println("5");
+  while(flag_rest);
+  contal_pulse('x',x+w,x,DSD);/*直接到位*/
+   
+
+// /*调试*/Serial.println("6");
+  while(flag_rest);
+  contal_pulse('y',y+4,y,DSD);/*直接到位*/
+//   while(flag_rest){;}
+
+//   while(1){;}
+// /*调试*/Serial.println("7");
+
+
+
+        u8g2.firstPage();
+        do
+        {
+          u8g2.setFont(u8g_font_7x14); // 设置字体
+          u8g2.drawStr(0, 40, "-read_Task_3END-");
+        } while (u8g2.nextPage());
+
+}
 
 void interruptFunction()
 {
@@ -836,3 +889,21 @@ void ReceiveDate(uint8_t num){
 }
 
 
+
+
+
+int hextoDec(int hex){
+ int sum=0,mul=1;
+ int i,r;
+ int count=0;
+ do{
+  r=hex%16;
+  for(i=0;i<count;i++)
+   mul*=16;
+  mul*=r;
+  sum+=mul;
+  mul=1;
+  count++; 
+ }while(hex/=16);
+ return sum;  
+}

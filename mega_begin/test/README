@@ -178,3 +178,19 @@ void armJoyCmd(char serialCmd)//Arduino根据手柄按键执行相应操作
           u8g2.setCursor(sizeof("y: ") * 8, 40);
           u8g2.print(myservo_y_vlue);
         } while (u8g2.nextPage());
+
+
+
+
+
+
+
+
+lr_data=data[2]/2/1.6*6.4;
+fb_data=data[3]/2/1.7*6.4;
+x_data_r=1512-lr_data;  x_data_l=1512+lr_data;
+x_data_f=1378-fb_data;  x_data_b=1378+fb_data;
+Serial.print("dlr_data: ");Serial.print(lr_data);//x
+Serial.print("fb_data: ");Serial.print(fb_data);//y
+Serial.print("x_data_r: ");Serial.print(x_data_r);Serial.print("x_data_l: ");Serial.print(x_data_l);
+Serial.print("x_data_f: ");Serial.print(x_data_f);Serial.print("x_data_b: ");Serial.println(x_data_b);

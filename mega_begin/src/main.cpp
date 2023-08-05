@@ -64,8 +64,13 @@ void Task_3();/*任务3*/
 
 // int start_x=1410;
 // int start_y=1330;
-int start_x=1452;//原点位置
-int start_y=1402;
+// int start_x=1452;//原点位置
+// int start_y=1402;
+
+
+int start_x=1491;//原点位置
+int start_y=1417;
+
 
 /*以下，新添*/
 void contal_pulse(char servoName,int last_pos,int toPos,int servoDelay);/*直接到位*/
@@ -82,15 +87,19 @@ volatile bool flag_rest=0;
 
 /*以下，读取K210值-任务3*/
 void read_Task_3(int x,int y,int w,int h);
-int data_out[4];//将十六进制转换为十进制
 void ReceiveDate(uint8_t num); //接收函数,每次调用只接收四个数据包里准确的数据刷新进全局data数组，接收正确就消亡了，要再接收必须重新调用。
 unsigned int data[4];
-int hextoDec(int hex);
+
+
+int lr_data;
+int fb_data;
+int x_data_r;int x_data_l;
+int x_data_f;int x_data_b;
 /*以上，读取K210值-任务3*/
 
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
   Serial1.begin(115200);    // 初始化虚拟串口
   pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
   pinMode(48,OUTPUT);
@@ -166,37 +175,41 @@ void setup() {
  
 
 void loop() {
-        u8g2.firstPage();
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, ".....loop.....");
-        } while (u8g2.nextPage());
-    ReceiveDate(4);            //规定只接收四个数据
-    Serial.print(data[0]);   Serial.print('\t');//打印第三个数据 Serial.print(data[0]);
-    Serial.print(data[1]);   Serial.print('\t');//打印第三个数据 
-    Serial.print(data[2]);   Serial.println('\t');//打印第三个数据 
-    Serial.println(data[3]);   //打印第三个数据 
-for(int i=0;i<4;i++)
-{
-  data_out[i]=hextoDec(data[i]); 
-}
-Serial.print("data_out[0]: ");Serial.print(data_out[0]);
-Serial.print("data_out[1]: ");Serial.print(data_out[1]);
-Serial.print("data_out[2]: ");Serial.print(data_out[2]);
-Serial.print("data_out[3]: ");Serial.print(data_out[3]);
-        u8g2.firstPage();
-        do
-        {
-          u8g2.setFont(u8g_font_7x14); // 设置字体
-          u8g2.drawStr(0, 10, "data_out[i]:");
-          u8g2.setCursor(0, 30);  u8g2.print(data_out[0]);
-          u8g2.setCursor(30, 30);  u8g2.print(data_out[1]);
-          u8g2.setCursor(50, 30);  u8g2.print(data_out[2]);
-          u8g2.setCursor(70, 30);  u8g2.print(data_out[3]);
-        } while (u8g2.nextPage());
+        // u8g2.firstPage();
+        // do
+        // {
+        //   u8g2.setFont(u8g_font_7x14); // 设置字体
+        //   u8g2.drawStr(0, 10, ".....loop.....");
+        // } while (u8g2.nextPage());
+//     ReceiveDate(4);            //规定只接收四个数据
+//     Serial.print(data[0]);   Serial.print('\t');//打印第三个数据 Serial.print(data[0]);
+//     Serial.print(data[1]);   Serial.print('\t');//打印第三个数据 
+//     Serial.print(data[2]);   Serial.print('\t');//打印第三个数据 
+//     Serial.println(data[3]);   //打印第三个数据 
+
+
+// lr_data=data[2]/2/1.6*6.4;
+// fb_data=data[3]/2/1.7*6.4;
+// x_data_r=1512-lr_data;  x_data_l=1512+lr_data;
+// x_data_f=1378-fb_data;  x_data_b=1378+fb_data;
+// Serial.print("dlr_data: ");Serial.print(lr_data);//x
+// Serial.print("fb_data: ");Serial.print(fb_data);//y
+// Serial.print("x_data_r: ");Serial.print(x_data_r);Serial.print("x_data_l: ");Serial.print(x_data_l);
+// Serial.print("x_data_f: ");Serial.print(x_data_f);Serial.print("x_data_b: ");Serial.println(x_data_b);
+
+
+        // u8g2.firstPage();
+        // do
+        // {
+        //   u8g2.setFont(u8g_font_7x14); // 设置字体
+        //   u8g2.drawStr(0, 10, "data_out[i]:");
+        //   u8g2.setCursor(0, 30);  u8g2.print(data_out[0]);
+        //   u8g2.setCursor(30, 30);  u8g2.print(data_out[1]);
+        //   u8g2.setCursor(50, 30);  u8g2.print(data_out[2]);
+        //   u8g2.setCursor(70, 30);  u8g2.print(data_out[3]);
+        // } while (u8g2.nextPage());
     
-// read_Task_3(data_out[0],data_out[1],data_out[2],data_out[3]);
+  // read_Task_3(x_data_r,x_data_l,x_data_f,x_data_b);
 
 
 
@@ -744,7 +757,7 @@ void Task_3()
 
 }
 
-void read_Task_3(int x,int y,int w,int h)
+void read_Task_3(int x_data_r,int x_data_l,int x_data_f,int x_data_b)
 {
         u8g2.firstPage();
         do
@@ -757,28 +770,28 @@ void read_Task_3(int x,int y,int w,int h)
 
   // /*调试*/Serial.println("1");
   while(flag_rest);
-  contal_pulse('x',0,x,DSD);/*直接到位*//*调试*/contal_pulse('y',0,y,DSD);/*直接到位*/
-  
+  contal_pulse('x',1512,x_data_r,DSD);/*直接到位*//*调试*/contal_pulse('y',1378,x_data_b,DSD);/*直接到位*/
+
 // /*调试*/Serial.println("3");
   while(flag_rest);
-  contal_pulse('x',x,x+w,DSD);/*直接到位*/
- 
+  contal_pulse('x',x_data_r,x_data_l,DSD);/*直接到位*/
+
 // /*调试*/Serial.println("4");
   while(flag_rest);
-  contal_pulse('y',y,y+4,DSD);/*直接到位*/
-
+  contal_pulse('y',x_data_b,x_data_f,DSD);/*直接到位*/
+  
 
 // /*调试*/Serial.println("5");
   while(flag_rest);
-  contal_pulse('x',x+w,x,DSD);/*直接到位*/
-   
+  contal_pulse('x',x_data_l,x_data_r,DSD);/*直接到位*/
+
 
 // /*调试*/Serial.println("6");
   while(flag_rest);
-  contal_pulse('y',y+4,y,DSD);/*直接到位*/
-//   while(flag_rest){;}
+  contal_pulse('y',x_data_f,x_data_b,DSD);/*直接到位*/
+  while(flag_rest){;}
 
-//   while(1){;}
+  // while(1){;}
 // /*调试*/Serial.println("7");
 
 
@@ -886,24 +899,4 @@ void ReceiveDate(uint8_t num){
 
   }
   
-}
-
-
-
-
-
-int hextoDec(int hex){
- int sum=0,mul=1;
- int i,r;
- int count=0;
- do{
-  r=hex%16;
-  for(i=0;i<count;i++)
-   mul*=16;
-  mul*=r;
-  sum+=mul;
-  mul=1;
-  count++; 
- }while(hex/=16);
- return sum;  
 }

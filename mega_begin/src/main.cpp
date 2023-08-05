@@ -80,6 +80,14 @@ volatile bool flag_rest=0;
 
 
 
+void one_tsck_2();/*任务2*/
+void rest_loacation();/*复位*/
+
+
+
+
+
+
 
 void setup() {
   // Serial.begin(9600);
@@ -170,15 +178,6 @@ void loop() {
   // armDataCmd('y', 90, DSD);
   // while(digitalRead(test_now) != LOW);
 
-  armDataCmd('x', 101, DSD);
-  armDataCmd('y', 65, DSD);
-  
-  armDataCmd('x', 73, DSD);
-  
-  armDataCmd('y', 88, DSD);
-  
-  armDataCmd('x', 100, DSD);
-  armDataCmd('y', 76, DSD);
   // button_fine_tuning();/*按键移动*/
 
 
@@ -200,6 +199,18 @@ void loop() {
   // Task_3();/*任务3*/
   // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 
+  if(digitalRead(test_now)==LOW)
+  {
+    delay(500);
+    if(digitalRead(test_now)==LOW)
+    {
+      one_tsck_2();
+    }
+  }
+  else
+  {
+    rest_loacation();
+  }
 }
 
 
@@ -783,6 +794,29 @@ void get_angle()
 }
 
 
+
+
+/*任务2*/
+void one_tsck_2()/*任务2*/
+{
+
+  armDataCmd('x', 101, DSD);
+  armDataCmd('y', 65, DSD);
+  armDataCmd('x', 73, DSD);
+  armDataCmd('y', 88, DSD);
+  armDataCmd('x', 100, DSD);
+  armDataCmd('y', 76, DSD);
+}
+
+
+/*复位*/
+void rest_loacation()/*复位*/
+{
+  myservo_x.write(88);//舵机起始位置
+  delay(10);
+  myservo_y.write(76); 
+  delay(10);
+}
 
 
 

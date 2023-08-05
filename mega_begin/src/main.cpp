@@ -7,7 +7,7 @@
 #include <Arduino.h>
 #include <U8g2lib.h>
 #include <Wire.h>
-#include <VarSpeedServo.h> 
+#include <Servo.h>
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
 
 #define myservo_x_pin 8//舵机引脚
@@ -19,8 +19,8 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /
 #define  y_down 42
 
 
-VarSpeedServo myservo_x;//x轴舵机  
-VarSpeedServo myservo_y; 
+Servo myservo_x;//x轴舵机  
+Servo myservo_y; 
 
 
 /*(((((((((((((((((((((((((((((((((((以下，设点原点位置)))))))))))))))))))))))))))))))))))*/
@@ -64,7 +64,7 @@ void contrl_reading(char serialCmd,int servoDelay); /*一点一点动*/
 void writeMicroseconds_button_fine_tuning();        /*以下，法2，按键移动调试*/
 int contrl_reading_baseJoyPos_x=start_x;
 int contrl_reading_baseJoyPos_y=start_y;
-int contrl_reading_moveStep=1;
+int contrl_reading_moveStep=3;
 /*以下，任务3-K210新添*/
 
 

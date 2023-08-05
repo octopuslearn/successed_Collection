@@ -9,12 +9,14 @@ U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/35, /* data=*/34, /
 #define myservo_x_pin 8
 #define myservo_y_pin 9
 #define rest 3//按键-舵机复位
-#define  x_up   38
+
 #define  x_down 41
 #define  y_up   39
 #define  y_down 42
 
 #define test_now 40
+#define tset_2   43
+#define  x_up   38
 
 Servo myservo_x;//x轴舵机  
 Servo myservo_y; 
@@ -82,7 +84,7 @@ volatile bool flag_rest=0;
 
 void one_tsck_2();/*任务2*/
 void rest_loacation();/*复位*/
-
+void one_tsck_3();/*任务3*/
 
 
 
@@ -93,6 +95,7 @@ void setup() {
   // Serial.begin(9600);
   pinMode(3, INPUT_PULLUP); // 设置引脚3为输入模式
   pinMode(48,OUTPUT);
+  pinMode(x_up,INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(3), interruptFunction, FALLING);
 
 
@@ -115,7 +118,7 @@ void setup() {
   delay(10);
   myservo_y.write(0); 
   delay(10);
-  delay(3000);
+  delay(1000);
 
 
 
@@ -199,18 +202,32 @@ void loop() {
   // Task_3();/*任务3*/
   // writeMicroseconds_button_fine_tuning();/*以下，法2，按键移动调试*/
 
-  if(digitalRead(test_now)==LOW)
+  if(digitalRead(test_now)==LOW)//40
   {
-    delay(500);
+    delay(50);
     if(digitalRead(test_now)==LOW)
     {
       one_tsck_2();
     }
   }
-  else
+  else if(digitalRead(x_up)==LOW)//38
   {
-    rest_loacation();
+    delay(50);
+    if(digitalRead(x_up)==LOW)
+    {
+      one_tsck_3();
+    }
   }
+  
+  else if(digitalRead(tset_2)==LOW)//43
+  {
+    delay(50);
+    if(digitalRead(tset_2)==LOW)
+    {
+      rest_loacation();
+    }
+  }
+
 }
 
 
@@ -818,5 +835,15 @@ void rest_loacation()/*复位*/
   delay(10);
 }
 
+/*任务2*/
+void one_tsck_3()/*任务3*/
+{
+  armDataCmd('x', 95, DSD);
+  armDataCmd('y', 71, DSD);
+  armDataCmd('x', 79, DSD);
+  armDataCmd('y', 80, DSD);
+  armDataCmd('x', 95, DSD);
+  armDataCmd('y', 76, DSD);
+}
 
 

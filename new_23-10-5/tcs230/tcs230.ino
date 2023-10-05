@@ -6,7 +6,7 @@
 // 这只是为了显示基本功能，无需校准。
 // 使用非阻塞版本的读取函数。
 // 输出使用串行控制台。
-
+ #include<math.h>
 
 #include <MD_TCS230.h>
 #include <FreqCount.h>
@@ -49,7 +49,7 @@ void setup()
 void loop() 
 {
   readSensor();
-  ledshow(tcs230_rgb[0], tcs230_rgb[1], tcs230_rgb[2]);
+  delay(100);
   /*测试颜色顺序*/
   // ledshow(255, 0, 0);
 }
@@ -72,7 +72,6 @@ void readSensor()
     if (CS.available()) //确定传感器读取完成，完成-true
     {
       colorData  rgb; //存储tcs230rgb数据-结构体
-      
       CS.getRGB(&rgb);  //获取最后的RGB格式的数据并放入rag结构体
       tcs230_rgb[0] = rgb.value[TCS230_RGB_R];
       tcs230_rgb[1] = rgb.value[TCS230_RGB_G];
@@ -86,22 +85,61 @@ void readSensor()
       Serial.println("]");
       
       waiting = false;
+
+      range_judgment(tcs230_rgb[0],  tcs230_rgb[1], tcs230_rgb[2]);
     }
+  }
+}
+
+
+
+void range_judgment(unsigned int in_r, unsigned int in_g, unsigned int in_b)
+{
+  unsigned int in_r2, in_g2, in_b2;
+  if(in_r<50 && in_g<50 && in_b<50)
+  {
+    Serial.println("000");
+    ledshow(0, 0, 0);
+  }
+  else
+  {
+    if(abs((in_r+in_g+in_b) - (in_r2+in_g2+in_b2)) >= 30)  //差值超过30
+    {
+      Serial.print("111");
+      Serial.print('\t');
+      Serial.print("in_r2: ");Serial.print(in_r2);Serial.print('\t');
+      Serial.print("in_g2: ");Serial.print(in_g2);Serial.print('\t');
+      Serial.print("in_b2: ");Serial.print(in_b2);Serial.println('\t');
+
+      Serial.print("in_r: ");Serial.print(in_r);Serial.print('\t');
+      Serial.print("in_g: ");Serial.print(in_g);Serial.print('\t');
+      Serial.print("in_b: ");Serial.println(in_b);
+
+      ledshow(in_r2, in_g2, in_b2);
+    }
+    else
+    {
+      Serial.println("222");
+      ledshow(in_r, in_g, in_b);
+    }
+    Serial.println("333");
+    in_r2 = in_r;
+    in_g2 = in_g;
+    in_b2 = in_b;
   }
 }
 
 
 void ledshow(unsigned int r, unsigned int g, unsigned int b)
 {
-      for(int i = 0; i < NUM_LEDS; i++) {
-        // Set the i'th led to red 
-        leds[i] = CRGB(r, g, b);
-        // Show the leds
-        FastLED.show(); 
-        // now that we've shown the leds, reset the i'th led to black
-        // leds[i] = CRGB::Black;
-        // delay(10);
-    }
+  for(int i = 0; i < NUM_LEDS; i++) 
+  {
+    leds[i] = CRGB(r, g, b);
+    FastLED.show(); 
+    Serial.println("444");
+  }
 }
+
+
 
 

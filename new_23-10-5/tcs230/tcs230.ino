@@ -49,7 +49,6 @@ void setup()
 void loop() 
 {
   readSensor();
-  delay(100);
   /*测试颜色顺序*/
   // ledshow(255, 0, 0);
 }
@@ -92,19 +91,20 @@ void readSensor()
 }
 
 
-
+unsigned int in_r2, in_g2, in_b2;
 void range_judgment(unsigned int in_r, unsigned int in_g, unsigned int in_b)
 {
-  unsigned int in_r2, in_g2, in_b2;
-  if(in_r<50 && in_g<50 && in_b<50)
+
+  if(in_r<50 && in_g<50 && in_b<50) //注意这里是&&
   {
-    Serial.println("000");
+    //Serial.println("000");
     ledshow(0, 0, 0);
   }
   else
   {
     if(abs((in_r+in_g+in_b) - (in_r2+in_g2+in_b2)) >= 30)  //差值超过30
     {
+      /*用于测试
       Serial.print("111");
       Serial.print('\t');
       Serial.print("in_r2: ");Serial.print(in_r2);Serial.print('\t');
@@ -114,18 +114,30 @@ void range_judgment(unsigned int in_r, unsigned int in_g, unsigned int in_b)
       Serial.print("in_r: ");Serial.print(in_r);Serial.print('\t');
       Serial.print("in_g: ");Serial.print(in_g);Serial.print('\t');
       Serial.print("in_b: ");Serial.println(in_b);
-
-      ledshow(in_r2, in_g2, in_b2);
+      */
+      ledshow(in_r, in_g, in_b);
     }
     else
     {
-      Serial.println("222");
-      ledshow(in_r, in_g, in_b);
+      //Serial.println("222");
+      ledshow(in_r2, in_g2, in_b2);
     }
+    /*测试
     Serial.println("333");
+      Serial.print("in_r2: ");Serial.print(in_r2);Serial.print('\t');
+      Serial.print("in_g2: ");Serial.print(in_g2);Serial.print('\t');
+      Serial.print("in_b2: ");Serial.print(in_b2);Serial.println('\t');
+      Serial.println("##############################################");
+    */
     in_r2 = in_r;
     in_g2 = in_g;
     in_b2 = in_b;
+    /*测试
+    Serial.print("in_r2: ");Serial.print(in_r2);Serial.print('\t');
+      Serial.print("in_g2: ");Serial.print(in_g2);Serial.print('\t');
+      Serial.print("in_b2: ");Serial.print(in_b2);Serial.println('\t');
+    Serial.println("________________________________________________");
+    */
   }
 }
 
@@ -136,7 +148,7 @@ void ledshow(unsigned int r, unsigned int g, unsigned int b)
   {
     leds[i] = CRGB(r, g, b);
     FastLED.show(); 
-    Serial.println("444");
+    //Serial.println("444");
   }
 }
 

@@ -11,28 +11,36 @@
 #include <MD_TCS230.h>
 #include <FreqCount.h>
 
+/*ws2812*/
+#include <FastLED.h>
+#define NUM_LEDS 64 
+#define DATA_PIN 2
+
+
+
 // Pin definitions
 //引脚定义
 #define  S2_OUT  12
 #define  S3_OUT  13
 #define  OE_OUT   8    // LOW = ENABLED //默认和GND连接在一起
 
+unsigned int tcs230_rgb[3]={};
+
+
+
 //创建对象
 MD_TCS230  CS(S2_OUT, S3_OUT, OE_OUT);
 
-
-
-
+/*ws2812*/
+//创建对象
+CRGB leds[NUM_LEDS];
 
 
 void setup() 
 {
   Serial.begin(115200);
-  Serial.println("[TCS230 Simple NON_BLOCKING Example]");
-  Serial.println("\nMove the sensor to different color to see the RGB value");
-  Serial.println("Note: These values are being read in without sensor calibration");
-  Serial.println("and are likely to be far from reality");
 
+  FastLED.addLeds<WS2812,DATA_PIN,  GRB>(leds,NUM_LEDS);
   CS.begin(); //初始化对象
 }
 
@@ -41,6 +49,9 @@ void setup()
 void loop() 
 {
   readSensor();
+  ledshow(tcs230_rgb[0], tcs230_rgb[1], tcs230_rgb[2]);
+  /*测试颜色顺序*/
+  // ledshow(255, 0, 0);
 }
 
 
@@ -60,20 +71,37 @@ void readSensor()
   {
     if (CS.available()) //确定传感器读取完成，完成-true
     {
-      colorData  rgb; //结构体
+      colorData  rgb; //存储tcs230rgb数据-结构体
       
       CS.getRGB(&rgb);  //获取最后的RGB格式的数据并放入rag结构体
+      tcs230_rgb[0] = rgb.value[TCS230_RGB_R];
+      tcs230_rgb[1] = rgb.value[TCS230_RGB_G];
+      tcs230_rgb[2] = rgb.value[TCS230_RGB_B];
       Serial.print("RGB [");
-      Serial.print(rgb.value[TCS230_RGB_R]);  //使用rgb.value获取结构体中的rgb数据
+      Serial.print(tcs230_rgb[0]);  //使用rgb.value获取结构体中的rgb数据
       Serial.print(",");
-      Serial.print(rgb.value[TCS230_RGB_G]);
+      Serial.print(tcs230_rgb[1]);
       Serial.print(",");
-      Serial.print(rgb.value[TCS230_RGB_B]);
+      Serial.print(tcs230_rgb[2]);
       Serial.println("]");
       
       waiting = false;
     }
   }
+}
+
+
+void ledshow(unsigned int r, unsigned int g, unsigned int b)
+{
+      for(int i = 0; i < NUM_LEDS; i++) {
+        // Set the i'th led to red 
+        leds[i] = CRGB(r, g, b);
+        // Show the leds
+        FastLED.show(); 
+        // now that we've shown the leds, reset the i'th led to black
+        // leds[i] = CRGB::Black;
+        // delay(10);
+    }
 }
 
 

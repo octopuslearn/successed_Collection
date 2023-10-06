@@ -41,7 +41,7 @@ CRGB leds[NUM_LEDS];
 
 void setup() 
 {
-  Serial.begin(115200);
+  //Serial.begin(115200);
 
   FastLED.addLeds<WS2812,DATA_PIN,  GRB>(leds,NUM_LEDS);
   CS.begin(); //初始化对象
@@ -78,13 +78,13 @@ void readSensor()
       tcs230_rgb[0] = rgb.value[TCS230_RGB_R];
       tcs230_rgb[1] = rgb.value[TCS230_RGB_G];
       tcs230_rgb[2] = rgb.value[TCS230_RGB_B];
-      Serial.print("RGB [");
-      Serial.print(tcs230_rgb[0]);  //使用rgb.value获取结构体中的rgb数据
-      Serial.print(",");
-      Serial.print(tcs230_rgb[1]);
-      Serial.print(",");
-      Serial.print(tcs230_rgb[2]);
-      Serial.println("]");
+      // Serial.print("RGB [");
+      // Serial.print(tcs230_rgb[0]);  //使用rgb.value获取结构体中的rgb数据
+      // Serial.print(",");
+      // Serial.print(tcs230_rgb[1]);
+      // Serial.print(",");
+      // Serial.print(tcs230_rgb[2]);
+      // Serial.println("]");
       
       waiting = false;
 

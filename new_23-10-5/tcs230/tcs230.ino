@@ -23,9 +23,12 @@
 #define  S2_OUT  12
 #define  S3_OUT  13
 #define  OE_OUT   8    // LOW = ENABLED //默认和GND连接在一起
-
 unsigned int tcs230_rgb[3]={};
 
+
+
+/*TCRT500*/
+#define TCRT_hongwai 3
 
 
 //创建对象
@@ -48,7 +51,7 @@ void setup()
 
 void loop() 
 {
-  readSensor();
+  read_distance();
   /*测试颜色顺序*/
   // ledshow(255, 0, 0);
 }
@@ -149,6 +152,18 @@ void ledshow(unsigned int r, unsigned int g, unsigned int b)
     leds[i] = CRGB(r, g, b);
     FastLED.show(); 
     //Serial.println("444");
+  }
+}
+
+void read_distance()
+{
+  if(digitalRead(TCRT_hongwai) == LOW)
+  {
+    readSensor();
+  }
+  else
+  {
+    ledshow(0, 0, 0);
   }
 }
 

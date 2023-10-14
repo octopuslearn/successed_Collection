@@ -11,6 +11,7 @@
 #include <MD_TCS230.h>
 #include <FreqCount.h>
 
+
 /*ws2812*/
 #include <FastLED.h>
 #define NUM_LEDS 64 
@@ -41,19 +42,24 @@ CRGB leds[NUM_LEDS];
 
 void setup() 
 {
-  //Serial.begin(115200);
-
+  Serial.begin(115200);
+Serial.println("11111");
   FastLED.addLeds<WS2812,DATA_PIN,  GRB>(leds,NUM_LEDS);
+  Serial.println("2222");
   CS.begin(); //初始化对象
+  Serial.println("3333");
 }
 
 
 
 void loop() 
 {
-  read_distance();
-  /*测试颜色顺序*/
+  Serial.println("ssss###");
+  delay(100);
+  //read_distance();
+  /*测试颜色顺序
   // ledshow(255, 0, 0);
+  */
 }
 
 
@@ -78,13 +84,13 @@ void readSensor()
       tcs230_rgb[0] = rgb.value[TCS230_RGB_R];
       tcs230_rgb[1] = rgb.value[TCS230_RGB_G];
       tcs230_rgb[2] = rgb.value[TCS230_RGB_B];
-      // Serial.print("RGB [");
-      // Serial.print(tcs230_rgb[0]);  //使用rgb.value获取结构体中的rgb数据
-      // Serial.print(",");
-      // Serial.print(tcs230_rgb[1]);
-      // Serial.print(",");
-      // Serial.print(tcs230_rgb[2]);
-      // Serial.println("]");
+      Serial.print("RGB [");
+      Serial.print(tcs230_rgb[0]);  //使用rgb.value获取结构体中的rgb数据
+      Serial.print(",");
+      Serial.print(tcs230_rgb[1]);
+      Serial.print(",");
+      Serial.print(tcs230_rgb[2]);
+      Serial.println("]");
       
       waiting = false;
 
@@ -166,7 +172,6 @@ void read_distance()
     ledshow(0, 0, 0);
   }
 }
-
 
 
 

@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  11/05/2023 18:15:23 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -9,266 +9,381 @@ line level    source
 
    1          #include "reg51.h"
    2          #include "lcd.h"
-   3          #define Key_Net  P1
-   4          //uchar code num[]="0123456789ABCDEF" ;
-   5          //uchar code number[]={7,8,9,(x),4,5,6,(-),1,2,3,(+),0,off,=,/};//保存显示的数据
-   6          //uchar code number[]={1,2,3,0x2b-0x30(+), 4,5,6,0x2d-0x30(-), 7,8,9,0x2a-0x30(*), 0,0x01-0x30(clr),0x3d-0
+   3          
+   4          #include "math.h"
+   5          #define PI 3.14159
+   6          
+   7          
+   8          #define  Key_Net    P1  ////列
+   9          #define Key_P2    P2
+  10          //uchar code num[]="0123456789ABCDEF" ;
+  11          //uchar code number[]={7,8,9,(x),4,5,6,(-),1,2,3,(+),0,off,=,/};//保存显示的数据
+  12          //uchar code number[]={1,2,3,0x2b-0x30(+), 4,5,6,0x2d-0x30(-), 7,8,9,0x2a-0x30(*), 0,0x01-0x30(clr),0x3d-0
              -x30(=),0x2b-0x30(/)};//保存显示的数据
-   7          uchar code number[]={
-   8          1,2,3,0x2b-0x30, 
-   9          4,5,6,0x2d-0x30,
-  10          7,8,9,0x2a-0x30,
-  11          0,0x01-0x30,0x3d-0x30,0x2f-0x30 };
-  12          uchar value;                
-  13          uchar fuhao,TABE;  //fuhao 储存+，-，*，/，clr，= ；TABE 标识   1是符  0是数
-  14          float Table_A,Table_B;     //Table_A,Table_B 储存输入的两个数字
-  15          long SUM,YU;
-  16          //=======================================================================延时函数=========================
+  13          //uchar code number[]={
+  14          //1,2,3,0x2b-0x30, 
+  15          //4,5,6,0x2d-0x30,
+  16          //7,8,9,0x2a-0x30,
+  17          //0,0x01-0x30,0x3d-0x30,0x2f-0x30 };
+  18          
+  19          //uchar code number[19]={
+  20          //  1,2,3,0,  '+','-','*','/',
+  21          //  4,5,6,'^','s','c','=','e',    
+  22          //  7,8,9,  
+  23          //};
+  24          
+  25          uchar code number[19]={
+  26            1,2,3,0,  0x2b-0x30,0x2d-0x30,0x2a-0x30,0x2f-0x30,
+  27            4,5,6,0x5e-0x30,0x73-0x30,0x73-0x30,0x3d-0x30,0x01-0x30,    
+  28            7,8,9,  
+  29          };
+  30          uchar value;                
+  31          uchar fuhao,TABE;  //fuhao 储存+，-，*，/，clr，= ；TABE 标识   1是符  0是数
+  32          float Table_A,Table_B;     //Table_A,Table_B 储存输入的两个数字
+  33          long SUM,YU;
+  34          //=======================================================================延时函数=========================
              -==================  
-  17          void delay10ms()   //误差 0us
-  18          {
-  19   1          unsigned char a,b,c;
-  20   1          for(c=5;c>0;c--)
-  21   1              for(b=4;b>0;b--)
-  22   1                  for(a=248;a>0;a--);
-  23   1      }
-  24          //=========================================================================初始化=========================
+  35          void delay10ms()   //误差 0us
+  36          {
+  37   1          unsigned char a,b,c;
+  38   1          for(c=5;c>0;c--)
+  39   1              for(b=4;b>0;b--)
+  40   1                  for(a=248;a>0;a--);
+  41   1      }
+  42          //=========================================================================初始化=========================
              -====================
-  25          void Init()
-  26          { 
-  27   1        fuhao=0;
-  28   1        TABE=0;
-  29   1        Table_A=0;
-  30   1        Table_B=0;
-  31   1      }
-  32          //=========================================================================扫描函数=======================
+  43          void Init()
+  44          { 
+  45   1        fuhao=0;
+  46   1        TABE=0;
+  47   1        Table_A=0;
+  48   1        Table_B=0;
+  49   1      }
+  50          //=========================================================================扫描函数=======================
              -====================
-  33          void Keydown()
-  34          {
-  35   1        char a,i;
-  36   1        i=0;
-  37   1        Key_Net=0x0f;
-  38   1        if(Key_Net!=0x0f)
-  39   1        {
-  40   2          delay10ms();
-  41   2          if(Key_Net!= 0x0f)
-  42   2          {
-  43   3            Key_Net=0x0f;
-  44   3            switch(Key_Net)
-  45   3            {
-  46   4              case(0x07) : value = 0 ;break; 
-  47   4              case(0x0b) : value = 1 ;break;
-  48   4              case(0x0d) : value = 2 ;break;
-  49   4              case(0x0e) : value = 3 ;break;
-  50   4            } 
-  51   3          
-C51 COMPILER V9.54   MAIN                                                                  11/05/2023 18:15:23 PAGE 2   
+  51          void Keydown()
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 2   
 
-  52   3            Key_Net = 0xf0;
-  53   3            delay10ms();
-  54   3            switch(Key_Net)
-  55   3            {
-  56   4              case(0x70) : value = value+0 ;break;
-  57   4              case(0xb0) : value = value+4 ;break;
-  58   4              case(0xd0) : value = value+8 ;break;
-  59   4              case(0xe0) : value = value+12 ;break; 
-  60   4            }
-  61   3            while((a<100)&&(Key_Net!=0xf0))
-  62   3            {
-  63   4              delay10ms();
-  64   4              a++;
-  65   4            }
-  66   3              a=0;
-  67   3          }         
-  68   2              if((0<=value)&&(value<=2)||(4<=value)&&(value<=6)||(8<=value)&&(value<=10)||value==12)  //键盘按下0-9
-  69   2            {
-  70   3              TABE=0;
-  71   3                //SHUZI=0;
-  72   3              if(fuhao==0)
-  73   3              {
-  74   4                Table_A=Table_A*10+number[value];  //按下一位储存在个位，再按下一位原来的数*10加上刚按下的值
-  75   4      
-  76   4              }
-  77   3              if((fuhao>0))
-  78   3              {
-  79   4                Table_B=Table_B*10+number[value];  //当有符号位按下后面的值储存在Table_B中 
-  80   4      
-  81   4              }
-  82   3                Lcd1602_Write_dat(0x30+number[value]);
-  83   3            }
-  84   2            
-  85   2            if(value==3)  //  键盘按下+   也可以写成SWITCH语句
-  86   2            {
-  87   3                TABE=1;
-  88   3              fuhao=1;  // +号标志
-  89   3              Lcd1602_Write_dat(0x30+number[value]);
-  90   3            }
-  91   2      
-  92   2            if(value==7)  //  键盘按下-
-  93   2            {
-  94   3                TABE=1;
-  95   3              fuhao=2;  // -号标志
-  96   3              Lcd1602_Write_dat(0x30+number[value]);      
-  97   3            }
-  98   2      
-  99   2            if(value==11)  //  键盘按下*
- 100   2            {
- 101   3                TABE=1;
- 102   3              fuhao=3;  // -号标志
- 103   3              Lcd1602_Write_dat(0x30+number[value]);      
- 104   3            }
- 105   2      
- 106   2            if(value==15)  //  键盘按下*
- 107   2            {
- 108   3                TABE=1;
- 109   3              fuhao=4;  // /号标志
- 110   3              Lcd1602_Write_dat(0x30+number[value]);      
- 111   3            }
- 112   2      
- 113   2            if(value==13)  //  键盘按下*
-C51 COMPILER V9.54   MAIN                                                                  11/05/2023 18:15:23 PAGE 3   
+  52          {
+  53   1        char a,i;
+  54   1        i=0;
+  55   1        Key_Net=0x0ff;  ////列初始值    Key_Net - P1
+  56   1        Key_P2 = 0x00;
+  57   1        if(Key_Net!=0xff) ////按键按下
+  58   1        {
+  59   2          delay10ms();
+  60   2          if(Key_Net!= 0xff)  ////按键消抖
+  61   2          {
+  62   3            Key_P2 = 0x00;
+  63   3            switch(Key_Net)
+  64   3            {
+  65   4              case(0x7f) : value = 7 ;break;  //0111 1111 第一列
+  66   4              case(0xbf) : value = 6 ;break;  //1011 1111
+  67   4              case(0xdf) : value = 5 ;break;  //1101 1111
+  68   4              case(0xef) : value = 4 ;break;  //1110 1111
+  69   4              case(0xf7) : value = 3 ;break;  //1111 0111
+  70   4              case(0xfb) : value = 2 ;break;  //1111 1011
+  71   4              case(0xfd) : value = 1 ;break;  //1111 1101
+  72   4              case(0xfe) : value = 0 ;break;  //1111 1110
+  73   4            }       
+  74   3            
+  75   3            Key_Net = 0x00;
+  76   3            Key_P2 = 0xff;
+  77   3            delay10ms();
+  78   3            switch(Key_P2)
+  79   3            {
+  80   4              case(0xfe) : value = value+0 ;break;  //1111 1110 //行+列 0+0
+  81   4              case(0xfd) : value = value+8 ;break;  //1111 1101 
+  82   4              case(0xfb) : value = value+16 ;break; //1111 1011
+  83   4            }
+  84   3            while((a<100)&&(Key_P2!=0xff))  //松手检测
+  85   3            {
+  86   4              delay10ms();
+  87   4              a++;
+  88   4            }
+  89   3              a=0;
+  90   3          }         
+  91   2          
+  92   2      
+  93   2            if((0<=value)&&(value<=2)||(8<=value)&&(value<=10)||(16<=value)&&(value<=18)||value==3) //键盘按下0-9
+  94   2            {
+  95   3              TABE=0; ////TABE = 0;表示是数字
+  96   3                //SHUZI=0;
+  97   3              if(fuhao==0)
+  98   3              {
+  99   4                Table_A=Table_A*10+number[value];  //按下一位储存在个位，再按下一位原来的数*10加上刚按下的值
+ 100   4      
+ 101   4              }
+ 102   3              if((fuhao>0))
+ 103   3              {
+ 104   4                Table_B=Table_B*10+number[value];  //当有符号位按下后面的值储存在Table_B中 
+ 105   4      
+ 106   4              }
+ 107   3                Lcd1602_Write_dat(0x30+number[value]);
+ 108   3            }
+ 109   2            
+ 110   2            
+ 111   2            
+ 112   2            
+ 113   2            
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 3   
 
- 114   2            {
- 115   3                TABE=1;
- 116   3              fuhao=5;  // RST标志
- 117   3              Lcd1602_Write_com(0x30+number[value]);
- 118   3              fuhao=0;
- 119   3              TABE=0;
- 120   3              Table_A=0;
- 121   3              Table_B=0;      
- 122   3            }
- 123   2      
- 124   2            if(value==14) //  键盘按下=后直接显示
- 125   2            {
- 126   3      //--------------------------------------------------------------------加法--------------------------------
+ 114   2            if(value==4)  //  键盘按下+   也可以写成SWITCH语句
+ 115   2            {
+ 116   3                TABE=1; ////TABE = 1;表示符号
+ 117   3              fuhao=1;  // +号标志
+ 118   3              Lcd1602_Write_dat(0x30+number[value]);
+ 119   3            }
+ 120   2      
+ 121   2            if(value==5)  //  键盘按下-
+ 122   2            {
+ 123   3                TABE=1;
+ 124   3              fuhao=2;  // -号标志
+ 125   3              Lcd1602_Write_dat(0x30+number[value]);      
+ 126   3            }
+ 127   2      
+ 128   2            if(value==6)  //  键盘按下*
+ 129   2            {
+ 130   3                TABE=1;
+ 131   3              fuhao=3;  // -号标志
+ 132   3              Lcd1602_Write_dat(0x30+number[value]);      
+ 133   3            }
+ 134   2      
+ 135   2            if(value==7)  //  键盘按下/
+ 136   2            {
+ 137   3                TABE=1;
+ 138   3              fuhao=4;  // /号标志
+ 139   3              Lcd1602_Write_dat(0x30+number[value]);      
+ 140   3            }
+ 141   2      
+ 142   2            if(value==15)  //  键盘按e
+ 143   2            {
+ 144   3                TABE=1;
+ 145   3              fuhao=5;  // e标志
+ 146   3              Lcd1602_Write_com(0x30+number[value]);
+ 147   3              fuhao=0;
+ 148   3              TABE=0;
+ 149   3              Table_A=0;
+ 150   3              Table_B=0;      
+ 151   3            }
+ 152   2            
+ 153   2            
+ 154   2            
+ 155   2            
+ 156   2      //################################      
+ 157   2            if(value==12)  //  键盘按sin
+ 158   2            {
+ 159   3                TABE=1;
+ 160   3              fuhao=6;  // sin标志
+ 161   3              Lcd1602_Write_dat(0x30+number[value]);
+ 162   3            }
+ 163   2            
+ 164   2            if(value==13)  //  键盘按cos
+ 165   2            {
+ 166   3                TABE=1;
+ 167   3              fuhao=7;  // cos标志
+ 168   3              Lcd1602_Write_dat(0x30+number[value]);
+ 169   3            }
+ 170   2            
+ 171   2            if(value==11)  //  键盘按^---阶乘
+ 172   2            {
+ 173   3                TABE=1;
+ 174   3              fuhao=8;  // ^阶乘标志
+ 175   3              Lcd1602_Write_dat(0x30+number[value]);
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 4   
+
+ 176   3            }         
+ 177   2      //################################  
+ 178   2      
+ 179   2            
+ 180   2            
+ 181   2            
+ 182   2            
+ 183   2            
+ 184   2            
+ 185   2            if(value==14) //  键盘按下=后直接显示
+ 186   2            {
+ 187   3      //--------------------------------------------------------------------加法--------------------------------
              -----------------
- 127   3              if(fuhao==1)  //加法
- 128   3              { 
- 129   4                SUM=Table_A+Table_B;
- 130   4                Lcd1602_Write_com(0Xcf); //从第二行最右边开始显示
- 131   4                Lcd1602_Write_com(0X04); //指针左移
- 132   4                while(SUM!=0)      //一位一位显示
- 133   4                    {
- 134   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
- 135   5                      SUM=SUM/10;             //取前面的结果数据  
- 136   5                    }
- 137   4                Lcd1602_Write_dat(0x3d);            //写等于号
- 138   4              }
- 139   3      //-----------------------------------------------------------------------减法-----------------------------
+ 188   3              if(fuhao==1)  //加法  ////fuhao=1;  // +号标志
+ 189   3              { 
+ 190   4                SUM=Table_A+Table_B;
+ 191   4                Lcd1602_Write_com(0Xcf); //从第二行最右边开始显示
+ 192   4                Lcd1602_Write_com(0X04); //指针左移
+ 193   4                while(SUM!=0)      //一位一位显示
+ 194   4                    {
+ 195   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 196   5                      SUM=SUM/10;             //取前面的结果数据  
+ 197   5                    }
+ 198   4                Lcd1602_Write_dat(0x3d);            //写等于号
+ 199   4              }
+ 200   3      //-----------------------------------------------------------------------减法-----------------------------
              -------------------
- 140   3              if(fuhao==2)  //减法
- 141   3              { 
- 142   4                if(Table_A>Table_B)
- 143   4                {
- 144   5                  SUM=Table_A - Table_B;
- 145   5                }
- 146   4                else
- 147   4                {
- 148   5                  SUM=Table_B - Table_A;
- 149   5                }
- 150   4                  Lcd1602_Write_com(0Xcf);
- 151   4                  Lcd1602_Write_com(0X04);
- 152   4                  while(SUM!=0)     //一位一位显示
- 153   4                      {
- 154   5                        Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
- 155   5                        SUM=SUM/10;             //取前面的结果数据  
- 156   5                      }
- 157   4                  if(Table_A < Table_B)
- 158   4                  {
- 159   5                    Lcd1602_Write_dat(0x2d);
- 160   5                  }
- 161   4                  Lcd1602_Write_dat(0x3d);            //写等于号
- 162   4              }
- 163   3      //-----------------------------------------------------------------------------乘法-----------------------
+ 201   3              if(fuhao==2)  //减法  ////fuhao=2;  // -号标志
+ 202   3              { 
+ 203   4                if(Table_A>Table_B)
+ 204   4                {
+ 205   5                  SUM=Table_A - Table_B;
+ 206   5                }
+ 207   4                else
+ 208   4                {
+ 209   5                  SUM=Table_B - Table_A;
+ 210   5                }
+ 211   4                  Lcd1602_Write_com(0Xcf);
+ 212   4                  Lcd1602_Write_com(0X04);
+ 213   4                  while(SUM!=0)     //一位一位显示
+ 214   4                      {
+ 215   5                        Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 216   5                        SUM=SUM/10;             //取前面的结果数据  
+ 217   5                      }
+ 218   4                  if(Table_A < Table_B)
+ 219   4                  {
+ 220   5                    Lcd1602_Write_dat(0x2d);
+ 221   5                  }
+ 222   4                  Lcd1602_Write_dat(0x3d);            //写等于号
+ 223   4              }
+ 224   3      //-----------------------------------------------------------------------------乘法-----------------------
              ---------------------
- 164   3              if(fuhao==3)  //乘法
- 165   3              { 
- 166   4                SUM=(Table_A)*(Table_B);
- 167   4                Lcd1602_Write_com(0Xcf);
- 168   4                Lcd1602_Write_com(0X04);
- 169   4                while(SUM!=0)     //一位一位显示
- 170   4                    {
- 171   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
- 172   5                      SUM=SUM/10;             //取前面的结果数据  
-C51 COMPILER V9.54   MAIN                                                                  11/05/2023 18:15:23 PAGE 4   
+ 225   3              if(fuhao==3)  //乘法  ////fuhao=3;  // -号标志
+ 226   3              { 
+ 227   4                SUM=(Table_A)*(Table_B);
+ 228   4                Lcd1602_Write_com(0Xcf);
+ 229   4                Lcd1602_Write_com(0X04);
+ 230   4                while(SUM!=0)     //一位一位显示
+ 231   4                    {
+ 232   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 233   5                      SUM=SUM/10;             //取前面的结果数据  
+ 234   5                    }
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 5   
 
- 173   5                    }
- 174   4                Lcd1602_Write_dat(0x3d);            //写等于号
- 175   4              }
- 176   3      //----------------------------------------------------------------------------除法------------------------
+ 235   4                Lcd1602_Write_dat(0x3d);            //写等于号
+ 236   4              }
+ 237   3      //----------------------------------------------------------------------------除法------------------------
              ---------------------
- 177   3              if(fuhao==4)  //除法
- 178   3              {
- 179   4                uchar i;
- 180   4                SUM=((Table_A/Table_B)*10000);      
- 181   4                Lcd1602_Write_com(0Xcf);
- 182   4                Lcd1602_Write_com(0X04);
- 183   4                if((Table_A < Table_B)&&SUM<100)    //当两个数差100倍时
- 184   4                {
- 185   5                while(SUM!=0)     //一位一位显示
- 186   5                    {
- 187   6                      i++;
- 188   6                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
- 189   6                      SUM=SUM/10;
- 190   6                      if(i==2)  
- 191   6                      {
- 192   7                      Lcd1602_Write_dat(0x30);
- 193   7                      Lcd1602_Write_dat(0x2e);
- 194   7                      i=0;
- 195   7                      }       
- 196   6                    }
- 197   5                }
- 198   4                while(SUM!=0)     //两个数差10倍时SUM为3位数
- 199   4                    {
- 200   5                      i++;
- 201   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
- 202   5                      SUM=SUM/10;
- 203   5                      
- 204   5                      if(i==3)              //改变num的倍数和i的值可以改变保留小数的大小
- 205   5                      {
- 206   6                      Lcd1602_Write_dat(0x2e);
- 207   6                      i=0;
- 208   6                      }
- 209   5                    } 
- 210   4                if(Table_A < Table_B)
- 211   4                {
- 212   5                Lcd1602_Write_dat(0x30);
- 213   5                }
- 214   4                Lcd1602_Write_dat(0x3d);            //写等于号
- 215   4              
- 216   4              }
- 217   3            }  
- 218   2      
- 219   2        } 
- 220   1      }
- 221          //========================================================主函数==========================================
+ 238   3              if(fuhao==4)  //除法  ////fuhao=4;  // /号标志
+ 239   3              {
+ 240   4                uchar i;
+ 241   4                SUM=((Table_A/Table_B)*10000);      
+ 242   4                Lcd1602_Write_com(0Xcf);
+ 243   4                Lcd1602_Write_com(0X04);
+ 244   4                if((Table_A < Table_B)&&SUM<100)    //当两个数差100倍时
+ 245   4                {
+ 246   5                while(SUM!=0)     //一位一位显示
+ 247   5                    {
+ 248   6                      i++;
+ 249   6                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 250   6                      SUM=SUM/10;
+ 251   6                      if(i==2)  
+ 252   6                      {
+ 253   7                      Lcd1602_Write_dat(0x30);
+ 254   7                      Lcd1602_Write_dat(0x2e);
+ 255   7                      i=0;
+ 256   7                      }       
+ 257   6                    }
+ 258   5                }
+ 259   4                while(SUM!=0)     //两个数差10倍时SUM为3位数
+ 260   4                    {
+ 261   5                      i++;
+ 262   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 263   5                      SUM=SUM/10;
+ 264   5                      
+ 265   5                      if(i==3)              //改变num的倍数和i的值可以改变保留小数的大小
+ 266   5                      {
+ 267   6                      Lcd1602_Write_dat(0x2e);
+ 268   6                      i=0;
+ 269   6                      }
+ 270   5                    } 
+ 271   4                if(Table_A < Table_B)
+ 272   4                {
+ 273   5                Lcd1602_Write_dat(0x30);
+ 274   5                }
+ 275   4                Lcd1602_Write_dat(0x3d);            //写等于号
+ 276   4              
+ 277   4              }
+ 278   3              
+ 279   3      //#####################################################       
+ 280   3      //-----------------------------------------------------------------------------sin------------------------
+             --------------------
+ 281   3      //        if(fuhao==6)  //sin ////fuhao=6;  // sin标志
+ 282   3      //        { 
+ 283   3      //          SUM=(Table_A)*(Table_B);
+ 284   3      //          Lcd1602_Write_com(0Xcf);
+ 285   3      //          Lcd1602_Write_com(0X04);
+ 286   3      //          while(SUM!=0)     //一位一位显示
+ 287   3      //              {
+ 288   3      //                Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 289   3      //                SUM=SUM/10;             //取前面的结果数据  
+ 290   3      //              }
+ 291   3      //          Lcd1602_Write_dat(0x3d);            //写等于号
+ 292   3      //        }
+ 293   3      
+ 294   3      
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 6   
+
+ 295   3      //        if(fuhao==7)  //cos ////fuhao=7;  // cos标志
+ 296   3      //        { 
+ 297   3      //          SUM=(Table_A)*(Table_B);
+ 298   3      //          Lcd1602_Write_com(0Xcf);
+ 299   3      //          Lcd1602_Write_com(0X04);
+ 300   3      //          while(SUM!=0)     //一位一位显示
+ 301   3      //              {
+ 302   3      //                Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 303   3      //                SUM=SUM/10;             //取前面的结果数据  
+ 304   3      //              }
+ 305   3      //          Lcd1602_Write_dat(0x3d);            //写等于号
+ 306   3      //        }       
+ 307   3      
+ 308   3      
+ 309   3              if(fuhao==8)  //^阶乘 ////fuhao=8;  // ^阶乘标志
+ 310   3              { 
+ 311   4      //          SUM=(Table_A)*(Table_B);
+ 312   4                SUM=pow(Table_A,Table_B);
+ 313   4                Lcd1602_Write_com(0Xcf);
+ 314   4                Lcd1602_Write_com(0X04);
+ 315   4                while(SUM!=0)     //一位一位显示
+ 316   4                    {
+ 317   5                      Lcd1602_Write_dat(0x30+SUM%10);   //显示结果的最后一位在0x4f的位置
+ 318   5                      SUM=SUM/10;             //取前面的结果数据  
+ 319   5                    }
+ 320   4                Lcd1602_Write_dat(0x3d);            //写等于号
+ 321   4              }               
+ 322   3              
+ 323   3      //#####################################################           
+ 324   3              
+ 325   3              
+ 326   3              
+ 327   3            }  
+ 328   2      
+ 329   2        } 
+ 330   1      }
+ 331          //========================================================主函数==========================================
              -=========================
- 222          void main()
- 223          {
- 224   1      //  uchar i;
- 225   1        Lcd_Init();   //初始化LCD
- 226   1      //  for(i=0;i<16;i++)
- 227   1      //  {
- 228   1      //    Lcd1602_Write_dat(display[i]);
- 229   1      //  }
- 230   1          while(1)
- 231   1        {
- 232   2          Keydown();
-C51 COMPILER V9.54   MAIN                                                                  11/05/2023 18:15:23 PAGE 5   
-
- 233   2      //    Lcd1602_Write_com(0X80);
- 234   2      //    Lcd1602_Write_dat(0x30+number[value]);
- 235   2        }
- 236   1      }
- 237            
+ 332          void main()
+ 333          {
+ 334   1      //  uchar i;
+ 335   1        Lcd_Init();   //初始化LCD
+ 336   1      //  for(i=0;i<16;i++)
+ 337   1      //  {
+ 338   1      //    Lcd1602_Write_dat(display[i]);
+ 339   1      //  }
+ 340   1          while(1)
+ 341   1        {
+ 342   2          Keydown();
+ 343   2      //    Lcd1602_Write_com(0X80);
+ 344   2      //    Lcd1602_Write_dat(0x30+number[value]);
+ 345   2        }
+ 346   1      }
+ 347            
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1170    ----
-   CONSTANT SIZE    =     16    ----
+   CODE SIZE        =   1377    ----
+   CONSTANT SIZE    =     19    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =     19       3
+C51 COMPILER V9.54   MAIN                                                                  11/06/2023 19:50:58 PAGE 7   
+
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

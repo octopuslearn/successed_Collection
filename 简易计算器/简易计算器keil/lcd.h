@@ -5,9 +5,9 @@ typedef unsigned char uchar;
 typedef unsigned int uint;
 
 #define IO P0
-sbit RW=P2^5;
-sbit RS=P2^6;
-sbit EN=P2^7;
+sbit RW=P3^0;
+sbit RS=P3^1;
+sbit EN=P3^2;
 
 void Lcd1602_Write_com(uchar com);
 void Lcd1602_Write_dat(uchar dat);

@@ -1,0 +1,52 @@
+    grc_l30_a =		;
+    grc_l30_b =		;
+    grc_r30_a =		;
+    grc_r30_b =		;
+    grc_lf_a =	; 
+    grc_lf_b =	; 
+    grc_rf_a =	;
+    grc_rf_b =	;
+	
+	
+
+qcmcu
+2022
+
+    grc_l30_a =	-0.5468	;
+    grc_l30_b =	0.6336	;
+    grc_r30_a =	-0.5053	;
+    grc_r30_b =	0.8840	;
+    grc_lf_a =	-0.5724; 
+    grc_lf_b =	0.8243; 
+    grc_rf_a =	-0.5399;
+    grc_rf_b =	1.0819;
+	
+	
+	grc_l30_a =		-0.5668;
+    grc_l30_b =		0.5826;
+    grc_r30_a =		-0.5065;
+    grc_r30_b =		0.8332;
+    grc_lf_a =	-0.5620; 
+    grc_lf_b =	0.8622; 
+    grc_rf_a =	-0.5419;
+    grc_rf_b =	1.0752;
+	
+	
+	grc_l30_a =		-0.5596;
+    grc_l30_b =		0.5941;
+    grc_r30_a =		-0.5051;
+    grc_r30_b =		0.9041;
+    grc_lf_a =	-0.5704; 
+    grc_lf_b =	0.821; 
+    grc_rf_a =	-0.5288;
+    grc_rf_b =	1.097;
+	
+	
+	grc_l30_a =	-0.5737	;
+    grc_l30_b =	0.5631	;
+    grc_r30_a =	-0.5065	;
+    grc_r30_b =	0.8871	;
+    grc_lf_a =	-0.5684; 
+    grc_lf_b =	0.8264; 
+    grc_rf_a =	-0.5287;
+    grc_rf_b =	1.0995;

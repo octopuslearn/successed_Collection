@@ -31,6 +31,13 @@ uchar value;
 uchar fuhao,TABE;	 //fuhao 储存+，-，*，/，clr，=	；TABE 标识   1是符  0是数
 float Table_A,Table_B;     //Table_A,Table_B 储存输入的两个数字
 long SUM,YU;
+
+
+
+int zheng_int,xiao_in_int,xiao_out_int;
+
+
+
 //=======================================================================延时函数===========================================	
 void delay10ms()   //误差 0us
 {
@@ -278,18 +285,40 @@ void Keydown()
 				
 //#####################################################				
 //-----------------------------------------------------------------------------sin-------------------------------------------
-//				if(fuhao==6)	//sin	////fuhao=6;  // sin标志
-//				{	
-//					SUM=(Table_A)*(Table_B);
-//					Lcd1602_Write_com(0Xcf);
-//					Lcd1602_Write_com(0X04);
+				if(fuhao==6)	//sin	////fuhao=6;  // sin标志
+				{	
+
+					Table_B = (Table_B*PI) / 180.0;
+					Table_B= cos(Table_B);
+					zheng_int = (int)Table_B;
+					xiao_in_int = (int)Table_B*100;
+					xiao_out_int = xiao_in_int%100;
+					
+					
+					
+					Lcd1602_Write_com(0Xcf);
+					Lcd1602_Write_com(0X04);
+					
+					
+					
+//					Lcd1602_Write_dat(0x30+zheng_int%10);
+					Lcd1602_Write_dat(0x2e);
+//					while(xiao_out_int != 0)
+//					{
+//						Lcd1602_Write_dat(0x30+xiao_out_int%10);
+//						xiao_out_int /= 10;
+//					}
+//					
+
+					
+				
 //					while(SUM!=0)	 		//一位一位显示
 //							{
 //								Lcd1602_Write_dat(0x30+SUM%10);		//显示结果的最后一位在0x4f的位置
 //								SUM=SUM/10;							//取前面的结果数据	
 //							}
-//					Lcd1602_Write_dat(0x3d);						//写等于号
-//				}
+					Lcd1602_Write_dat(0x3d);						//写等于号
+				}
 
 
 //				if(fuhao==7)	//cos	////fuhao=7;  // cos标志
@@ -306,9 +335,8 @@ void Keydown()
 //				}				
 
 
-				if(fuhao==8)	//^阶乘	////fuhao=8;  // ^阶乘标志
+				if(fuhao==8)	//^乘方	////fuhao=8;  // ^阶乘标志
 				{	
-//					SUM=(Table_A)*(Table_B);
 					SUM=pow(Table_A,Table_B);
 					Lcd1602_Write_com(0Xcf);
 					Lcd1602_Write_com(0X04);
